@@ -443,7 +443,6 @@ export default function WorldMap() {
         }));
 
         setPokemonList(finalPokemonList);
-        console.log("Lista final de Pokémon:", finalPokemonList);
       } catch (error) {
         if (error.name === "AbortError") return;
         console.error("Error generando lista de Pokémon:", error);
