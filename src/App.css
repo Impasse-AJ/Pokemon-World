@@ -1,42 +1,158 @@
-/* #root {
-  max-width: 1280px;
+.world-map-page {
+  --page-pad: clamp(0.55rem, 1vw, 0.9rem);
+  --map-chrome-space: clamp(10rem, 17vh, 12.25rem);
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--page-pad);
+}
+
+.world-map-shell {
+  width: min(100%, 118rem);
   margin: 0 auto;
-  padding: 2rem;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  justify-items: center;
+  align-content: start;
+  height: calc(100dvh - (var(--page-pad) * 2));
+  gap: clamp(0.5rem, 1vw, 0.9rem);
+}
+
+.pokemon-logo {
+  width: clamp(4.75rem, 6vw, 6.5rem);
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 10px 20px rgba(7, 15, 40, 0.3))
+    drop-shadow(0 2px 0 rgba(255, 255, 255, 0.12));
+}
+
+.world-map-header {
+  width: min(100%, 72rem);
+  display: grid;
+  gap: 0.45rem;
+  justify-items: center;
   text-align: center;
+  position: relative;
+  padding-top: 0.1rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.world-map-header::after {
+  content: "";
+  width: clamp(7.5rem, 12vw, 11rem);
+  height: 0.36rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffdf5e 0%, #ff8c42 52%, #ff4f5e 100%);
+  box-shadow:
+    0 8px 18px rgba(255, 143, 66, 0.28),
+    0 0 0 2px rgba(18, 42, 93, 0.2);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.world-map-eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #cfe0ff;
+  text-shadow: 0 2px 10px rgba(6, 15, 38, 0.35);
+}
+
+.world-map-title {
+  margin: 0;
+  font-family: "Arial Black", "Trebuchet MS", "Segoe UI", sans-serif;
+  font-size: clamp(2.25rem, 4vw, 4.45rem);
+  line-height: 0.88;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ffd84f;
+  text-shadow:
+    -3px -3px 0 #2247a6,
+    3px -3px 0 #2247a6,
+    -3px 3px 0 #2247a6,
+    3px 3px 0 #2247a6,
+    0 0 0 #2247a6,
+    0 10px 22px rgba(5, 12, 31, 0.32);
+}
+
+.world-map-stage {
+  width: min(
+    100%,
+    calc(
+      var(
+        --map-stage-max-height,
+        calc(100dvh - (var(--page-pad) * 2) - var(--map-chrome-space))
+      ) * var(--world-map-ratio)
+    )
+  );
+  aspect-ratio: 2018.99 / 864.56;
+  max-height: var(
+    --map-stage-max-height,
+    calc(100dvh - (var(--page-pad) * 2) - var(--map-chrome-space))
+  );
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(196, 217, 255, 0.14);
+  background: linear-gradient(180deg, #456fda 0%, #365fc8 100%);
+  box-shadow: 0 22px 60px rgba(4, 10, 27, 0.34);
+}
+
+.world-map-canvas {
+  width: 100%;
+  height: 100%;
+  line-height: 0;
+}
+
+.world-map-canvas #map_holder,
+.world-map-canvas #map_inner,
+.world-map-canvas #map_outer,
+.world-map-canvas #map_zoom {
+  max-width: 100%;
+}
+
+.world-map-canvas select {
+  display: none !important;
+}
+
+@media (max-width: 980px) {
+  .world-map-page {
+    --page-pad: 0.65rem;
+    --map-chrome-space: 9.25rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  .pokemon-logo {
+    width: clamp(3.8rem, 14vw, 5rem);
+  }
+
+  .world-map-eyebrow {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+  }
+
+  .world-map-title {
+    font-size: clamp(1.45rem, 5.2vw, 2rem);
+    text-shadow:
+      -2px -2px 0 #2247a6,
+      2px -2px 0 #2247a6,
+      -2px 2px 0 #2247a6,
+      2px 2px 0 #2247a6,
+      0 8px 18px rgba(5, 12, 31, 0.26);
+  }
+
+  .world-map-stage {
+    width: min(
+      100%,
+      calc(
+        var(
+          --map-stage-max-height,
+          calc(100dvh - (var(--page-pad) * 2) - var(--map-chrome-space))
+        ) * var(--world-map-ratio)
+      )
+    );
+    max-height: var(
+      --map-stage-max-height,
+      calc(100dvh - (var(--page-pad) * 2) - var(--map-chrome-space))
+    );
   }
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-} */

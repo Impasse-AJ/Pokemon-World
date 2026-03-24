@@ -1,3 +1,4 @@
+import "./App.css";
 import WorldMap from "./components/WorldMap";
 
 function App() {

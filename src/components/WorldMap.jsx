@@ -1,105 +1,87 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-function classifyTemperature(temp) {
-  if (temp === null || temp === undefined) return null;
+const TITULO_INICIAL = "Pokémon World Map";
+const ALTO_MINIMO_MAPA = 220;
+const LIMITE_POKEMON = 20;
 
-  if (temp <= -5) {
+function clasificarTemperatura(temperatura) {
+  if (temperatura === null || temperatura === undefined) return null;
+
+  if (temperatura <= -5) {
+    return { categoria: "polar", tipos: ["ice", "water", "steel"] };
+  }
+
+  if (temperatura <= 3) {
+    return { categoria: "muy frío", tipos: ["ice", "water", "flying"] };
+  }
+
+  if (temperatura <= 9) {
+    return { categoria: "frío", tipos: ["ice", "water", "normal"] };
+  }
+
+  if (temperatura <= 15) {
+    return { categoria: "fresco", tipos: ["grass", "flying", "normal"] };
+  }
+
+  if (temperatura <= 21) {
+    return { categoria: "templado", tipos: ["grass", "normal", "bug"] };
+  }
+
+  if (temperatura <= 27) {
     return {
-      category: "polar",
-      types: ["ice", "water", "steel"],
+      categoria: "templado cálido",
+      tipos: ["grass", "ground", "fighting"],
     };
   }
 
-  if (temp <= 3) {
-    return {
-      category: "muy frío",
-      types: ["ice", "water", "flying"],
-    };
+  if (temperatura <= 33) {
+    return { categoria: "cálido", tipos: ["fire", "ground", "rock"] };
   }
 
-  if (temp <= 9) {
-    return {
-      category: "frío",
-      types: ["ice", "water", "normal"],
-    };
+  if (temperatura <= 39) {
+    return { categoria: "muy cálido", tipos: ["fire", "rock", "dragon"] };
   }
 
-  if (temp <= 15) {
-    return {
-      category: "fresco",
-      types: ["grass", "flying", "normal"],
-    };
-  }
-
-  if (temp <= 21) {
-    return {
-      category: "templado",
-      types: ["grass", "normal", "bug"],
-    };
-  }
-
-  if (temp <= 27) {
-    return {
-      category: "templado cálido",
-      types: ["grass", "ground", "fighting"],
-    };
-  }
-
-  if (temp <= 33) {
-    return {
-      category: "cálido",
-      types: ["fire", "ground", "rock"],
-    };
-  }
-
-  if (temp <= 39) {
-    return {
-      category: "muy cálido",
-      types: ["fire", "rock", "dragon"],
-    };
-  }
-
-  return {
-    category: "extremo",
-    types: ["fire", "ground", "dragon"],
-  };
+  return { categoria: "extremo", tipos: ["fire", "ground", "dragon"] };
 }
 
-function stringToSeed(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+function crearSemilla(texto) {
+  let semilla = 0;
+
+  for (let i = 0; i < texto.length; i++) {
+    semilla = (semilla * 31 + texto.charCodeAt(i)) >>> 0;
   }
-  return hash;
+
+  return semilla;
 }
 
-function seededShuffle(array, seed) {
-  const result = [...array];
-  let currentSeed = seed;
+function mezclarConSemilla(lista, semilla) {
+  const copia = [...lista];
+  let semillaActual = semilla;
 
-  function random() {
-    currentSeed = (currentSeed * 1664525 + 1013904223) % 4294967296;
-    return currentSeed / 4294967296;
+  function numeroAleatorio() {
+    semillaActual = (semillaActual * 1664525 + 1013904223) % 4294967296;
+    return semillaActual / 4294967296;
   }
 
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const indice = Math.floor(numeroAleatorio() * (i + 1));
+    [copia[i], copia[indice]] = [copia[indice], copia[i]];
   }
 
-  return result;
+  return copia;
 }
 
-function loadScriptOnce(src, id) {
+function cargarScript(src, id) {
   return new Promise((resolve, reject) => {
-    const existing = document.getElementById(id);
+    const scriptActual = document.getElementById(id);
 
-    if (existing) {
-      if (existing.dataset.loaded === "true") {
+    if (scriptActual) {
+      if (scriptActual.dataset.loaded === "true") {
         resolve();
       } else {
-        existing.addEventListener("load", () => resolve(), { once: true });
-        existing.addEventListener(
+        scriptActual.addEventListener("load", resolve, { once: true });
+        scriptActual.addEventListener(
           "error",
           () => reject(new Error(`No se pudo cargar ${src}`)),
           { once: true }
@@ -124,89 +106,209 @@ function loadScriptOnce(src, id) {
   });
 }
 
-function registerSimplemapsHooks() {
+function obtenerSeleccionMapa() {
+  const mapa = window.simplemaps_worldmap;
+  const datosMapa = window.simplemaps_worldmap_mapdata;
+  const id = mapa.zoom_level_id;
+
+  if (!id) {
+    return { titulo: TITULO_INICIAL, pais: null };
+  }
+
+  if (datosMapa.state_specific?.[id]) {
+    const nombre = datosMapa.state_specific[id].name;
+    return { titulo: nombre, pais: { id, name: nombre } };
+  }
+
+  if (datosMapa.regions?.[id]) {
+    return { titulo: datosMapa.regions[id].name, pais: null };
+  }
+
+  if (window.simplemaps_worldmap_mapinfo?.names?.[id]) {
+    const nombre = window.simplemaps_worldmap_mapinfo.names[id];
+    return { titulo: nombre, pais: { id, name: nombre } };
+  }
+
+  return { titulo: id, pais: null };
+}
+
+function registrarEventosMapa() {
   if (window.__simplemaps_hooks_registered__) return;
 
-  if (
-    !window.simplemaps_worldmap ||
-    !window.simplemaps_worldmap.plugin_hooks ||
-    !Array.isArray(window.simplemaps_worldmap.plugin_hooks.zooming_complete)
-  ) {
-    return;
-  }
+  const hooks = window.simplemaps_worldmap?.plugin_hooks?.zooming_complete;
+  if (!Array.isArray(hooks)) return;
 
   window.__simplemaps_hooks_registered__ = true;
 
-  window.simplemaps_worldmap.plugin_hooks.zooming_complete.push(function () {
-    const map = window.simplemaps_worldmap;
-    const mapdata = window.simplemaps_worldmap_mapdata;
-    const stateId = map.zoom_level_id;
-
-    let itemName = "Pokémon World Map";
-    let selected = null;
-
-    if (stateId) {
-      if (mapdata.state_specific && mapdata.state_specific[stateId]) {
-        itemName = mapdata.state_specific[stateId].name;
-        selected = {
-          id: stateId,
-          name: itemName,
-        };
-      } else if (mapdata.regions && mapdata.regions[stateId]) {
-        itemName = mapdata.regions[stateId].name;
-      } else if (
-        window.simplemaps_worldmap_mapinfo &&
-        window.simplemaps_worldmap_mapinfo.names &&
-        window.simplemaps_worldmap_mapinfo.names[stateId]
-      ) {
-        itemName = window.simplemaps_worldmap_mapinfo.names[stateId];
-        selected = {
-          id: stateId,
-          name: itemName,
-        };
-      } else {
-        itemName = stateId;
-      }
-    }
-
-    const title = document.getElementById("mapTitle");
-    if (title) {
-      title.textContent = itemName;
-    }
+  hooks.push(function () {
+    const seleccion = obtenerSeleccionMapa();
 
     window.dispatchEvent(
       new CustomEvent("simplemaps-country-change", {
-        detail: selected,
+        detail: seleccion,
       })
     );
   });
 }
 
+async function pedirJson(url, signal, errorTexto) {
+  const response = await fetch(url, { signal });
+
+  if (!response.ok) {
+    throw new Error(`${errorTexto}: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+async function pedirPais(idPais, signal) {
+  const data = await pedirJson(
+    `https://restcountries.com/v3.1/alpha/${idPais}?fields=name,capital,capitalInfo,flags,languages,cca2`,
+    signal,
+    "Error REST Countries"
+  );
+
+  return Array.isArray(data) ? data[0] : data;
+}
+
+async function pedirClima(coords, signal) {
+  const [latitud, longitud] = coords;
+
+  return pedirJson(
+    `https://api.open-meteo.com/v1/forecast?latitude=${latitud}&longitude=${longitud}&current=temperature_2m`,
+    signal,
+    "Error Open-Meteo"
+  );
+}
+
+function sacarNombresTipo(dataTipo) {
+  return dataTipo.pokemon.map((item) => item.pokemon.name);
+}
+
+function meterNombresUnicos(resultado, usados, lista, limite) {
+  for (const nombre of lista) {
+    if (!usados.has(nombre)) {
+      usados.add(nombre);
+      resultado.push(nombre);
+    }
+
+    if (resultado.length >= limite) return;
+  }
+}
+
+function crearListaNombres(idPais, temperatura, nombresPorTipo) {
+  const [lista1, lista2, lista3] = nombresPorTipo;
+  const semillaBase = crearSemilla(`${idPais}-${Math.round(temperatura)}`);
+
+  const mezcla1 = mezclarConSemilla(lista1, semillaBase + 1);
+  const mezcla2 = mezclarConSemilla(lista2, semillaBase + 2);
+  const mezcla3 = mezclarConSemilla(lista3, semillaBase + 3);
+
+  const nombres = [];
+  const usados = new Set();
+
+  meterNombresUnicos(nombres, usados, mezcla1, 8);
+  meterNombresUnicos(nombres, usados, mezcla2, 14);
+  meterNombresUnicos(nombres, usados, mezcla3, 18);
+
+  const resto = mezclarConSemilla(
+    [...new Set([...lista1, ...lista2, ...lista3])],
+    semillaBase + 99
+  );
+
+  meterNombresUnicos(nombres, usados, resto, LIMITE_POKEMON);
+
+  return nombres.slice(0, LIMITE_POKEMON);
+}
+
+function crearPokemon(dataPokemon) {
+  return {
+    id: dataPokemon.id,
+    name: dataPokemon.name,
+    image:
+      dataPokemon.sprites.other["official-artwork"].front_default ||
+      dataPokemon.sprites.front_default,
+    types: dataPokemon.types.map((tipo) => tipo.type.name),
+  };
+}
+
+async function pedirPokemons(tipos, idPais, temperatura, signal) {
+  const datosTipos = await Promise.all(
+    tipos.map((tipo) =>
+      pedirJson(
+        `https://pokeapi.co/api/v2/type/${tipo}`,
+        signal,
+        "Error PokéAPI tipos"
+      )
+    )
+  );
+
+  const nombresPorTipo = datosTipos.map(sacarNombresTipo);
+  const nombres = crearListaNombres(idPais, temperatura, nombresPorTipo);
+
+  const datosPokemon = await Promise.all(
+    nombres.map((nombre) =>
+      pedirJson(
+        `https://pokeapi.co/api/v2/pokemon/${nombre}`,
+        signal,
+        "Error PokéAPI detalle"
+      )
+    )
+  );
+
+  return datosPokemon.map(crearPokemon);
+}
+
+function calcularAltoMapa(contenedor, logo, encabezado) {
+  const estilos = window.getComputedStyle(contenedor);
+  const gap = parseFloat(estilos.rowGap || estilos.gap || "0");
+
+  const altoDisponible =
+    contenedor.clientHeight - logo.offsetHeight - encabezado.offsetHeight - gap * 2;
+
+  return Math.max(ALTO_MINIMO_MAPA, Math.floor(altoDisponible));
+}
+
 export default function WorldMap() {
-  const [selectedState, setSelectedState] = useState(null);
-  const [countryData, setCountryData] = useState(null);
-  const [weatherData, setWeatherData] = useState(null);
-  const [pokemonProfile, setPokemonProfile] = useState(null);
-  const [pokemonList, setPokemonList] = useState([]);
+  const [titulo, setTitulo] = useState(TITULO_INICIAL);
+  const [paisSeleccionado, setPaisSeleccionado] = useState(null);
+  const [datosPais, setDatosPais] = useState(null);
+  const [datosClima, setDatosClima] = useState(null);
+  const [listaPokemon, setListaPokemon] = useState([]);
+  const [altoMapa, setAltoMapa] = useState(null);
 
-  // Carga scripts + escucha del país seleccionado
+  const contenedorRef = useRef(null);
+  const logoRef = useRef(null);
+  const encabezadoRef = useRef(null);
+
+  const coordsCapital = datosPais?.capitalInfo?.latlng ?? null;
+  const temperatura = datosClima?.current?.temperature_2m;
+  const perfilPokemon = clasificarTemperatura(temperatura);
+  const categoriaPokemon = perfilPokemon?.categoria ?? null;
+  const tiposPokemon = perfilPokemon?.tipos ?? null;
+  const tiposTexto = tiposPokemon ? tiposPokemon.join(",") : "";
+
   useEffect(() => {
-    let cancelled = false;
+    let cancelado = false;
 
-    const handleCountryChange = (event) => {
-      setSelectedState(event.detail);
+    const cambiarPais = (event) => {
+      const detalle = event.detail ?? {};
+
+      setDatosPais(null);
+      setDatosClima(null);
+      setListaPokemon([]);
+      setPaisSeleccionado(detalle.pais ?? null);
+      setTitulo(detalle.titulo ?? TITULO_INICIAL);
     };
 
-    window.addEventListener("simplemaps-country-change", handleCountryChange);
-
-    const initMap = async () => {
+    async function iniciarMapa() {
       try {
-        await loadScriptOnce("/simplemaps/mapdata.js", "simplemaps-mapdata");
-        await loadScriptOnce("/simplemaps/worldmap.js", "simplemaps-worldmap");
+        await cargarScript("/simplemaps/mapdata.js", "simplemaps-mapdata");
+        await cargarScript("/simplemaps/worldmap.js", "simplemaps-worldmap");
 
-        if (cancelled) return;
+        if (cancelado) return;
 
-        registerSimplemapsHooks();
+        registrarEventosMapa();
 
         setTimeout(() => {
           document.body.style.removeProperty("position");
@@ -214,135 +316,69 @@ export default function WorldMap() {
       } catch (error) {
         console.error("Error inicializando el mapa:", error);
       }
-    };
+    }
 
-    initMap();
+    window.addEventListener("simplemaps-country-change", cambiarPais);
+    iniciarMapa();
 
     return () => {
-      cancelled = true;
-      window.removeEventListener(
-        "simplemaps-country-change",
-        handleCountryChange
-      );
+      cancelado = true;
+      window.removeEventListener("simplemaps-country-change", cambiarPais);
     };
   }, []);
 
-  // Cuando cambia el país, limpiamos TODO lo dependiente
   useEffect(() => {
-    if (selectedState) {
-      console.log("selectedState cambiado:", selectedState);
-    } else {
-      console.log("selectedState limpiado");
-    }
-
-    setCountryData(null);
-    setWeatherData(null);
-    setPokemonProfile(null);
-    setPokemonList([]);
-  }, [selectedState]);
-
-  // REST Countries
-  useEffect(() => {
-    if (!selectedState?.id) return;
+    if (!paisSeleccionado?.id) return;
 
     const controller = new AbortController();
 
-    const fetchCountryData = async () => {
+    async function cargarPais() {
       try {
-        const response = await fetch(
-          `https://restcountries.com/v3.1/alpha/${selectedState.id}?fields=name,capital,capitalInfo,flags,languages,cca2`,
-          { signal: controller.signal }
-        );
-
-        if (!response.ok) {
-          throw new Error(`Error REST Countries: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const country = Array.isArray(data) ? data[0] : data;
-
-        setCountryData(country);
-        console.log("countryData cargado:", country);
+        const pais = await pedirPais(paisSeleccionado.id, controller.signal);
+        setDatosPais(pais);
       } catch (error) {
         if (error.name === "AbortError") return;
         console.error("Error cargando datos del país:", error);
-        setCountryData(null);
+        setDatosPais(null);
       }
-    };
-
-    fetchCountryData();
-
-    return () => controller.abort();
-  }, [selectedState?.id]);
-
-  // Open-Meteo
-  useEffect(() => {
-    const latlng = countryData?.capitalInfo?.latlng;
-
-    if (!latlng || latlng.length < 2) {
-      setWeatherData(null);
-      return;
     }
 
-    const [latitude, longitude] = latlng;
+    cargarPais();
+
+    return () => controller.abort();
+  }, [paisSeleccionado?.id]);
+
+  useEffect(() => {
+    if (!coordsCapital || coordsCapital.length < 2) return;
+
     const controller = new AbortController();
 
-    const fetchWeatherData = async () => {
+    async function cargarClima() {
       try {
-        const response = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m`,
-          { signal: controller.signal }
-        );
-
-        if (!response.ok) {
-          throw new Error(`Error Open-Meteo: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setWeatherData(data);
-        console.log("weatherData cargado:", data);
+        const clima = await pedirClima(coordsCapital, controller.signal);
+        setDatosClima(clima);
       } catch (error) {
         if (error.name === "AbortError") return;
         console.error("Error cargando clima:", error);
-        setWeatherData(null);
+        setDatosClima(null);
       }
-    };
+    }
 
-    fetchWeatherData();
+    cargarClima();
 
     return () => controller.abort();
-  }, [countryData?.cca2]);
+  }, [coordsCapital]);
 
-  // Clasificación clima -> tipos Pokémon
   useEffect(() => {
-    const temperature = weatherData?.current?.temperature_2m;
-
-    if (temperature === null || temperature === undefined) {
-      setPokemonProfile(null);
-      return;
-    }
-
-    const profile = classifyTemperature(temperature);
-    setPokemonProfile(profile);
-
-    console.log("Clasificación Pokémon:", profile);
-  }, [weatherData?.current?.temperature_2m]);
-
-  // Generación de lista Pokémon
-  useEffect(() => {
-    const temperature = weatherData?.current?.temperature_2m;
-    const types = pokemonProfile?.types;
+    const tipos = tiposTexto ? tiposTexto.split(",") : [];
 
     if (
-      !selectedState?.id ||
-      temperature === null ||
-      temperature === undefined ||
-      !types ||
-      types.length < 3
-    ) {
-      setPokemonList([]);
+      !paisSeleccionado?.id ||
+      temperatura === null ||
+      temperatura === undefined ||
+      tipos.length < 3
+    )
       return;
-    }
 
     const controller = new AbortController();
 
@@ -443,75 +479,111 @@ export default function WorldMap() {
         }));
 
         setPokemonList(finalPokemonList);
+        console.log("Lista final de Pokémon:", finalPokemonList);
       } catch (error) {
         if (error.name === "AbortError") return;
         console.error("Error generando lista de Pokémon:", error);
-        setPokemonList([]);
+        setListaPokemon([]);
       }
-    };
+    }
 
-    fetchPokemonList();
+    cargarPokemons();
 
     return () => controller.abort();
-  }, [
-    selectedState?.id,
-    weatherData?.current?.temperature_2m,
-    pokemonProfile?.types?.join(","),
-  ]);
+  }, [paisSeleccionado?.id, temperatura, tiposTexto]);
 
-  // Logs útiles
   useEffect(() => {
-    if (countryData) {
+    if (paisSeleccionado) {
+      console.log("País seleccionado:", paisSeleccionado);
+    } else {
+      console.log("País seleccionado limpiado");
+    }
+  }, [paisSeleccionado]);
+
+  useEffect(() => {
+    if (datosPais) {
       console.log("Datos útiles del país:");
-      console.log("Nombre:", countryData.name?.common);
-      console.log("Capital:", countryData.capital?.[0]);
-      console.log("Coordenadas capital:", countryData.capitalInfo?.latlng);
-      console.log(
-        "Bandera:",
-        countryData.flags?.png || countryData.flags?.svg
-      );
-      console.log("Idiomas:", countryData.languages);
+      console.log("Nombre:", datosPais.name?.common);
+      console.log("Capital:", datosPais.capital?.[0]);
+      console.log("Coordenadas capital:", datosPais.capitalInfo?.latlng);
+      console.log("Bandera:", datosPais.flags?.png || datosPais.flags?.svg);
+      console.log("Idiomas:", datosPais.languages);
     }
-  }, [countryData]);
+  }, [datosPais]);
 
   useEffect(() => {
-    if (weatherData) {
-      console.log("Temperatura actual:", weatherData.current?.temperature_2m);
+    if (datosClima) {
+      console.log("Temperatura actual:", datosClima.current?.temperature_2m);
     }
-  }, [weatherData]);
+  }, [datosClima]);
 
   useEffect(() => {
-    if (pokemonProfile) {
-      console.log("Categoría climática:", pokemonProfile.category);
-      console.log("Tipos Pokémon recomendados:", pokemonProfile.types);
+    if (categoriaPokemon && tiposTexto) {
+      console.log("Categoría Pokémon:", categoriaPokemon);
+      console.log("Tipos Pokémon recomendados:", tiposTexto.split(","));
     }
-  }, [pokemonProfile]);
+  }, [categoriaPokemon, tiposTexto]);
 
   useEffect(() => {
-    if (pokemonList.length > 0) {
-      console.log("Pokémon listos para mostrar:", pokemonList);
+    if (listaPokemon.length > 0) {
+      console.log("Pokémon listos para mostrar:", listaPokemon);
     }
-  }, [pokemonList]);
+  }, [listaPokemon]);
+
+  useEffect(() => {
+    const contenedor = contenedorRef.current;
+    const logo = logoRef.current;
+    const encabezado = encabezadoRef.current;
+
+    if (!contenedor || !logo || !encabezado) return;
+
+    const actualizarAlto = () => {
+      setAltoMapa(calcularAltoMapa(contenedor, logo, encabezado));
+    };
+
+    actualizarAlto();
+
+    const resizeObserver = new ResizeObserver(actualizarAlto);
+    resizeObserver.observe(contenedor);
+    resizeObserver.observe(logo);
+    resizeObserver.observe(encabezado);
+    window.addEventListener("resize", actualizarAlto);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", actualizarAlto);
+    };
+  }, [titulo]);
 
   return (
-    <>
-      <h1
-        id="mapTitle"
-        style={{
-          textAlign: "center",
-          color: "rgba(255,255,255,0.95)",
-          textShadow: "2px 2px 4px rgba(0,0,0,0.7)",
-        }}
+    <main className="world-map-page">
+      <section
+        ref={contenedorRef}
+        className="world-map-shell"
+        style={
+          altoMapa
+            ? { "--map-stage-max-height": `${altoMapa}px` }
+            : undefined
+        }
       >
-        Pokémon World Map
-      </h1>
+        <img
+          ref={logoRef}
+          className="pokemon-logo"
+          src="/media/pokeball-logo.png"
+          alt="Poké Ball"
+        />
 
-      <div
-        id="map"
-        style={{
-          width: "100%",
-        }}
-      />
-    </>
+        <header ref={encabezadoRef} className="world-map-header">
+          <p className="world-map-eyebrow">Pokemon world atlas</p>
+          <h1 id="mapTitle" className="world-map-title">
+            {titulo}
+          </h1>
+        </header>
+
+        <div className="world-map-stage">
+          <div id="map" className="world-map-canvas" />
+        </div>
+      </section>
+    </main>
   );
 }

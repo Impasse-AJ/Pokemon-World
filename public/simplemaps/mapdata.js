@@ -36,6 +36,8 @@ var simplemaps_worldmap_mapdata={
     hide_labels: "no",
     hide_eastern_labels: false,
     manual_zoom: "no",
+    keyboard_navigation: "no",
+    keyboard_omit: "navigat state region location",
     back_image: "no",
     arrow_box: "no",
     navigation_size: "40",
