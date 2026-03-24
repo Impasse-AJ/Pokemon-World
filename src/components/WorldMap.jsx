@@ -382,104 +382,15 @@ export default function WorldMap() {
 
     const controller = new AbortController();
 
-    const fetchPokemonList = async () => {
+    async function cargarPokemons() {
       try {
-        const [type1, type2, type3] = types;
-
-        const typeResponses = await Promise.all([
-          fetch(`https://pokeapi.co/api/v2/type/${type1}`, {
-            signal: controller.signal,
-          }),
-          fetch(`https://pokeapi.co/api/v2/type/${type2}`, {
-            signal: controller.signal,
-          }),
-          fetch(`https://pokeapi.co/api/v2/type/${type3}`, {
-            signal: controller.signal,
-          }),
-        ]);
-
-        for (const response of typeResponses) {
-          if (!response.ok) {
-            throw new Error(`Error PokéAPI tipos: ${response.status}`);
-          }
-        }
-
-        const [data1, data2, data3] = await Promise.all(
-          typeResponses.map((response) => response.json())
+        const pokemons = await pedirPokemons(
+          tipos,
+          paisSeleccionado.id,
+          temperatura,
+          controller.signal
         );
-
-        const pool1 = data1.pokemon.map((entry) => entry.pokemon.name);
-        const pool2 = data2.pokemon.map((entry) => entry.pokemon.name);
-        const pool3 = data3.pokemon.map((entry) => entry.pokemon.name);
-
-        const seedBase = `${selectedState.id}-${Math.round(temperature)}`;
-        const seed = stringToSeed(seedBase);
-
-        const shuffled1 = seededShuffle(pool1, seed + 1);
-        const shuffled2 = seededShuffle(pool2, seed + 2);
-        const shuffled3 = seededShuffle(pool3, seed + 3);
-
-        const uniqueNames = [];
-        const used = new Set();
-
-        const takeFromPool = (pool, targetLength) => {
-          for (const name of pool) {
-            if (!used.has(name)) {
-              used.add(name);
-              uniqueNames.push(name);
-            }
-            if (uniqueNames.length >= targetLength) return;
-          }
-        };
-
-        // Base: 8 + 6 + 4 = 18
-        takeFromPool(shuffled1, 8);
-        takeFromPool(shuffled2, 14);
-        takeFromPool(shuffled3, 18);
-
-        // Relleno hasta 20
-        const combinedPool = seededShuffle(
-          [...new Set([...pool1, ...pool2, ...pool3])],
-          seed + 99
-        );
-
-        for (const name of combinedPool) {
-          if (!used.has(name)) {
-            used.add(name);
-            uniqueNames.push(name);
-          }
-          if (uniqueNames.length >= 20) break;
-        }
-
-        const detailResponses = await Promise.all(
-          uniqueNames.slice(0, 20).map((name) =>
-            fetch(`https://pokeapi.co/api/v2/pokemon/${name}`, {
-              signal: controller.signal,
-            })
-          )
-        );
-
-        for (const response of detailResponses) {
-          if (!response.ok) {
-            throw new Error(`Error PokéAPI detalle: ${response.status}`);
-          }
-        }
-
-        const detailData = await Promise.all(
-          detailResponses.map((response) => response.json())
-        );
-
-        const finalPokemonList = detailData.map((pokemon) => ({
-          id: pokemon.id,
-          name: pokemon.name,
-          image:
-            pokemon.sprites.other["official-artwork"].front_default ||
-            pokemon.sprites.front_default,
-          types: pokemon.types.map((typeInfo) => typeInfo.type.name),
-        }));
-
-        setPokemonList(finalPokemonList);
-        console.log("Lista final de Pokémon:", finalPokemonList);
+        setListaPokemon(pokemons);
       } catch (error) {
         if (error.name === "AbortError") return;
         console.error("Error generando lista de Pokémon:", error);
