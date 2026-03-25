@@ -19,6 +19,9 @@ export default function WorldMap() {
   const [datosPais, setDatosPais] = useState(null);
   const [datosClima, setDatosClima] = useState(null);
   const [listaPokemon, setListaPokemon] = useState([]);
+  const [errorPais, setErrorPais] = useState(null);
+  const [errorClima, setErrorClima] = useState(null);
+  const [errorPokemons, setErrorPokemons] = useState(null);
   const [cargandoPais, setCargandoPais] = useState(false);
   const [cargandoClima, setCargandoClima] = useState(false);
   const [cargandoPokemons, setCargandoPokemons] = useState(false);
@@ -38,13 +41,25 @@ export default function WorldMap() {
   const tiposTexto = tiposPokemon ? tiposPokemon.join(",") : "";
   const panelVisible = Boolean(paisSeleccionado?.id) && panelAbierto;
   const [panelDebajo, setPanelDebajo] = useState(false);
+  const [movilHorizontal, setMovilHorizontal] = useState(false);
+  const clasesShell = [
+    "world-map-shell",
+    movilHorizontal ? "world-map-shell--movil-horizontal" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   useEffect(() => {
     const comprobarPanel = () => {
+      const telefonoHorizontal =
+        window.innerWidth <= 932 &&
+        window.innerWidth > window.innerHeight &&
+        window.innerHeight <= 540;
       const pantallaPequena = window.innerWidth <= 1100;
       const ventanaBaja = window.innerWidth <= 1180 && window.innerHeight <= 760;
 
-      setPanelDebajo(pantallaPequena || ventanaBaja);
+      setMovilHorizontal(telefonoHorizontal);
+      setPanelDebajo(!telefonoHorizontal && (pantallaPequena || ventanaBaja));
     };
 
     comprobarPanel();
@@ -62,6 +77,9 @@ export default function WorldMap() {
       setDatosPais(null);
       setDatosClima(null);
       setListaPokemon([]);
+      setErrorPais(null);
+      setErrorClima(null);
+      setErrorPokemons(null);
       setCargandoPais(Boolean(detalle.pais));
       setCargandoClima(false);
       setCargandoPokemons(false);
@@ -103,6 +121,7 @@ export default function WorldMap() {
 
     async function cargarPais() {
       setCargandoPais(true);
+      setErrorPais(null);
 
       try {
         const pais = await pedirPais(paisSeleccionado.id, controller.signal);
@@ -111,6 +130,11 @@ export default function WorldMap() {
         if (error.name === "AbortError") return;
         console.error("Error cargando datos del país:", error);
         setDatosPais(null);
+        setDatosClima(null);
+        setListaPokemon([]);
+        setErrorPais("No se pudo cargar la información del país");
+        setErrorClima(null);
+        setErrorPokemons(null);
       } finally {
         setCargandoPais(false);
       }
@@ -123,7 +147,12 @@ export default function WorldMap() {
 
   useEffect(() => {
     if (!coordsCapital || coordsCapital.length < 2) {
+      setDatosClima(null);
+      setListaPokemon([]);
+      setErrorClima(null);
+      setErrorPokemons(null);
       setCargandoClima(false);
+      setCargandoPokemons(false);
       return;
     }
 
@@ -131,6 +160,7 @@ export default function WorldMap() {
 
     async function cargarClima() {
       setCargandoClima(true);
+      setErrorClima(null);
 
       try {
         const clima = await pedirClima(coordsCapital, controller.signal);
@@ -139,6 +169,9 @@ export default function WorldMap() {
         if (error.name === "AbortError") return;
         console.error("Error cargando clima:", error);
         setDatosClima(null);
+        setListaPokemon([]);
+        setErrorClima("No se pudo obtener el clima");
+        setErrorPokemons(null);
       } finally {
         setCargandoClima(false);
       }
@@ -158,6 +191,8 @@ export default function WorldMap() {
       temperatura === undefined ||
       tipos.length < 3
     ) {
+      setListaPokemon([]);
+      setErrorPokemons(null);
       setCargandoPokemons(false);
       return;
     }
@@ -166,6 +201,8 @@ export default function WorldMap() {
 
     async function cargarPokemons() {
       setCargandoPokemons(true);
+      setErrorPokemons(null);
+      setListaPokemon([]);
 
       try {
         const pokemons = await pedirPokemons(
@@ -179,6 +216,7 @@ export default function WorldMap() {
         if (error.name === "AbortError") return;
         console.error("Error generando lista de Pokémon:", error);
         setListaPokemon([]);
+        setErrorPokemons("Error al cargar los Pokémon");
       } finally {
         setCargandoPokemons(false);
       }
@@ -276,7 +314,7 @@ export default function WorldMap() {
     <main className="world-map-page">
       <section
         ref={contenedorRef}
-        className="world-map-shell"
+        className={clasesShell}
         style={
           altoMapa !== null || altoPanel !== null
             ? {
@@ -318,6 +356,9 @@ export default function WorldMap() {
               categoriaPokemon={categoriaPokemon}
               tiposPokemon={tiposPokemon}
               listaPokemon={listaPokemon}
+              errorPais={errorPais}
+              errorClima={errorClima}
+              errorPokemons={errorPokemons}
               cargandoPais={cargandoPais}
               cargandoClima={cargandoClima}
               cargandoPokemons={cargandoPokemons}

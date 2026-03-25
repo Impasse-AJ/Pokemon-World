@@ -4,7 +4,7 @@ function capitalizar(texto) {
 }
 
 function formatearCoords(coords) {
-  if (!coords || coords.length < 2) return "Sin datos";
+  if (!coords || coords.length < 2) return "No disponible";
   return `${coords[0].toFixed(2)}, ${coords[1].toFixed(2)}`;
 }
 
@@ -18,6 +18,9 @@ export default function PanelPais({
   categoriaPokemon,
   tiposPokemon,
   listaPokemon,
+  errorPais,
+  errorClima,
+  errorPokemons,
   cargandoPais,
   cargandoClima,
   cargandoPokemons,
@@ -26,20 +29,33 @@ export default function PanelPais({
 
   const nombrePais = datosPais?.name?.common ?? paisSeleccionado.name;
   const bandera = datosPais?.flags?.png || datosPais?.flags?.svg;
-  const capital = datosPais?.capital?.[0] ?? (cargandoPais ? "Cargando..." : "Sin datos");
+  const capital = errorPais
+    ? "No disponible"
+    : datosPais?.capital?.[0] ?? (cargandoPais ? "Cargando..." : "No disponible");
   const idiomas = datosPais?.languages ? Object.values(datosPais.languages) : [];
   const idiomasTexto = idiomas.length
     ? idiomas.join(", ")
+    : errorPais
+      ? "No disponible"
     : cargandoPais
       ? "Cargando..."
-      : "Sin datos";
+      : "No disponible";
   const temperatura = datosClima?.current?.temperature_2m;
   const temperaturaTexto =
-    temperatura === null || temperatura === undefined
+    errorClima
+      ? "No disponible"
+      : temperatura === null || temperatura === undefined
+        ? cargandoClima
+          ? "Cargando..."
+          : "No disponible"
+        : `${temperatura.toFixed(1)} ºC`;
+  const categoriaTexto = errorClima
+    ? "No disponible"
+    : temperatura === null || temperatura === undefined
       ? cargandoClima
-        ? "Cargando..."
-        : "Sin datos"
-      : `${temperatura.toFixed(1)} ºC`;
+        ? "Calculando..."
+        : "No disponible"
+      : capitalizar(categoriaPokemon ?? "No disponible");
 
   return (
     <div className="panel-overlay">
@@ -49,6 +65,9 @@ export default function PanelPais({
             <p className="panel-pais-etiqueta">Ficha del país</p>
             <h2 className="panel-pais-nombre">{nombrePais}</h2>
             <p className="panel-pais-id">ID: {paisSeleccionado.id}</p>
+            {cargandoPais ? (
+              <p className="panel-estado panel-estado-principal">Cargando datos del país...</p>
+            ) : null}
           </div>
 
           <button
@@ -63,6 +82,8 @@ export default function PanelPais({
 
         <div className="panel-pais-body">
           <section className="panel-bloque panel-bloque-portada">
+            {errorPais ? <p className="panel-error">{errorPais}</p> : null}
+
             {bandera ? (
               <img
                 className="panel-pais-bandera"
@@ -78,7 +99,11 @@ export default function PanelPais({
               </div>
               <div>
                 <dt>Coordenadas</dt>
-                <dd>{formatearCoords(datosPais?.capitalInfo?.latlng)}</dd>
+                <dd>
+                  {errorPais
+                    ? "No disponible"
+                    : formatearCoords(datosPais?.capitalInfo?.latlng)}
+                </dd>
               </div>
               <div>
                 <dt>Idiomas</dt>
@@ -90,14 +115,16 @@ export default function PanelPais({
           <section className="panel-bloque">
             <div className="panel-bloque-cabecera">
               <h3>Clima</h3>
-              {cargandoClima ? <span className="panel-estado">Cargando</span> : null}
+              {cargandoClima ? (
+                <span className="panel-estado">Cargando clima...</span>
+              ) : null}
             </div>
+
+            {errorClima ? <p className="panel-error">{errorClima}</p> : null}
 
             <div className="panel-clima">
               <strong className="panel-temperatura">{temperaturaTexto}</strong>
-              <span className="panel-categoria">
-                {capitalizar(categoriaPokemon ?? (cargandoClima ? "calculando..." : "pendiente"))}
-              </span>
+              <span className="panel-categoria">{categoriaTexto}</span>
             </div>
           </section>
 
@@ -115,7 +142,11 @@ export default function PanelPais({
                 ))
               ) : (
                 <p className="panel-vacio">
-                  {cargandoClima ? "Calculando tipos..." : "Sin tipos todavía"}
+                  {errorClima
+                    ? "No disponible"
+                    : cargandoClima
+                      ? "Calculando tipos..."
+                      : "No disponible"}
                 </p>
               )}
             </div>
@@ -124,10 +155,14 @@ export default function PanelPais({
           <section className="panel-bloque">
             <div className="panel-bloque-cabecera">
               <h3>Pokémon</h3>
-              <span className="panel-estado">{listaPokemon.length}/20</span>
+              <span className="panel-estado">
+                {cargandoPokemons ? "Cargando Pokémon..." : `${listaPokemon.length}/20`}
+              </span>
             </div>
 
-            {cargandoPokemons && !listaPokemon.length ? (
+            {errorPokemons ? (
+              <p className="panel-error">{errorPokemons}</p>
+            ) : cargandoPokemons && !listaPokemon.length ? (
               <p className="panel-vacio">Cargando Pokémon...</p>
             ) : listaPokemon.length ? (
               <ul className="panel-pokemon-lista">
@@ -156,7 +191,13 @@ export default function PanelPais({
                 ))}
               </ul>
             ) : (
-              <p className="panel-vacio">Aún no hay Pokémon para mostrar.</p>
+              <p className="panel-vacio">
+                {errorClima
+                  ? "No disponible"
+                  : cargandoClima
+                    ? "Esperando datos del clima..."
+                    : "Aún no hay Pokémon para mostrar."}
+              </p>
             )}
           </section>
         </div>

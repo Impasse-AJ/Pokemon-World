@@ -10,6 +10,10 @@ function esPantallaCompacta(contenedor) {
   return contenedor.clientWidth <= 480 || contenedor.clientHeight <= 560;
 }
 
+function esMovilHorizontal(contenedor) {
+  return contenedor.classList.contains("world-map-shell--movil-horizontal");
+}
+
 export function cargarScript(src, id) {
   return new Promise((resolve, reject) => {
     const scriptActual = document.getElementById(id);
@@ -116,8 +120,11 @@ export function calcularAltoMapa(contenedor, logo, encabezado, panelDebajo = fal
     return Math.max(altoMinimo, altoSugerido);
   }
 
-  let altoDisponible =
-    contenedor.clientHeight - logo.offsetHeight - encabezado.offsetHeight - gap * 2;
+  const altoCabecera = esMovilHorizontal(contenedor)
+    ? Math.max(logo.offsetHeight, encabezado.offsetHeight) + gap
+    : logo.offsetHeight + encabezado.offsetHeight + gap * 2;
+
+  let altoDisponible = contenedor.clientHeight - altoCabecera;
 
   return Math.max(ALTO_MINIMO_MAPA, Math.floor(altoDisponible));
 }
