@@ -278,10 +278,12 @@ export default function WorldMap() {
         ref={contenedorRef}
         className="world-map-shell"
         style={
-          altoMapa || altoPanel
+          altoMapa !== null || altoPanel !== null
             ? {
-                ...(altoMapa ? { "--map-stage-max-height": `${altoMapa}px` } : {}),
-                ...(altoPanel ? { "--panel-max-height": `${altoPanel}px` } : {}),
+                ...(altoMapa !== null
+                  ? { "--map-stage-max-height": `${altoMapa}px` }
+                  : {}),
+                ...(altoPanel !== null ? { "--panel-max-height": `${altoPanel}px` } : {}),
               }
             : undefined
         }
