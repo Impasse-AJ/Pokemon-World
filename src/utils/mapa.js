@@ -1,6 +1,8 @@
 export const TITULO_INICIAL = "Pokémon World Map";
 
 const ALTO_MINIMO_MAPA = 220;
+const ALTO_OBJETIVO_PANEL = 180;
+const RELACION_MAPA = 2018.99 / 864.56;
 
 export function cargarScript(src, id) {
   return new Promise((resolve, reject) => {
@@ -81,12 +83,36 @@ export function registrarEventosMapa() {
   });
 }
 
-export function calcularAltoMapa(contenedor, logo, encabezado) {
+export function calcularAltoMapa(contenedor, logo, encabezado, panelDebajo = false) {
   const estilos = window.getComputedStyle(contenedor);
   const gap = parseFloat(estilos.rowGap || estilos.gap || "0");
 
-  const altoDisponible =
+  if (panelDebajo) {
+    const altoDisponible =
+      contenedor.clientHeight - logo.offsetHeight - encabezado.offsetHeight - gap * 3;
+    const altoNatural = Math.floor(contenedor.clientWidth / RELACION_MAPA);
+    const altoMaximoMapa = Math.max(ALTO_MINIMO_MAPA, altoDisponible - ALTO_OBJETIVO_PANEL);
+
+    return Math.max(ALTO_MINIMO_MAPA, Math.min(altoNatural, altoMaximoMapa));
+  }
+
+  let altoDisponible =
     contenedor.clientHeight - logo.offsetHeight - encabezado.offsetHeight - gap * 2;
 
   return Math.max(ALTO_MINIMO_MAPA, Math.floor(altoDisponible));
+}
+
+export function calcularAltoPanel(contenedor, logo, encabezado) {
+  const estilos = window.getComputedStyle(contenedor);
+  const gap = parseFloat(estilos.rowGap || estilos.gap || "0");
+
+  const altoLibre =
+    contenedor.clientHeight -
+    logo.offsetHeight -
+    encabezado.offsetHeight -
+    gap * 3;
+
+  const altoMapa = calcularAltoMapa(contenedor, logo, encabezado, true);
+
+  return Math.max(0, Math.floor(altoLibre - altoMapa));
 }

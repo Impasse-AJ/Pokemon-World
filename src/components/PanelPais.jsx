@@ -11,6 +11,7 @@ function formatearCoords(coords) {
 export default function PanelPais({
   abierto,
   alCerrar,
+  panelRef,
   paisSeleccionado,
   datosPais,
   datosClima,
@@ -42,7 +43,7 @@ export default function PanelPais({
 
   return (
     <div className="panel-overlay">
-      <aside className="panel-pais" aria-live="polite">
+      <aside ref={panelRef} className="panel-pais" aria-live="polite">
         <div className="panel-pais-top">
           <div>
             <p className="panel-pais-etiqueta">Ficha del país</p>

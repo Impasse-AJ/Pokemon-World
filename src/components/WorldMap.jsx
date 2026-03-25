@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import PanelPais from "./PanelPais";
 import {
+  calcularAltoPanel,
   calcularAltoMapa,
   cargarScript,
   registrarEventosMapa,
@@ -20,10 +21,12 @@ export default function WorldMap() {
   const [cargandoClima, setCargandoClima] = useState(false);
   const [cargandoPokemons, setCargandoPokemons] = useState(false);
   const [altoMapa, setAltoMapa] = useState(null);
+  const [altoPanel, setAltoPanel] = useState(null);
 
   const contenedorRef = useRef(null);
   const logoRef = useRef(null);
   const encabezadoRef = useRef(null);
+  const panelRef = useRef(null);
 
   const coordsCapital = datosPais?.capitalInfo?.latlng ?? null;
   const temperatura = datosClima?.current?.temperature_2m;
@@ -32,6 +35,21 @@ export default function WorldMap() {
   const tiposPokemon = perfilPokemon?.tipos ?? null;
   const tiposTexto = tiposPokemon ? tiposPokemon.join(",") : "";
   const panelVisible = Boolean(paisSeleccionado?.id) && panelAbierto;
+  const [panelDebajo, setPanelDebajo] = useState(false);
+
+  useEffect(() => {
+    const comprobarPanel = () => {
+      const pantallaPequena = window.innerWidth <= 1100;
+      const ventanaBaja = window.innerWidth <= 1180 && window.innerHeight <= 760;
+
+      setPanelDebajo(pantallaPequena || ventanaBaja);
+    };
+
+    comprobarPanel();
+    window.addEventListener("resize", comprobarPanel);
+
+    return () => window.removeEventListener("resize", comprobarPanel);
+  }, []);
 
   useEffect(() => {
     let cancelado = false;
@@ -211,11 +229,18 @@ export default function WorldMap() {
     const contenedor = contenedorRef.current;
     const logo = logoRef.current;
     const encabezado = encabezadoRef.current;
+    const panel = panelRef.current;
 
     if (!contenedor || !logo || !encabezado) return;
 
     const actualizarAlto = () => {
-      setAltoMapa(calcularAltoMapa(contenedor, logo, encabezado));
+      if (panelVisible && panelDebajo) {
+        setAltoPanel(calcularAltoPanel(contenedor, logo, encabezado));
+      } else {
+        setAltoPanel(null);
+      }
+
+      setAltoMapa(calcularAltoMapa(contenedor, logo, encabezado, panelVisible && panelDebajo));
     };
 
     actualizarAlto();
@@ -224,13 +249,16 @@ export default function WorldMap() {
     resizeObserver.observe(contenedor);
     resizeObserver.observe(logo);
     resizeObserver.observe(encabezado);
+    if (panelVisible && panelDebajo && panel) {
+      resizeObserver.observe(panel);
+    }
     window.addEventListener("resize", actualizarAlto);
 
     return () => {
       resizeObserver.disconnect();
       window.removeEventListener("resize", actualizarAlto);
     };
-  }, [titulo]);
+  }, [titulo, panelVisible, panelDebajo]);
 
   return (
     <main className="world-map-page">
@@ -238,8 +266,11 @@ export default function WorldMap() {
         ref={contenedorRef}
         className="world-map-shell"
         style={
-          altoMapa
-            ? { "--map-stage-max-height": `${altoMapa}px` }
+          altoMapa || altoPanel
+            ? {
+                ...(altoMapa ? { "--map-stage-max-height": `${altoMapa}px` } : {}),
+                ...(altoPanel ? { "--panel-max-height": `${altoPanel}px` } : {}),
+              }
             : undefined
         }
       >
@@ -264,6 +295,7 @@ export default function WorldMap() {
         <PanelPais
           abierto={panelVisible}
           alCerrar={() => setPanelAbierto(false)}
+          panelRef={panelRef}
           paisSeleccionado={paisSeleccionado}
           datosPais={datosPais}
           datosClima={datosClima}
