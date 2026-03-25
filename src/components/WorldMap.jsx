@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import PanelPais from "./PanelPais";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import {
   calcularAltoPanel,
   calcularAltoMapa,
@@ -9,6 +8,9 @@ import {
 } from "../utils/mapa";
 import { pedirClima, pedirPais } from "../utils/paisClima";
 import { clasificarTemperatura, pedirPokemons } from "../utils/pokemon";
+
+const PanelPais = lazy(() => import("./PanelPais"));
+const ES_DESARROLLO = import.meta.env.DEV;
 
 export default function WorldMap() {
   const [titulo, setTitulo] = useState(TITULO_INICIAL);
@@ -188,6 +190,8 @@ export default function WorldMap() {
   }, [paisSeleccionado?.id, temperatura, tiposTexto]);
 
   useEffect(() => {
+    if (!ES_DESARROLLO) return;
+
     if (paisSeleccionado) {
       console.log("País seleccionado:", paisSeleccionado);
     } else {
@@ -196,6 +200,8 @@ export default function WorldMap() {
   }, [paisSeleccionado]);
 
   useEffect(() => {
+    if (!ES_DESARROLLO) return;
+
     if (datosPais) {
       console.log("Datos útiles del país:");
       console.log("Nombre:", datosPais.name?.common);
@@ -207,12 +213,16 @@ export default function WorldMap() {
   }, [datosPais]);
 
   useEffect(() => {
+    if (!ES_DESARROLLO) return;
+
     if (datosClima) {
       console.log("Temperatura actual:", datosClima.current?.temperature_2m);
     }
   }, [datosClima]);
 
   useEffect(() => {
+    if (!ES_DESARROLLO) return;
+
     if (categoriaPokemon && tiposTexto) {
       console.log("Categoría Pokémon:", categoriaPokemon);
       console.log("Tipos Pokémon recomendados:", tiposTexto.split(","));
@@ -220,6 +230,8 @@ export default function WorldMap() {
   }, [categoriaPokemon, tiposTexto]);
 
   useEffect(() => {
+    if (!ES_DESARROLLO) return;
+
     if (listaPokemon.length > 0) {
       console.log("Pokémon listos para mostrar:", listaPokemon);
     }
@@ -283,7 +295,7 @@ export default function WorldMap() {
 
         <header ref={encabezadoRef} className="world-map-header">
           <p className="world-map-eyebrow">Pokemon world atlas</p>
-          <h1 id="mapTitle" className="world-map-title">
+          <h1 id="mapTitle" className="world-map-title" data-title={titulo}>
             {titulo}
           </h1>
         </header>
@@ -292,20 +304,24 @@ export default function WorldMap() {
           <div id="map" className="world-map-canvas" />
         </div>
 
-        <PanelPais
-          abierto={panelVisible}
-          alCerrar={() => setPanelAbierto(false)}
-          panelRef={panelRef}
-          paisSeleccionado={paisSeleccionado}
-          datosPais={datosPais}
-          datosClima={datosClima}
-          categoriaPokemon={categoriaPokemon}
-          tiposPokemon={tiposPokemon}
-          listaPokemon={listaPokemon}
-          cargandoPais={cargandoPais}
-          cargandoClima={cargandoClima}
-          cargandoPokemons={cargandoPokemons}
-        />
+        {panelVisible ? (
+          <Suspense fallback={null}>
+            <PanelPais
+              abierto={panelVisible}
+              alCerrar={() => setPanelAbierto(false)}
+              panelRef={panelRef}
+              paisSeleccionado={paisSeleccionado}
+              datosPais={datosPais}
+              datosClima={datosClima}
+              categoriaPokemon={categoriaPokemon}
+              tiposPokemon={tiposPokemon}
+              listaPokemon={listaPokemon}
+              cargandoPais={cargandoPais}
+              cargandoClima={cargandoClima}
+              cargandoPokemons={cargandoPokemons}
+            />
+          </Suspense>
+        ) : null}
       </section>
     </main>
   );

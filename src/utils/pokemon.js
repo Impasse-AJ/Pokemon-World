@@ -1,4 +1,6 @@
 const LIMITE_POKEMON = 20;
+const LIMITE_CANDIDATOS = 40;
+const TAMANO_LOTE = 10;
 
 export function clasificarTemperatura(temperatura) {
   if (temperatura === null || temperatura === undefined) return null;
@@ -103,18 +105,30 @@ function crearListaNombres(idPais, temperatura, nombresPorTipo) {
     semillaBase + 99
   );
 
-  meterNombresUnicos(nombres, usados, resto, LIMITE_POKEMON);
+  meterNombresUnicos(nombres, usados, resto, LIMITE_CANDIDATOS);
 
-  return nombres.slice(0, LIMITE_POKEMON);
+  return nombres.slice(0, LIMITE_CANDIDATOS);
+}
+
+function sacarImagenPokemon(dataPokemon) {
+  return (
+    dataPokemon.sprites.other?.["official-artwork"]?.front_default ||
+    dataPokemon.sprites.other?.home?.front_default ||
+    dataPokemon.sprites.other?.dream_world?.front_default ||
+    dataPokemon.sprites.front_default ||
+    null
+  );
 }
 
 function crearPokemon(dataPokemon) {
+  const image = sacarImagenPokemon(dataPokemon);
+
+  if (!image) return null;
+
   return {
     id: dataPokemon.id,
     name: dataPokemon.name,
-    image:
-      dataPokemon.sprites.other["official-artwork"].front_default ||
-      dataPokemon.sprites.front_default,
+    image,
     types: dataPokemon.types.map((tipo) => tipo.type.name),
   };
 }
@@ -142,16 +156,30 @@ export async function pedirPokemons(tipos, idPais, temperatura, signal) {
 
   const nombresPorTipo = datosTipos.map(sacarNombresTipo);
   const nombres = crearListaNombres(idPais, temperatura, nombresPorTipo);
+  const pokemons = [];
 
-  const datosPokemon = await Promise.all(
-    nombres.map((nombre) =>
-      pedirJson(
-        `https://pokeapi.co/api/v2/pokemon/${nombre}`,
-        signal,
-        "Error PokéAPI detalle"
+  for (let i = 0; i < nombres.length; i += TAMANO_LOTE) {
+    const lote = nombres.slice(i, i + TAMANO_LOTE);
+    const datosPokemon = await Promise.all(
+      lote.map((nombre) =>
+        pedirJson(
+          `https://pokeapi.co/api/v2/pokemon/${nombre}`,
+          signal,
+          "Error PokéAPI detalle"
+        )
       )
-    )
-  );
+    );
 
-  return datosPokemon.map(crearPokemon);
+    const pokemonsValidos = datosPokemon
+      .map(crearPokemon)
+      .filter(Boolean);
+
+    pokemons.push(...pokemonsValidos);
+
+    if (pokemons.length >= LIMITE_POKEMON) {
+      return pokemons.slice(0, LIMITE_POKEMON);
+    }
+  }
+
+  return pokemons.slice(0, LIMITE_POKEMON);
 }

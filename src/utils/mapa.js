@@ -9,17 +9,23 @@ export function cargarScript(src, id) {
     const scriptActual = document.getElementById(id);
 
     if (scriptActual) {
-      if (scriptActual.dataset.loaded === "true") {
-        resolve();
+      const srcActual = scriptActual.getAttribute("src");
+
+      if (srcActual !== src) {
+        scriptActual.remove();
       } else {
-        scriptActual.addEventListener("load", resolve, { once: true });
-        scriptActual.addEventListener(
-          "error",
-          () => reject(new Error(`No se pudo cargar ${src}`)),
-          { once: true }
-        );
+        if (scriptActual.dataset.loaded === "true") {
+          resolve();
+        } else {
+          scriptActual.addEventListener("load", resolve, { once: true });
+          scriptActual.addEventListener(
+            "error",
+            () => reject(new Error(`No se pudo cargar ${src}`)),
+            { once: true }
+          );
+        }
+        return;
       }
-      return;
     }
 
     const script = document.createElement("script");
