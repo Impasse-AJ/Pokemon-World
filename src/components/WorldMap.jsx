@@ -27,11 +27,13 @@ export default function WorldMap() {
   const [cargandoPokemons, setCargandoPokemons] = useState(false);
   const [altoMapa, setAltoMapa] = useState(null);
   const [altoPanel, setAltoPanel] = useState(null);
+  const [claveSeleccion, setClaveSeleccion] = useState(0);
 
   const contenedorRef = useRef(null);
   const logoRef = useRef(null);
   const encabezadoRef = useRef(null);
   const panelRef = useRef(null);
+  const claveSeleccionRef = useRef(0);
 
   const coordsCapital = datosPais?.capitalInfo?.latlng ?? null;
   const temperatura = datosClima?.current?.temperature_2m;
@@ -73,6 +75,9 @@ export default function WorldMap() {
 
     const cambiarPais = (event) => {
       const detalle = event.detail ?? {};
+      const nuevaClave = claveSeleccionRef.current + 1;
+
+      claveSeleccionRef.current = nuevaClave;
 
       setDatosPais(null);
       setDatosClima(null);
@@ -86,6 +91,7 @@ export default function WorldMap() {
       setPaisSeleccionado(detalle.pais ?? null);
       setPanelAbierto(Boolean(detalle.pais));
       setTitulo(detalle.titulo ?? TITULO_INICIAL);
+      setClaveSeleccion(nuevaClave);
     };
 
     async function iniciarMapa() {
@@ -118,6 +124,7 @@ export default function WorldMap() {
     if (!paisSeleccionado?.id) return;
 
     const controller = new AbortController();
+    const claveActual = claveSeleccion;
 
     async function cargarPais() {
       setCargandoPais(true);
@@ -125,9 +132,17 @@ export default function WorldMap() {
 
       try {
         const pais = await pedirPais(paisSeleccionado.id, controller.signal);
+
+        if (controller.signal.aborted || claveSeleccionRef.current !== claveActual) {
+          return;
+        }
+
         setDatosPais(pais);
       } catch (error) {
-        if (error.name === "AbortError") return;
+        if (error.name === "AbortError" || claveSeleccionRef.current !== claveActual) {
+          return;
+        }
+
         console.error("Error cargando datos del país:", error);
         setDatosPais(null);
         setDatosClima(null);
@@ -136,14 +151,16 @@ export default function WorldMap() {
         setErrorClima(null);
         setErrorPokemons(null);
       } finally {
-        setCargandoPais(false);
+        if (!controller.signal.aborted && claveSeleccionRef.current === claveActual) {
+          setCargandoPais(false);
+        }
       }
     }
 
     cargarPais();
 
     return () => controller.abort();
-  }, [paisSeleccionado?.id]);
+  }, [paisSeleccionado?.id, claveSeleccion]);
 
   useEffect(() => {
     if (!coordsCapital || coordsCapital.length < 2) {
@@ -157,6 +174,7 @@ export default function WorldMap() {
     }
 
     const controller = new AbortController();
+    const claveActual = claveSeleccion;
 
     async function cargarClima() {
       setCargandoClima(true);
@@ -164,23 +182,33 @@ export default function WorldMap() {
 
       try {
         const clima = await pedirClima(coordsCapital, controller.signal);
+
+        if (controller.signal.aborted || claveSeleccionRef.current !== claveActual) {
+          return;
+        }
+
         setDatosClima(clima);
       } catch (error) {
-        if (error.name === "AbortError") return;
+        if (error.name === "AbortError" || claveSeleccionRef.current !== claveActual) {
+          return;
+        }
+
         console.error("Error cargando clima:", error);
         setDatosClima(null);
         setListaPokemon([]);
         setErrorClima("No se pudo obtener el clima");
         setErrorPokemons(null);
       } finally {
-        setCargandoClima(false);
+        if (!controller.signal.aborted && claveSeleccionRef.current === claveActual) {
+          setCargandoClima(false);
+        }
       }
     }
 
     cargarClima();
 
     return () => controller.abort();
-  }, [coordsCapital]);
+  }, [coordsCapital, claveSeleccion]);
 
   useEffect(() => {
     const tipos = tiposTexto ? tiposTexto.split(",") : [];
@@ -198,6 +226,7 @@ export default function WorldMap() {
     }
 
     const controller = new AbortController();
+    const claveActual = claveSeleccion;
 
     async function cargarPokemons() {
       setCargandoPokemons(true);
@@ -211,21 +240,31 @@ export default function WorldMap() {
           temperatura,
           controller.signal
         );
+
+        if (controller.signal.aborted || claveSeleccionRef.current !== claveActual) {
+          return;
+        }
+
         setListaPokemon(pokemons);
       } catch (error) {
-        if (error.name === "AbortError") return;
+        if (error.name === "AbortError" || claveSeleccionRef.current !== claveActual) {
+          return;
+        }
+
         console.error("Error generando lista de Pokémon:", error);
         setListaPokemon([]);
         setErrorPokemons("Error al cargar los Pokémon");
       } finally {
-        setCargandoPokemons(false);
+        if (!controller.signal.aborted && claveSeleccionRef.current === claveActual) {
+          setCargandoPokemons(false);
+        }
       }
     }
 
     cargarPokemons();
 
     return () => controller.abort();
-  }, [paisSeleccionado?.id, temperatura, tiposTexto]);
+  }, [paisSeleccionado?.id, temperatura, tiposTexto, claveSeleccion]);
 
   useEffect(() => {
     if (!ES_DESARROLLO) return;
