@@ -56,7 +56,7 @@
 .panel-pais-nombre {
   margin: 0;
   font-size: clamp(1.45rem, 2vw, 1.95rem);
-  line-height: 0.98;
+  line-height: 1.1;
   letter-spacing: -0.02em;
   color: #f7fbff;
 }
@@ -98,12 +98,22 @@
   box-shadow: 0 12px 24px rgba(5, 12, 31, 0.24);
 }
 
+.panel-pais-cerrar:focus-visible {
+  outline: 2px solid rgba(255, 220, 120, 0.65);
+  outline-offset: 2px;
+}
+
 .panel-pais-contenido {
   min-height: 0;
   overflow: auto;
   padding: 0.95rem;
   display: grid;
   gap: 0.9rem;
+}
+
+.panel-pais-contenido {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(153, 181, 255, 0.28) transparent;
 }
 
 .panel-pais-contenido::-webkit-scrollbar {
@@ -244,6 +254,54 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
+/* Colores canónicos por tipo Pokémon */
+[data-tipo="normal"]   { background: rgba(168, 168, 120, 0.18); border-color: rgba(168, 168, 120, 0.38); color: #d0d0b0; }
+[data-tipo="fire"]     { background: rgba(240, 128, 48, 0.20);  border-color: rgba(240, 128, 48, 0.42);  color: #f9c090; }
+[data-tipo="water"]    { background: rgba(100, 144, 240, 0.20); border-color: rgba(100, 144, 240, 0.42); color: #a4beff; }
+[data-tipo="electric"] { background: rgba(248, 208, 48, 0.20);  border-color: rgba(248, 208, 48, 0.42);  color: #f8e070; }
+[data-tipo="grass"]    { background: rgba(120, 200, 80, 0.18);  border-color: rgba(120, 200, 80, 0.40);  color: #9de070; }
+[data-tipo="ice"]      { background: rgba(152, 216, 216, 0.20); border-color: rgba(152, 216, 216, 0.42); color: #a8e8e8; }
+[data-tipo="fighting"] { background: rgba(192, 48, 40, 0.18);   border-color: rgba(192, 48, 40, 0.40);   color: #f09090; }
+[data-tipo="poison"]   { background: rgba(160, 64, 160, 0.18);  border-color: rgba(160, 64, 160, 0.40);  color: #d090d0; }
+[data-tipo="ground"]   { background: rgba(224, 192, 104, 0.20); border-color: rgba(224, 192, 104, 0.42); color: #e8d090; }
+[data-tipo="flying"]   { background: rgba(168, 144, 240, 0.18); border-color: rgba(168, 144, 240, 0.40); color: #c0b0ff; }
+[data-tipo="psychic"]  { background: rgba(248, 88, 136, 0.18);  border-color: rgba(248, 88, 136, 0.40);  color: #f8a0c0; }
+[data-tipo="bug"]      { background: rgba(168, 184, 32, 0.18);  border-color: rgba(168, 184, 32, 0.40);  color: #c8d060; }
+[data-tipo="rock"]     { background: rgba(184, 160, 56, 0.20);  border-color: rgba(184, 160, 56, 0.42);  color: #d8c870; }
+[data-tipo="ghost"]    { background: rgba(112, 88, 152, 0.22);  border-color: rgba(112, 88, 152, 0.46);  color: #b0a0d0; }
+[data-tipo="dragon"]   { background: rgba(112, 56, 248, 0.20);  border-color: rgba(112, 56, 248, 0.42);  color: #b090ff; }
+[data-tipo="dark"]     { background: rgba(112, 88, 72, 0.24);   border-color: rgba(112, 88, 72, 0.46);   color: #c0a890; }
+[data-tipo="steel"]    { background: rgba(184, 184, 208, 0.18); border-color: rgba(184, 184, 208, 0.40); color: #d0d0e8; }
+[data-tipo="fairy"]    { background: rgba(238, 153, 172, 0.18); border-color: rgba(238, 153, 172, 0.40); color: #f0b0c8; }
+
+/* Color adaptativo de temperatura por categoría climática */
+.panel-clima[data-categoria="polar"] .panel-temperatura          { color: #7dd8f0; }
+.panel-clima[data-categoria="polar"] .panel-categoria            { background: rgba(100, 200, 220, 0.16); border-color: rgba(130, 220, 240, 0.32); color: #a8e8f8; }
+
+.panel-clima[data-categoria="muy frío"] .panel-temperatura       { color: #90cef0; }
+.panel-clima[data-categoria="muy frío"] .panel-categoria         { background: rgba(110, 180, 220, 0.16); border-color: rgba(140, 200, 240, 0.32); color: #b0d8f8; }
+
+.panel-clima[data-categoria="frío"] .panel-temperatura           { color: #a8d8f0; }
+.panel-clima[data-categoria="frío"] .panel-categoria             { background: rgba(120, 170, 210, 0.16); border-color: rgba(150, 190, 230, 0.32); color: #b8d4f0; }
+
+.panel-clima[data-categoria="fresco"] .panel-temperatura         { color: #90d4a0; }
+.panel-clima[data-categoria="fresco"] .panel-categoria           { background: rgba(80, 170, 100, 0.14);  border-color: rgba(110, 190, 130, 0.30); color: #a8e0b8; }
+
+.panel-clima[data-categoria="templado"] .panel-temperatura       { color: #d0e080; }
+.panel-clima[data-categoria="templado"] .panel-categoria         { background: rgba(180, 200, 60, 0.14);  border-color: rgba(200, 220, 80, 0.30);  color: #d8e890; }
+
+.panel-clima[data-categoria="templado cálido"] .panel-temperatura { color: #f8d060; }
+.panel-clima[data-categoria="templado cálido"] .panel-categoria   { background: rgba(240, 200, 60, 0.16);  border-color: rgba(250, 220, 80, 0.32);  color: #f8e090; }
+
+.panel-clima[data-categoria="cálido"] .panel-temperatura         { color: #f8a840; }
+.panel-clima[data-categoria="cálido"] .panel-categoria           { background: rgba(248, 160, 64, 0.16);  border-color: rgba(255, 190, 110, 0.30); color: #ffdca4; }
+
+.panel-clima[data-categoria="muy cálido"] .panel-temperatura     { color: #f87830; }
+.panel-clima[data-categoria="muy cálido"] .panel-categoria       { background: rgba(240, 100, 48, 0.16);  border-color: rgba(255, 140, 80, 0.30);  color: #ffb090; }
+
+.panel-clima[data-categoria="extremo"] .panel-temperatura        { color: #f85030; }
+.panel-clima[data-categoria="extremo"] .panel-categoria          { background: rgba(220, 60, 40, 0.18);   border-color: rgba(255, 100, 80, 0.34);  color: #ff9090; }
+
 .panel-vacio,
 .panel-error {
   margin: 0;
@@ -291,7 +349,7 @@
   aspect-ratio: 1 / 1;
   object-fit: contain;
   border-radius: 0.95rem;
-  background: radial-gradient(circle, rgba(92, 139, 255, 0.22), rgba(92, 139, 255, 0.05));
+  background: radial-gradient(circle, rgba(220, 230, 255, 0.10), rgba(220, 230, 255, 0.02));
   padding: 0.42rem;
 }
 
@@ -317,6 +375,15 @@
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+@keyframes pulsarEstado {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
+.panel-estado--cargando {
+  animation: pulsarEstado 1.4s ease-in-out infinite;
 }
 
 @keyframes aparecerPanelApilado {
@@ -728,7 +795,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .panel-pais {
-  animation: none !important;
+  .panel-pais,
+  .panel-estado--cargando {
+    animation: none !important;
   }
 }

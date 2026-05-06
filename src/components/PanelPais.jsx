@@ -118,13 +118,13 @@ export default function PanelPais({
             <div className="panel-bloque-cabecera">
               <h3>Clima</h3>
               {cargandoClima ? (
-                <span className="panel-estado">Cargando clima...</span>
+                <span className="panel-estado panel-estado--cargando">Cargando clima...</span>
               ) : null}
             </div>
 
             {errorClima ? <p className="panel-error">{errorClima}</p> : null}
 
-            <div className="panel-clima">
+            <div className="panel-clima" data-categoria={categoriaPokemon ?? undefined}>
               <strong className="panel-temperatura">{temperaturaTexto}</strong>
               <span className="panel-categoria">{categoriaTexto}</span>
             </div>
@@ -138,7 +138,7 @@ export default function PanelPais({
             <div className="panel-tipos">
               {tiposPokemon?.length ? (
                 tiposPokemon.map((tipo) => (
-                  <span key={tipo} className="panel-tipo">
+                  <span key={tipo} className="panel-tipo" data-tipo={tipo}>
                     {capitalizar(tipo)}
                   </span>
                 ))
@@ -157,7 +157,7 @@ export default function PanelPais({
           <section className="panel-bloque">
             <div className="panel-bloque-cabecera">
               <h3>Pokémon</h3>
-              <span className="panel-estado">
+              <span className={`panel-estado${cargandoPokemons ? " panel-estado--cargando" : ""}`}>
                 {cargandoPokemons ? "Cargando Pokémon..." : `${listaPokemon.length}/20`}
               </span>
             </div>
@@ -183,6 +183,7 @@ export default function PanelPais({
                           <span
                             key={`${pokemon.id}-${tipo}`}
                             className="panel-pokemon-tipo"
+                            data-tipo={tipo}
                           >
                             {capitalizar(tipo)}
                           </span>

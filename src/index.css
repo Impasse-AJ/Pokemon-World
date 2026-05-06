@@ -1,6 +1,15 @@
 :root {
   --world-map-proporcion: 2.336;
   color-scheme: dark;
+
+  /* Paleta base de la app */
+  --color-fondo-oscuro: #09142d;
+  --color-acento-dorado: #ffd84f;
+  --color-acento-azul: #4a74df;
+  --color-acento-naranja: #ff8c42;
+  --color-texto-principal: #f4f8ff;
+  --color-borde-sutil: rgba(196, 217, 255, 0.16);
+  --color-superficie-oscura: rgba(9, 20, 45, 0.93);
 }
 
 * {
