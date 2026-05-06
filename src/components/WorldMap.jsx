@@ -29,13 +29,13 @@ export default function WorldMap() {
   const [altoPanel, setAltoPanel] = useState(null);
   const [claveSeleccion, setClaveSeleccion] = useState(0);
 
-  const contenedorRef = useRef(null);
-  const logoRef = useRef(null);
-  const encabezadoRef = useRef(null);
-  const panelRef = useRef(null);
-  const claveSeleccionRef = useRef(0);
+  const referenciaContenedor = useRef(null);
+  const referenciaLogo = useRef(null);
+  const referenciaEncabezado = useRef(null);
+  const referenciaPanel = useRef(null);
+  const claveSeleccionActual = useRef(0);
 
-  const coordsCapital = datosPais?.capitalInfo?.latlng ?? null;
+  const coordenadasCapital = datosPais?.capitalInfo?.latlng ?? null;
   const temperatura = datosClima?.current?.temperature_2m;
   const perfilPokemon = clasificarTemperatura(temperatura);
   const categoriaPokemon = perfilPokemon?.categoria ?? null;
@@ -44,9 +44,9 @@ export default function WorldMap() {
   const panelVisible = Boolean(paisSeleccionado?.id) && panelAbierto;
   const [panelDebajo, setPanelDebajo] = useState(false);
   const [movilHorizontal, setMovilHorizontal] = useState(false);
-  const clasesShell = [
-    "world-map-shell",
-    movilHorizontal ? "world-map-shell--movil-horizontal" : "",
+  const clasesContenedor = [
+    "world-map-contenedor",
+    movilHorizontal ? "world-map-contenedor--movil-horizontal" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -73,11 +73,11 @@ export default function WorldMap() {
   useEffect(() => {
     let cancelado = false;
 
-    const cambiarPais = (event) => {
-      const detalle = event.detail ?? {};
-      const nuevaClave = claveSeleccionRef.current + 1;
+    const cambiarPais = (evento) => {
+      const detalle = evento.detail ?? {};
+      const nuevaClave = claveSeleccionActual.current + 1;
 
-      claveSeleccionRef.current = nuevaClave;
+      claveSeleccionActual.current = nuevaClave;
 
       setDatosPais(null);
       setDatosClima(null);
@@ -123,7 +123,7 @@ export default function WorldMap() {
   useEffect(() => {
     if (!paisSeleccionado?.id) return;
 
-    const controller = new AbortController();
+    const controlador = new AbortController();
     const claveActual = claveSeleccion;
 
     async function cargarPais() {
@@ -131,15 +131,15 @@ export default function WorldMap() {
       setErrorPais(null);
 
       try {
-        const pais = await pedirPais(paisSeleccionado.id, controller.signal);
+        const pais = await pedirPais(paisSeleccionado.id, controlador.signal);
 
-        if (controller.signal.aborted || claveSeleccionRef.current !== claveActual) {
+        if (controlador.signal.aborted || claveSeleccionActual.current !== claveActual) {
           return;
         }
 
         setDatosPais(pais);
       } catch (error) {
-        if (error.name === "AbortError" || claveSeleccionRef.current !== claveActual) {
+        if (error.name === "AbortError" || claveSeleccionActual.current !== claveActual) {
           return;
         }
 
@@ -151,7 +151,7 @@ export default function WorldMap() {
         setErrorClima(null);
         setErrorPokemons(null);
       } finally {
-        if (!controller.signal.aborted && claveSeleccionRef.current === claveActual) {
+        if (!controlador.signal.aborted && claveSeleccionActual.current === claveActual) {
           setCargandoPais(false);
         }
       }
@@ -159,11 +159,11 @@ export default function WorldMap() {
 
     cargarPais();
 
-    return () => controller.abort();
+    return () => controlador.abort();
   }, [paisSeleccionado?.id, claveSeleccion]);
 
   useEffect(() => {
-    if (!coordsCapital || coordsCapital.length < 2) {
+    if (!coordenadasCapital || coordenadasCapital.length < 2) {
       setDatosClima(null);
       setListaPokemon([]);
       setErrorClima(null);
@@ -173,7 +173,7 @@ export default function WorldMap() {
       return;
     }
 
-    const controller = new AbortController();
+    const controlador = new AbortController();
     const claveActual = claveSeleccion;
 
     async function cargarClima() {
@@ -181,15 +181,15 @@ export default function WorldMap() {
       setErrorClima(null);
 
       try {
-        const clima = await pedirClima(coordsCapital, controller.signal);
+        const clima = await pedirClima(coordenadasCapital, controlador.signal);
 
-        if (controller.signal.aborted || claveSeleccionRef.current !== claveActual) {
+        if (controlador.signal.aborted || claveSeleccionActual.current !== claveActual) {
           return;
         }
 
         setDatosClima(clima);
       } catch (error) {
-        if (error.name === "AbortError" || claveSeleccionRef.current !== claveActual) {
+        if (error.name === "AbortError" || claveSeleccionActual.current !== claveActual) {
           return;
         }
 
@@ -199,7 +199,7 @@ export default function WorldMap() {
         setErrorClima("No se pudo obtener el clima");
         setErrorPokemons(null);
       } finally {
-        if (!controller.signal.aborted && claveSeleccionRef.current === claveActual) {
+        if (!controlador.signal.aborted && claveSeleccionActual.current === claveActual) {
           setCargandoClima(false);
         }
       }
@@ -207,8 +207,8 @@ export default function WorldMap() {
 
     cargarClima();
 
-    return () => controller.abort();
-  }, [coordsCapital, claveSeleccion]);
+    return () => controlador.abort();
+  }, [coordenadasCapital, claveSeleccion]);
 
   useEffect(() => {
     const tipos = tiposTexto ? tiposTexto.split(",") : [];
@@ -225,7 +225,7 @@ export default function WorldMap() {
       return;
     }
 
-    const controller = new AbortController();
+    const controlador = new AbortController();
     const claveActual = claveSeleccion;
 
     async function cargarPokemons() {
@@ -238,16 +238,16 @@ export default function WorldMap() {
           tipos,
           paisSeleccionado.id,
           temperatura,
-          controller.signal
+          controlador.signal
         );
 
-        if (controller.signal.aborted || claveSeleccionRef.current !== claveActual) {
+        if (controlador.signal.aborted || claveSeleccionActual.current !== claveActual) {
           return;
         }
 
         setListaPokemon(pokemons);
       } catch (error) {
-        if (error.name === "AbortError" || claveSeleccionRef.current !== claveActual) {
+        if (error.name === "AbortError" || claveSeleccionActual.current !== claveActual) {
           return;
         }
 
@@ -255,7 +255,7 @@ export default function WorldMap() {
         setListaPokemon([]);
         setErrorPokemons("Error al cargar los Pokémon");
       } finally {
-        if (!controller.signal.aborted && claveSeleccionRef.current === claveActual) {
+        if (!controlador.signal.aborted && claveSeleccionActual.current === claveActual) {
           setCargandoPokemons(false);
         }
       }
@@ -263,7 +263,7 @@ export default function WorldMap() {
 
     cargarPokemons();
 
-    return () => controller.abort();
+    return () => controlador.abort();
   }, [paisSeleccionado?.id, temperatura, tiposTexto, claveSeleccion]);
 
   useEffect(() => {
@@ -315,14 +315,14 @@ export default function WorldMap() {
   }, [listaPokemon]);
 
   useEffect(() => {
-    const contenedor = contenedorRef.current;
-    const logo = logoRef.current;
-    const encabezado = encabezadoRef.current;
-    const panel = panelRef.current;
+    const contenedor = referenciaContenedor.current;
+    const logo = referenciaLogo.current;
+    const encabezado = referenciaEncabezado.current;
+    const panel = referenciaPanel.current;
 
     if (!contenedor || !logo || !encabezado) return;
 
-    const actualizarAlto = () => {
+    const actualizarAlturas = () => {
       if (panelVisible && panelDebajo) {
         setAltoPanel(calcularAltoPanel(contenedor, logo, encabezado));
       } else {
@@ -332,55 +332,55 @@ export default function WorldMap() {
       setAltoMapa(calcularAltoMapa(contenedor, logo, encabezado, panelVisible && panelDebajo));
     };
 
-    actualizarAlto();
+    actualizarAlturas();
 
-    const resizeObserver = new ResizeObserver(actualizarAlto);
-    resizeObserver.observe(contenedor);
-    resizeObserver.observe(logo);
-    resizeObserver.observe(encabezado);
+    const observadorTamano = new ResizeObserver(actualizarAlturas);
+    observadorTamano.observe(contenedor);
+    observadorTamano.observe(logo);
+    observadorTamano.observe(encabezado);
     if (panelVisible && panelDebajo && panel) {
-      resizeObserver.observe(panel);
+      observadorTamano.observe(panel);
     }
-    window.addEventListener("resize", actualizarAlto);
+    window.addEventListener("resize", actualizarAlturas);
 
     return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener("resize", actualizarAlto);
+      observadorTamano.disconnect();
+      window.removeEventListener("resize", actualizarAlturas);
     };
   }, [titulo, panelVisible, panelDebajo]);
 
   return (
-    <main className="world-map-page">
+    <main className="world-map-pagina">
       <section
-        ref={contenedorRef}
-        className={clasesShell}
+        ref={referenciaContenedor}
+        className={clasesContenedor}
         style={
           altoMapa !== null || altoPanel !== null
             ? {
                 ...(altoMapa !== null
-                  ? { "--map-stage-max-height": `${altoMapa}px` }
+                  ? { "--alto-maximo-mapa": `${altoMapa}px` }
                   : {}),
-                ...(altoPanel !== null ? { "--panel-max-height": `${altoPanel}px` } : {}),
+                ...(altoPanel !== null ? { "--alto-maximo-panel": `${altoPanel}px` } : {}),
               }
             : undefined
         }
       >
         <img
-          ref={logoRef}
-          className="pokemon-logo"
+          ref={referenciaLogo}
+          className="logo-pokemon"
           src="/media/pokeball-logo.png"
           alt="Poké Ball"
         />
 
-        <header ref={encabezadoRef} className="world-map-header">
-          <p className="world-map-eyebrow">Pokemon world atlas</p>
-          <h1 id="mapTitle" className="world-map-title" data-title={titulo}>
+        <header ref={referenciaEncabezado} className="world-map-cabecera">
+          <p className="world-map-subtitulo">Pokemon world atlas</p>
+          <h1 id="mapTitle" className="world-map-titulo" data-title={titulo}>
             {titulo}
           </h1>
         </header>
 
-        <div className="world-map-stage">
-          <div id="map" className="world-map-canvas" />
+        <div className="world-map-marco">
+          <div id="map" className="world-map-lienzo" />
         </div>
 
         {panelVisible ? (
@@ -388,7 +388,7 @@ export default function WorldMap() {
             <PanelPais
               abierto={panelVisible}
               alCerrar={() => setPanelAbierto(false)}
-              panelRef={panelRef}
+              referenciaPanel={referenciaPanel}
               paisSeleccionado={paisSeleccionado}
               datosPais={datosPais}
               datosClima={datosClima}

@@ -70,8 +70,8 @@ function mezclarConSemilla(lista, semilla) {
   return copia;
 }
 
-function sacarNombresTipo(dataTipo) {
-  return dataTipo.pokemon.map((item) => item.pokemon.name);
+function sacarNombresTipo(datosTipo) {
+  return datosTipo.pokemon.map((elemento) => elemento.pokemon.name);
 }
 
 function meterNombresUnicos(resultado, usados, lista, limite) {
@@ -110,45 +110,45 @@ function crearListaNombres(idPais, temperatura, nombresPorTipo) {
   return nombres.slice(0, LIMITE_CANDIDATOS);
 }
 
-function sacarImagenPokemon(dataPokemon) {
+function sacarImagenPokemon(datosPokemon) {
   return (
-    dataPokemon.sprites.other?.["official-artwork"]?.front_default ||
-    dataPokemon.sprites.other?.home?.front_default ||
-    dataPokemon.sprites.other?.dream_world?.front_default ||
-    dataPokemon.sprites.front_default ||
+    datosPokemon.sprites.other?.["official-artwork"]?.front_default ||
+    datosPokemon.sprites.other?.home?.front_default ||
+    datosPokemon.sprites.other?.dream_world?.front_default ||
+    datosPokemon.sprites.front_default ||
     null
   );
 }
 
-function crearPokemon(dataPokemon) {
-  const image = sacarImagenPokemon(dataPokemon);
+function crearPokemon(datosPokemon) {
+  const imagen = sacarImagenPokemon(datosPokemon);
 
-  if (!image) return null;
+  if (!imagen) return null;
 
   return {
-    id: dataPokemon.id,
-    name: dataPokemon.name,
-    image,
-    types: dataPokemon.types.map((tipo) => tipo.type.name),
+    id: datosPokemon.id,
+    nombre: datosPokemon.name,
+    imagen,
+    tipos: datosPokemon.types.map((tipo) => tipo.type.name),
   };
 }
 
-async function pedirJson(url, signal, errorTexto) {
-  const response = await fetch(url, { signal });
+async function pedirJson(ruta, senal, textoError) {
+  const respuesta = await fetch(ruta, { signal: senal });
 
-  if (!response.ok) {
-    throw new Error(`${errorTexto}: ${response.status}`);
+  if (!respuesta.ok) {
+    throw new Error(`${textoError}: ${respuesta.status}`);
   }
 
-  return response.json();
+  return respuesta.json();
 }
 
-export async function pedirPokemons(tipos, idPais, temperatura, signal) {
+export async function pedirPokemons(tipos, idPais, temperatura, senal) {
   const datosTipos = await Promise.all(
     tipos.map((tipo) =>
       pedirJson(
         `https://pokeapi.co/api/v2/type/${tipo}`,
-        signal,
+        senal,
         "Error PokéAPI tipos"
       )
     )
@@ -164,7 +164,7 @@ export async function pedirPokemons(tipos, idPais, temperatura, signal) {
       lote.map((nombre) =>
         pedirJson(
           `https://pokeapi.co/api/v2/pokemon/${nombre}`,
-          signal,
+          senal,
           "Error PokéAPI detalle"
         )
       )

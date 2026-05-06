@@ -473,8 +473,8 @@ En ese caso:
 
 Con eso se recalculan:
 
-- `--map-stage-max-height`
-- `--panel-max-height`
+- `--alto-maximo-mapa`
+- `--alto-maximo-panel`
 
 ### Scroll
 

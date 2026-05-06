@@ -1,29 +1,29 @@
-async function pedirJson(url, signal, errorTexto) {
-  const response = await fetch(url, { signal });
+async function pedirJson(ruta, senal, textoError) {
+  const respuesta = await fetch(ruta, { signal: senal });
 
-  if (!response.ok) {
-    throw new Error(`${errorTexto}: ${response.status}`);
+  if (!respuesta.ok) {
+    throw new Error(`${textoError}: ${respuesta.status}`);
   }
 
-  return response.json();
+  return respuesta.json();
 }
 
-export async function pedirPais(idPais, signal) {
-  const data = await pedirJson(
+export async function pedirPais(idPais, senal) {
+  const datos = await pedirJson(
     `https://restcountries.com/v3.1/alpha/${idPais}?fields=name,capital,capitalInfo,flags,languages,cca2`,
-    signal,
+    senal,
     "Error REST Countries"
   );
 
-  return Array.isArray(data) ? data[0] : data;
+  return Array.isArray(datos) ? datos[0] : datos;
 }
 
-export function pedirClima(coords, signal) {
-  const [latitud, longitud] = coords;
+export function pedirClima(coordenadas, senal) {
+  const [latitud, longitud] = coordenadas;
 
   return pedirJson(
     `https://api.open-meteo.com/v1/forecast?latitude=${latitud}&longitude=${longitud}&current=temperature_2m`,
-    signal,
+    senal,
     "Error Open-Meteo"
   );
 }

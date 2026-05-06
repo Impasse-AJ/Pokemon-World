@@ -3,15 +3,15 @@ function capitalizar(texto) {
   return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
-function formatearCoords(coords) {
-  if (!coords || coords.length < 2) return "No disponible";
-  return `${coords[0].toFixed(2)}, ${coords[1].toFixed(2)}`;
+function formatearCoordenadas(coordenadas) {
+  if (!coordenadas || coordenadas.length < 2) return "No disponible";
+  return `${coordenadas[0].toFixed(2)}, ${coordenadas[1].toFixed(2)}`;
 }
 
 export default function PanelPais({
   abierto,
   alCerrar,
-  panelRef,
+  referenciaPanel,
   paisSeleccionado,
   datosPais,
   datosClima,
@@ -58,9 +58,9 @@ export default function PanelPais({
       : capitalizar(categoriaPokemon ?? "No disponible");
 
   return (
-    <div className="panel-overlay">
-      <aside ref={panelRef} className="panel-pais" aria-live="polite">
-        <div className="panel-pais-top">
+    <div className="panel-capa">
+      <aside ref={referenciaPanel} className="panel-pais" aria-live="polite">
+        <div className="panel-pais-cabecera">
           <div>
             <p className="panel-pais-etiqueta">Ficha del país</p>
             <h2 className="panel-pais-nombre">{nombrePais}</h2>
@@ -80,8 +80,8 @@ export default function PanelPais({
           </button>
         </div>
 
-        <div className="panel-pais-body">
-          <section className="panel-bloque panel-bloque-portada">
+        <div className="panel-pais-contenido">
+          <section className="panel-bloque panel-bloque-principal">
             {errorPais ? <p className="panel-error">{errorPais}</p> : null}
 
             {bandera ? (
@@ -102,7 +102,7 @@ export default function PanelPais({
                 <dd>
                   {errorPais
                     ? "No disponible"
-                    : formatearCoords(datosPais?.capitalInfo?.latlng)}
+                    : formatearCoordenadas(datosPais?.capitalInfo?.latlng)}
                 </dd>
               </div>
               <div>
@@ -133,10 +133,10 @@ export default function PanelPais({
               <h3>Tipos recomendados</h3>
             </div>
 
-            <div className="panel-chips">
+            <div className="panel-tipos">
               {tiposPokemon?.length ? (
                 tiposPokemon.map((tipo) => (
-                  <span key={tipo} className="panel-chip">
+                  <span key={tipo} className="panel-tipo">
                     {capitalizar(tipo)}
                   </span>
                 ))
@@ -167,17 +167,17 @@ export default function PanelPais({
             ) : listaPokemon.length ? (
               <ul className="panel-pokemon-lista">
                 {listaPokemon.map((pokemon) => (
-                  <li key={pokemon.id} className="panel-pokemon-item">
+                  <li key={pokemon.id} className="panel-pokemon-elemento">
                     <img
                       className="panel-pokemon-imagen"
-                      src={pokemon.image}
-                      alt={pokemon.name}
+                      src={pokemon.imagen}
+                      alt={pokemon.nombre}
                     />
 
                     <div className="panel-pokemon-texto">
-                      <strong>{capitalizar(pokemon.name)}</strong>
+                      <strong>{capitalizar(pokemon.nombre)}</strong>
                       <div className="panel-pokemon-tipos">
-                        {pokemon.types.map((tipo) => (
+                        {pokemon.tipos.map((tipo) => (
                           <span
                             key={`${pokemon.id}-${tipo}`}
                             className="panel-pokemon-tipo"
