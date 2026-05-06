@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
+import "../styles/mapa.css";
 import {
   calcularAltoPanel,
   calcularAltoMapa,

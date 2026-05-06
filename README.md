@@ -86,7 +86,9 @@ Pokemon World/
 │   │   ├── mapa.js
 │   │   ├── paisClima.js
 │   │   └── pokemon.js
-│   ├── App.css
+│   ├── styles/
+│   │   ├── mapa.css
+│   │   └── panel.css
 │   ├── App.jsx
 │   ├── index.css
 │   └── main.jsx
@@ -111,6 +113,7 @@ Es el componente principal. Controla:
 - cálculo dinámico de alturas del mapa y panel
 - render del lienzo del mapa
 - carga lazy del panel
+- importa `src/styles/mapa.css`
 
 ### `src/components/PanelPais.jsx`
 
@@ -127,6 +130,7 @@ Renderiza la ficha del país. Muestra:
 - tipos recomendados
 - lista de Pokémon
 - estados de carga, error y vacío
+- importa `src/styles/panel.css`
 
 ### `src/utils/mapa.js`
 
@@ -160,7 +164,7 @@ Contiene la lógica de dominio Pokémon:
 
 ### `src/App.jsx`
 
-Importa `App.css` y renderiza `WorldMap`.
+Renderiza `WorldMap`. No carga estilos propios.
 
 ### `src/main.jsx`
 
@@ -176,16 +180,32 @@ Define la base global:
 - `min-width: 320px`
 - `overflow-x: hidden`
 
-### `src/App.css`
+### `src/styles/mapa.css`
 
-Contiene toda la capa visual real:
+Contiene los estilos relacionados con:
 
-- layout general
-- header
-- mapa
-- panel
-- animaciones
-- responsive aprobado
+- layout general de la página
+- cabecera del mapa
+- logo
+- título
+- marco del mapa
+- lienzo de Simplemaps
+- animaciones del mapa y del título
+- responsive del contenedor principal
+
+### `src/styles/panel.css`
+
+Contiene los estilos relacionados con:
+
+- capa del panel
+- ficha del país
+- bloques de información
+- bandera
+- clima
+- tipos recomendados
+- lista de Pokémon
+- estados de carga, error y vacío
+- responsive interno del panel
 
 ### `index.html`
 
