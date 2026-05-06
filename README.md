@@ -1,72 +1,53 @@
 # Pokemon World Map
 
-Aplicación React construida con Vite que combina un mapa mundial interactivo con una capa temática de Pokémon. El usuario selecciona un país en el mapa y la app muestra una ficha con información del país, clima actual y una lista de Pokémon recomendados según la temperatura.
+Aplicación React + Vite que muestra un mapa mundial interactivo con estética Pokémon. El usuario selecciona un país en el mapa y la aplicación abre una ficha con datos reales del país, clima actual y una lista de Pokémon recomendados según la temperatura.
 
-## Qué Hace La App
+El mapa es el elemento principal de la interfaz. El panel del país es una capa informativa que se adapta al espacio disponible sin sustituir el protagonismo del mapa.
 
-- Muestra un mapa mundial interactivo con `Simplemaps`.
-- Permite seleccionar países directamente desde el mapa.
-- Consulta datos reales del país con `REST Countries`.
-- Consulta la temperatura actual con `Open-Meteo`.
-- Clasifica esa temperatura en una categoría climática.
-- Genera una lista determinista de Pokémon usando `PokéAPI`.
-- Abre un panel con país, clima, tipos recomendados y Pokémon.
-
-## Tecnologías Usadas
+## Tecnologías
 
 - React 19
 - Vite 7
 - CSS puro
-- Simplemaps como scripts externos
+- Simplemaps como mapa externo
 - REST Countries API
 - Open-Meteo API
 - PokéAPI
 - ESLint
 
-## Cómo Se Ejecuta
+## Instalación Y Ejecución
 
-Instala dependencias:
+Instalar dependencias:
 
 ```bash
 npm install
 ```
 
-Modo desarrollo:
+Arrancar en desarrollo:
 
 ```bash
 npm run dev
 ```
 
-Qué esperar:
-- servidor Vite con recarga en caliente
-- logs de desarrollo activos
-- útil para iterar interfaz y lógica
-
-Build de producción:
+Generar build de producción:
 
 ```bash
 npm run build
 ```
 
-Qué esperar:
-- salida optimizada en `dist/`
-- `PanelPais` separado en un chunk lazy
-
-Preview de producción:
+Levantar la build real:
 
 ```bash
 npm run preview
 ```
 
-Qué esperar:
-- arranque de la build real
-- es el modo correcto para validar comportamiento y rendimiento final
-
-Lint:
+Revisar lint:
 
 ```bash
 npm run lint
 ```
+
+Para validar rendimiento y comportamiento final, la referencia correcta es `npm run build` + `npm run preview`. El modo `dev` incluye cliente de Vite, HMR y comportamiento propio de desarrollo.
 
 ## Estructura Del Proyecto
 
@@ -82,195 +63,193 @@ Pokemon World/
 │   ├── components/
 │   │   ├── PanelPais.jsx
 │   │   └── WorldMap.jsx
+│   ├── styles/
+│   │   ├── mapa.css
+│   │   └── panel.css
 │   ├── utils/
 │   │   ├── mapa.js
 │   │   ├── paisClima.js
 │   │   └── pokemon.js
-│   ├── styles/
-│   │   ├── mapa.css
-│   │   └── panel.css
 │   ├── App.jsx
 │   ├── index.css
 │   └── main.jsx
 ├── index.html
-└── package.json
+├── MEJORAS_VISUALES.md
+├── package.json
+└── README.md
 ```
 
-## Responsabilidad De Cada Archivo
+## Responsabilidad De Archivos
+
+### `src/main.jsx`
+
+Punto de entrada de React. Importa `index.css`, monta `App` con `createRoot` y envuelve la app en `StrictMode`.
+
+### `src/App.jsx`
+
+Componente raíz. Renderiza `WorldMap`. No importa estilos propios ni depende de `App.css`.
 
 ### `src/components/WorldMap.jsx`
 
-Es el componente principal. Controla:
+Componente principal de la aplicación. Controla:
 
-- estado global visible de la app
-- carga de scripts externos del mapa
+- carga de scripts de Simplemaps
 - escucha del evento `simplemaps-country-change`
-- selección de país
+- país seleccionado
 - apertura y cierre del panel
 - carga de país, clima y Pokémon
-- control de concurrencia con `AbortController`
-- protección adicional con `claveSeleccion`
-- cálculo dinámico de alturas del mapa y panel
-- render del lienzo del mapa
-- carga lazy del panel
-- importa `src/styles/mapa.css`
+- errores por API
+- estados de carga
+- limpieza de datos al cambiar de país
+- control de peticiones tardías
+- cálculo dinámico de alto del mapa y panel
+- importación de `src/styles/mapa.css`
+- carga lazy de `PanelPais`
 
 ### `src/components/PanelPais.jsx`
 
-Renderiza la ficha del país. Muestra:
+Componente visual del panel. Muestra:
 
 - nombre del país
-- ID
+- ID del país
 - bandera
 - capital
 - coordenadas
 - idiomas
-- temperatura
+- temperatura actual
 - categoría climática
-- tipos recomendados
+- tipos Pokémon recomendados
 - lista de Pokémon
 - estados de carga, error y vacío
-- importa `src/styles/panel.css`
+
+También añade atributos visuales:
+
+- `data-tipo={tipo}` en chips de tipos Pokémon
+- `data-categoria={categoriaPokemon}` en el bloque de clima
+- `panel-estado--cargando` durante carga de clima o Pokémon
+
+Importa `src/styles/panel.css`.
 
 ### `src/utils/mapa.js`
 
-Contiene la lógica auxiliar del mapa:
+Contiene la integración con Simplemaps y los cálculos de layout:
 
 - `TITULO_INICIAL`
-- `cargarScript()` para inyectar `mapdata.js` y `worldmap.js`
-- `registrarEventosMapa()` para engancharse al hook de zoom de Simplemaps
-- `calcularAltoMapa()` para mantener el mapa protagonista
-- `calcularAltoPanel()` para ajustar el panel cuando va debajo
+- `cargarScript()`
+- `registrarEventosMapa()`
+- `calcularAltoMapa()`
+- `calcularAltoPanel()`
+
+No modifica el bundle de Simplemaps. Solo usa sus objetos globales y su hook `plugin_hooks.zooming_complete`.
 
 ### `src/utils/paisClima.js`
 
-Gestiona peticiones de datos externas:
+Agrupa las peticiones a APIs de país y clima:
 
-- `pedirJson()` como helper común
-- `pedirPais()` contra `REST Countries`
-- `pedirClima()` contra `Open-Meteo`
+- `pedirPais(idPais, senal)`
+- `pedirClima(coordenadas, senal)`
+- `pedirJson(ruta, senal, textoError)`
 
 ### `src/utils/pokemon.js`
 
-Contiene la lógica de dominio Pokémon:
+Contiene la lógica Pokémon:
 
-- clasificación por temperatura
-- asociación de tipos Pokémon a cada rango térmico
-- generación determinista de semilla
-- mezcla pseudoaleatoria estable de listas
-- deduplicado de nombres
-- validación de imagen del Pokémon
-- carga por lotes desde `PokéAPI`
-
-### `src/App.jsx`
-
-Renderiza `WorldMap`. No carga estilos propios.
-
-### `src/main.jsx`
-
-Punto de entrada de React. Monta la aplicación con `createRoot` dentro de `StrictMode`.
+- clasificación de temperatura
+- selección de tipos recomendados
+- generación determinista por semilla
+- mezcla pseudoaleatoria estable
+- control de duplicados
+- validación de imagen
+- carga de Pokémon por lotes
 
 ### `src/index.css`
 
-Define la base global:
+Base global de la app:
 
+- `--world-map-proporcion`
+- tokens de color globales
 - `box-sizing`
+- fondo base
 - tipografía base
-- fondo global
 - `min-width: 320px`
 - `overflow-x: hidden`
 
 ### `src/styles/mapa.css`
 
-Contiene los estilos relacionados con:
+Estilos del mapa y la estructura principal:
 
-- layout general de la página
-- cabecera del mapa
-- logo
+- página
+- contenedor principal
+- logo Poké Ball
+- cabecera
 - título
 - marco del mapa
 - lienzo de Simplemaps
-- animaciones del mapa y del título
-- responsive del contenedor principal
+- animaciones del mapa y cabecera
+- responsive del contenedor
 
 ### `src/styles/panel.css`
 
-Contiene los estilos relacionados con:
+Estilos del panel:
 
 - capa del panel
 - ficha del país
-- bloques de información
+- cabecera del panel
+- bloques internos
 - bandera
 - clima
-- tipos recomendados
+- tipos Pokémon
 - lista de Pokémon
 - estados de carga, error y vacío
 - responsive interno del panel
 
-### `index.html`
-
-Configura:
-
-- `lang="es"`
-- favicon de Poké Ball
-- título `Pokemon World Map`
-
 ### `public/simplemaps/mapdata.js`
 
-Archivo de configuración del mapa:
+Configuración del mapa:
 
-- estilos base
 - nombres de países
+- estilos base de Simplemaps
+- zoom
+- labels
 - `div: "map"`
 - `state_description: ""`
-- configuración de zoom, labels y comportamiento general
 
 ### `public/simplemaps/worldmap.js`
 
-Bundle vendor de `Simplemaps`. El proyecto no reescribe su lógica interna. Se usa como motor del mapa y se consume a través de sus globals y del hook `plugin_hooks.zooming_complete`.
+Bundle externo de Simplemaps. No debe editarse salvo que se quiera sustituir toda la librería.
 
-## Flujo Funcional Completo
+## Flujo Funcional
 
-El flujo real es este:
+El flujo completo es:
 
 1. El usuario hace click en un país del mapa.
-2. `Simplemaps` actualiza su estado interno de zoom/selección.
+2. Simplemaps actualiza su selección interna.
 3. `registrarEventosMapa()` escucha `plugin_hooks.zooming_complete`.
-4. Desde ahí se construye un objeto con:
-   - `titulo`
-   - `pais`
-5. Se lanza el evento global:
+4. `obtenerSeleccionMapa()` resuelve el país seleccionado.
+5. Se lanza el evento global `simplemaps-country-change`.
+6. `WorldMap.jsx` recibe el evento.
+7. Se limpian datos anteriores.
+8. Se actualiza `paisSeleccionado`.
+9. Se abre el panel.
+10. Se actualiza el título visible.
+11. Se pide el país a REST Countries.
+12. Si hay coordenadas de capital, se pide el clima a Open-Meteo.
+13. Con la temperatura, se calcula categoría climática y tipos Pokémon.
+14. Con los tipos, se pide información a PokéAPI.
+15. Se genera una lista final de hasta 20 Pokémon válidos.
+16. `PanelPais.jsx` muestra la información.
 
-```js
-simplemaps-country-change
-```
-
-6. `WorldMap.jsx` escucha ese evento.
-7. Al recibir una nueva selección:
-   - limpia estado anterior
-   - incrementa `claveSeleccion`
-   - actualiza el país activo
-   - abre el panel
-   - cambia el título
-8. Se pide el país a `REST Countries`.
-9. Si hay capital y coordenadas válidas, se pide el clima a `Open-Meteo`.
-10. Con la temperatura actual, `clasificarTemperatura()` devuelve:
-    - categoría climática
-    - tipos Pokémon recomendados
-11. Con esos tipos, `pedirPokemons()` genera una lista determinista.
-12. Cuando todo llega, `PanelPais` renderiza los datos.
-
-## Lógica De Datos
+## Datos Externos
 
 ### REST Countries
 
-Se usa:
+Endpoint usado:
 
 ```text
 https://restcountries.com/v3.1/alpha/:id?fields=name,capital,capitalInfo,flags,languages,cca2
 ```
 
-Campos usados realmente:
+Campos usados:
 
 - `name.common`
 - `capital`
@@ -282,31 +261,35 @@ Campos usados realmente:
 
 Uso:
 
-- `name.common` para el nombre visible
-- `capital[0]` para capital
-- `capitalInfo.latlng` para pedir el clima
-- bandera para la ficha
-- idiomas para la sección de datos
+- nombre del país
+- capital
+- coordenadas de la capital
+- bandera
+- idiomas
 
 ### Open-Meteo
 
-Se usa con las coordenadas de la capital para obtener:
+Endpoint construido con latitud y longitud:
+
+```text
+https://api.open-meteo.com/v1/forecast?latitude=:latitud&longitude=:longitud&current=temperature_2m
+```
+
+Campo usado:
 
 - `current.temperature_2m`
 
-Ese valor alimenta la lógica de clasificación climática.
+La temperatura decide la categoría climática y los tipos Pokémon recomendados.
 
 ### PokéAPI
 
-Se usa en dos niveles:
-
-1. pools por tipo:
+Primero se consultan tipos:
 
 ```text
 https://pokeapi.co/api/v2/type/:tipo
 ```
 
-2. detalle individual:
+Luego se consulta detalle individual:
 
 ```text
 https://pokeapi.co/api/v2/pokemon/:nombre
@@ -314,82 +297,50 @@ https://pokeapi.co/api/v2/pokemon/:nombre
 
 ## Clasificación De Temperatura
 
-La clasificación actual en `pokemon.js` es:
+La función `clasificarTemperatura()` devuelve una categoría y tres tipos Pokémon:
 
-- `<= -5`: `polar` → `ice`, `water`, `steel`
-- `<= 3`: `muy frío` → `ice`, `water`, `flying`
-- `<= 9`: `frío` → `ice`, `water`, `normal`
-- `<= 15`: `fresco` → `grass`, `flying`, `normal`
-- `<= 21`: `templado` → `grass`, `normal`, `bug`
-- `<= 27`: `templado cálido` → `grass`, `ground`, `fighting`
-- `<= 33`: `cálido` → `fire`, `ground`, `rock`
-- `<= 39`: `muy cálido` → `fire`, `rock`, `dragon`
-- `> 39`: `extremo` → `fire`, `ground`, `dragon`
+| Temperatura | Categoría | Tipos |
+|---|---|---|
+| `<= -5` | `polar` | `ice`, `water`, `steel` |
+| `<= 3` | `muy frío` | `ice`, `water`, `flying` |
+| `<= 9` | `frío` | `ice`, `water`, `normal` |
+| `<= 15` | `fresco` | `grass`, `flying`, `normal` |
+| `<= 21` | `templado` | `grass`, `normal`, `bug` |
+| `<= 27` | `templado cálido` | `grass`, `ground`, `fighting` |
+| `<= 33` | `cálido` | `fire`, `ground`, `rock` |
+| `<= 39` | `muy cálido` | `fire`, `rock`, `dragon` |
+| `> 39` | `extremo` | `fire`, `ground`, `dragon` |
 
-## Lista Determinista De Pokémon
+## Generación De Pokémon
 
-La lista no es aleatoria pura. Es estable para el mismo país y temperatura.
+La lista no es aleatoria pura. Es determinista.
 
-Base del sistema:
+La semilla base es:
 
-- semilla: `${idPais}-${Math.round(temperatura)}`
-- mezcla con semilla para cada tipo
-- mezcla final del pool combinado
+```js
+`${idPais}-${Math.round(temperatura)}`
+```
 
-Construcción actual:
+Con esa semilla:
 
-- primer tipo: hasta 8 nombres
-- segundo tipo: hasta 14
-- tercer tipo: hasta 18
-- relleno desde el resto mezclado
-- máximo de 40 candidatos
-- resultado final: hasta 20 Pokémon válidos
+- se mezclan los Pokémon del primer tipo
+- se mezclan los Pokémon del segundo tipo
+- se mezclan los Pokémon del tercer tipo
+- se combinan resultados sin duplicados
+- se genera una lista de hasta 40 candidatos
+- se cargan detalles por lotes de 10
+- se devuelven hasta 20 Pokémon válidos
 
-## Validaciones Importantes
+## Validación De Imagen Pokémon
 
-### Imagen Del Pokémon
-
-El orden real de fallback es:
+No todos los Pokémon devueltos por PokéAPI tienen las mismas imágenes disponibles. Por eso se usa este orden de fallback:
 
 1. `official-artwork`
 2. `home`
 3. `dream_world`
 4. `front_default`
 
-Si no existe ninguna imagen válida, el Pokémon se descarta.
-
-### Candidatos Extra
-
-Para no quedarse sin resultados:
-
-- se generan hasta 40 candidatos
-- se procesan por lotes de 10
-- se guardan solo los 20 primeros válidos
-
-### Duplicados
-
-Se controlan con `Set` al construir la lista de nombres.
-
-### Peticiones Concurrentes
-
-El proyecto protege el flujo con:
-
-- `AbortController`
-- `claveSeleccion`
-- `claveSeleccionRef`
-
-Esto evita que respuestas antiguas sobrescriban una selección más nueva.
-
-### Limpieza Al Cambiar País
-
-Cada nueva selección limpia:
-
-- `datosPais`
-- `datosClima`
-- `listaPokemon`
-- errores previos
-
-Así se evita mezclar datos antiguos y nuevos.
+Si un Pokémon no tiene ninguna imagen válida, se descarta y no aparece en el panel.
 
 ## Gestión De Estado
 
@@ -413,150 +364,179 @@ Estados principales de `WorldMap.jsx`:
 - `panelDebajo`
 - `movilHorizontal`
 
-Cómo se sincroniza el panel:
+Al seleccionar un país nuevo se limpian:
 
-- el panel se abre cuando llega una selección válida
-- se cierra manualmente con botón
-- si el usuario vuelve a seleccionar otro país, se reabre automáticamente
+- datos del país anterior
+- clima anterior
+- lista anterior de Pokémon
+- errores anteriores
+- estados de carga secundarios
 
-Cómo se evita mezcla de datos:
+Para evitar mezclas por peticiones tardías se usa:
 
-- cada selección nueva incrementa `claveSeleccion`
-- cada efecto comprueba si sigue siendo la selección activa antes de escribir estado
+- `AbortController`
+- `claveSeleccion`
+- `claveSeleccionActual`
 
-## Panel De País
+Antes de escribir datos en estado, cada petición comprueba que sigue perteneciendo a la selección activa.
 
-El panel muestra:
+## Panel Del País
 
-- nombre del país
-- ID
-- bandera
-- capital
-- coordenadas
-- idiomas
-- temperatura
-- categoría
-- tipos recomendados
-- lista de Pokémon
+El panel se abre cuando hay un país seleccionado y `panelAbierto` es `true`.
 
-Comportamiento:
+Puede cerrarse manualmente con el botón `×`. Cerrar el panel no borra el país activo ni rompe el mapa. Si se selecciona otro país, el panel vuelve a abrirse automáticamente.
 
-- se abre al seleccionar país
-- se puede cerrar manualmente
-- reaparece al seleccionar otro país
+El panel contempla:
 
-Carga lazy:
+- carga de país
+- carga de clima
+- carga de Pokémon
+- error de REST Countries
+- error de Open-Meteo
+- error de PokéAPI
+- datos incompletos
+- lista vacía
 
-- `PanelPais` se carga con `lazy()`
-- se renderiza con `Suspense`
+Mensajes principales:
 
-Estados visuales existentes:
+- `Cargando datos del país...`
+- `Cargando clima...`
+- `Cargando Pokémon...`
+- `No se pudo cargar la información del país`
+- `No se pudo obtener el clima`
+- `Error al cargar los Pokémon`
+- `No disponible`
 
-- carga
-- error
-- vacío
+## Estilos Y Responsive
 
-Todos están integrados dentro del panel, no como texto aislado.
+La app no usa `App.css`.
 
-## Responsive Y Layout
+Los estilos están separados por responsabilidad:
 
-### Panel lateral vs debajo
+- `src/styles/mapa.css`: mapa, página, título, logo, marco, animaciones y responsive del mapa.
+- `src/styles/panel.css`: panel, datos del país, clima, tipos, Pokémon, estados y responsive del panel.
+- `src/index.css`: estilos globales mínimos y tokens base.
 
-Reglas actuales:
+### Comportamiento Responsive
 
-- panel debajo si `window.innerWidth <= 1100`
-- o si `window.innerWidth <= 1180 && window.innerHeight <= 760`
-- excepto en móvil horizontal específico
+En escritorio amplio:
 
-### Móvil horizontal
+- el mapa queda centrado y grande
+- el panel aparece superpuesto lateralmente
 
-Se activa si:
+En ventanas más pequeñas:
 
-- `window.innerWidth <= 932`
-- `window.innerWidth > window.innerHeight`
-- `window.innerHeight <= 540`
+- el panel pasa debajo del mapa
+- el mapa mantiene prioridad visual
+- el panel usa scroll interno
 
-En ese caso:
+Condiciones principales:
 
-- header compacto
+- panel debajo si `innerWidth <= 1100`
+- panel debajo si `innerWidth <= 1180 && innerHeight <= 760`
+- móvil horizontal específico si `innerWidth <= 932`, `innerWidth > innerHeight` e `innerHeight <= 540`
+
+En móvil horizontal:
+
+- cabecera más compacta
 - mapa protagonista
 - panel lateral superpuesto
 
-### Alturas dinámicas
+### Cálculo Dinámico
 
-`ResizeObserver` observa:
+`WorldMap.jsx` usa `ResizeObserver` para observar:
 
 - contenedor principal
 - logo
 - cabecera
-- panel si procede
+- panel, cuando corresponde
 
-Con eso se recalculan:
+Con eso calcula:
 
 - `--alto-maximo-mapa`
 - `--alto-maximo-panel`
 
-### Scroll
+Estas variables se usan en CSS para mantener el mapa y el panel ajustados al viewport.
 
-- el objetivo es que la página no haga scroll raro
-- cuando el panel va debajo, el scroll útil ocurre dentro del panel
+## Mejoras Visuales Actuales
 
-## Decisiones Técnicas Aprobadas
+El archivo `MEJORAS_VISUALES.md` registra cambios visuales aplicados sin modificar la lógica.
 
-- frontend con React + Vite
-- sin backend en esta versión
-- sin router
-- sin librerías de estado global
-- mapa con `Simplemaps` y scripts externos
-- uso directo de APIs externas
-- lista Pokémon determinista
-- `PanelPais` con lazy + `Suspense`
-- logs solo en desarrollo
-- uso de `mapdata.js` y `worldmap.js` originales
-- no uso de versiones `.min` experimentales
+Resumen:
+
+- mejora de `line-height` del nombre del país
+- `:focus-visible` en botón de cierre
+- scrollbar del panel adaptado también para Firefox
+- colores por tipo Pokémon usando `data-tipo`
+- color semántico del clima usando `data-categoria`
+- tokens de color globales en `index.css`
+- fondo neutral para sprites Pokémon
+- consolidación del `text-shadow` del título con variables CSS
+- estado de carga pulsante con `panel-estado--cargando`
+- soporte de `prefers-reduced-motion`
 
 ## Rendimiento
 
-Puntos clave del estado actual:
+`PanelPais` se carga con `lazy()` y `Suspense`, por lo que el panel se separa en un chunk propio en producción.
 
-- `PanelPais` se carga en chunk separado
-- los logs de desarrollo no se ejecutan en producción
-- la validación real debe hacerse con `build + preview`
-- los scripts externos del mapa se cargan una sola vez y con guardas para no duplicarse
+Los estilos también quedan separados:
 
-Diferencia entre dev y producción:
+- CSS principal del mapa
+- CSS del panel cargado junto al chunk del panel
 
-- en dev hay HMR, `StrictMode` y cliente de Vite
-- en producción desaparece ese ruido y se valida el comportamiento real
+Los scripts de Simplemaps se cargan dinámicamente mediante `cargarScript()`. La función evita duplicar scripts y marca los scripts cargados con `data-loaded`.
 
-## Qué Esperar En Cada Modo
+Los logs de estudio están protegidos por:
 
-### `npm run dev`
+```js
+import.meta.env.DEV
+```
 
-- desarrollo con recarga rápida
-- útil para iteración
-- logs de desarrollo visibles
+Eso evita que los logs de desarrollo se ejecuten en producción.
 
-### `npm run build`
+## Decisiones Técnicas
 
-- empaquetado final
-- chunk lazy del panel
+- Mantener React + Vite.
+- Mantener frontend puro.
+- No usar backend todavía.
+- No usar router todavía.
+- No usar librerías de estado global.
+- No modificar `public/simplemaps/worldmap.js`.
+- No usar versiones `.min` experimentales de Simplemaps.
+- Mantener `mapdata.js` y `worldmap.js` originales.
+- Mantener lógica determinista para Pokémon.
+- Mantener validación de imagen Pokémon.
+- Mantener separación de estilos por responsabilidad.
 
-### `npm run preview`
+## Archivos Que No Deben Tocarse Sin Motivo
 
-- simulación real de producción
-- es la referencia correcta para revisar estabilidad y rendimiento
+- `public/simplemaps/worldmap.js`: vendor externo.
+- `public/simplemaps/mapdata.js`: configuración base del mapa.
 
-## Posibles Extensiones Futuras
+Si se modifica Simplemaps, hay riesgo de romper la carga del mapa, el zoom o el evento de selección.
 
-Mejoras coherentes con el estado actual:
+## Posibles Mejoras Futuras
 
-- detalle completo de un Pokémon al hacer click en la lista
-- tests automáticos del flujo asíncrono país → clima → Pokémon
-- pequeña caché de respuestas para reducir repeticiones
-- reintento manual en estados de error
-- backend futuro para autenticación o persistencia si el proyecto evoluciona
+Extensiones coherentes con la arquitectura actual:
 
-## Nota Final
+- página de detalle de Pokémon
+- router para navegar a detalles
+- caché ligera de respuestas de APIs
+- tests de interacción para cambios rápidos de país
+- tests de peticiones tardías
+- reintentos manuales en errores de API
+- backend futuro para usuarios, favoritos o historial
 
-La lógica interna completa de `public/simplemaps/worldmap.js` no está documentada aquí porque es un vendor bundle externo. En este proyecto solo se documenta el uso real que el código hace de esa librería.
+## Estado Del Proyecto
+
+Estado actual:
+
+- aplicación funcional
+- mapa operativo
+- panel operativo
+- estilos separados
+- lógica de APIs separada en utilidades
+- panel lazy
+- validaciones de imagen
+- control de peticiones concurrentes
+- documentación visual adicional en `MEJORAS_VISUALES.md`
