@@ -2,6 +2,8 @@ const LIMITE_POKEMON = 20;
 const LIMITE_CANDIDATOS = 40;
 const TAMANO_LOTE = 10;
 
+// Traduce la temperatura real del país a una categoría climática y a tres tipos Pokémon.
+// Esta función conecta la API del clima con la lógica de recomendación Pokémon.
 export function clasificarTemperatura(temperatura) {
   if (temperatura === null || temperatura === undefined) return null;
 
@@ -43,6 +45,7 @@ export function clasificarTemperatura(temperatura) {
   return { categoria: "extremo", tipos: ["fire", "ground", "dragon"] };
 }
 
+// Convierte país + temperatura en un número estable para que la lista no cambie al recargar.
 function crearSemilla(texto) {
   let semilla = 0;
 
@@ -53,6 +56,7 @@ function crearSemilla(texto) {
   return semilla;
 }
 
+// Mezcla una lista usando una semilla propia; parece aleatorio, pero el resultado es repetible.
 function mezclarConSemilla(lista, semilla) {
   const copia = [...lista];
   let semillaActual = semilla;
@@ -70,10 +74,12 @@ function mezclarConSemilla(lista, semilla) {
   return copia;
 }
 
+// Extrae de la respuesta de PokéAPI los nombres de Pokémon asociados a un tipo.
 function sacarNombresTipo(datosTipo) {
   return datosTipo.pokemon.map((elemento) => elemento.pokemon.name);
 }
 
+// Añade nombres sin repetir hasta llegar al límite indicado.
 function meterNombresUnicos(resultado, usados, lista, limite) {
   for (const nombre of lista) {
     if (!usados.has(nombre)) {
@@ -85,6 +91,8 @@ function meterNombresUnicos(resultado, usados, lista, limite) {
   }
 }
 
+// Combina los tres pools de tipos en una lista ordenada y determinista de candidatos.
+// Se generan más candidatos de los necesarios porque algunos Pokémon pueden no tener imagen válida.
 function crearListaNombres(idPais, temperatura, nombresPorTipo) {
   const [lista1, lista2, lista3] = nombresPorTipo;
   const semillaBase = crearSemilla(`${idPais}-${Math.round(temperatura)}`);
@@ -110,6 +118,7 @@ function crearListaNombres(idPais, temperatura, nombresPorTipo) {
   return nombres.slice(0, LIMITE_CANDIDATOS);
 }
 
+// Busca la mejor imagen disponible en PokéAPI, de mayor calidad a fallback básico.
 function sacarImagenPokemon(datosPokemon) {
   return (
     datosPokemon.sprites.other?.["official-artwork"]?.front_default ||
@@ -120,6 +129,8 @@ function sacarImagenPokemon(datosPokemon) {
   );
 }
 
+// Normaliza el detalle de PokéAPI al formato que necesita el panel.
+// Si el Pokémon no tiene imagen, se descarta para no mostrar tarjetas rotas.
 function crearPokemon(datosPokemon) {
   const imagen = sacarImagenPokemon(datosPokemon);
 
@@ -133,6 +144,7 @@ function crearPokemon(datosPokemon) {
   };
 }
 
+// Hace una petición a PokéAPI y transforma errores HTTP en errores controlados.
 async function pedirJson(ruta, senal, textoError) {
   const respuesta = await fetch(ruta, { signal: senal });
 
@@ -143,6 +155,8 @@ async function pedirJson(ruta, senal, textoError) {
   return respuesta.json();
 }
 
+// Flujo principal de PokéAPI: pide Pokémon por tipo, crea candidatos deterministas
+// y luego pide el detalle de cada Pokémon por lotes para obtener imagen, nombre y tipos.
 export async function pedirPokemons(tipos, idPais, temperatura, senal) {
   const datosTipos = await Promise.all(
     tipos.map((tipo) =>

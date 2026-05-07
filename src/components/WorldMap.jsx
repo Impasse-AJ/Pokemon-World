@@ -52,6 +52,8 @@ export default function WorldMap() {
     .filter(Boolean)
     .join(" ");
 
+  // Decide si el panel se superpone al mapa o baja debajo según el tamaño real de ventana.
+  // En móvil horizontal mantiene el mapa como protagonista y evita cambios de layout bruscos.
   useEffect(() => {
     const comprobarPanel = () => {
       const telefonoHorizontal =
@@ -74,6 +76,8 @@ export default function WorldMap() {
   useEffect(() => {
     let cancelado = false;
 
+    // Recibe la selección emitida desde Simplemaps y limpia datos anteriores antes de cargar los nuevos.
+    // La clave evita que respuestas tardías de otro país acaben mezclándose en el panel actual.
     const cambiarPais = (evento) => {
       const detalle = evento.detail ?? {};
       const nuevaClave = claveSeleccionActual.current + 1;
@@ -95,6 +99,7 @@ export default function WorldMap() {
       setClaveSeleccion(nuevaClave);
     };
 
+    // Carga mapdata.js y worldmap.js originales de Simplemaps y registra el puente de eventos con React.
     async function iniciarMapa() {
       try {
         await cargarScript("/simplemaps/mapdata.js", "simplemaps-mapdata");
@@ -127,6 +132,7 @@ export default function WorldMap() {
     const controlador = new AbortController();
     const claveActual = claveSeleccion;
 
+    // Pide REST Countries para el país seleccionado y guarda solo la respuesta que siga vigente.
     async function cargarPais() {
       setCargandoPais(true);
       setErrorPais(null);
@@ -177,6 +183,7 @@ export default function WorldMap() {
     const controlador = new AbortController();
     const claveActual = claveSeleccion;
 
+    // Pide Open-Meteo con las coordenadas de la capital y evita usar climas de selecciones antiguas.
     async function cargarClima() {
       setCargandoClima(true);
       setErrorClima(null);
@@ -229,6 +236,7 @@ export default function WorldMap() {
     const controlador = new AbortController();
     const claveActual = claveSeleccion;
 
+    // Pide PokéAPI usando los tipos calculados por temperatura y descarta respuestas tardías.
     async function cargarPokemons() {
       setCargandoPokemons(true);
       setErrorPokemons(null);
@@ -323,6 +331,7 @@ export default function WorldMap() {
 
     if (!contenedor || !logo || !encabezado) return;
 
+    // Recalcula alturas con ResizeObserver para que el mapa y el panel se ajusten sin romper el layout.
     const actualizarAlturas = () => {
       if (panelVisible && panelDebajo) {
         setAltoPanel(calcularAltoPanel(contenedor, logo, encabezado));

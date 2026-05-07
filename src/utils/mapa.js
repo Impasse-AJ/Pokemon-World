@@ -6,14 +6,17 @@ const ALTO_OBJETIVO_PANEL = 180;
 const ALTO_OBJETIVO_PANEL_COMPACTO = 140;
 const PROPORCION_MAPA = 2018.99 / 864.56;
 
+// Detecta ventanas pequeñas donde el mapa y el panel necesitan alturas más contenidas.
 function esPantallaCompacta(contenedor) {
   return contenedor.clientWidth <= 480 || contenedor.clientHeight <= 560;
 }
 
+// Detecta el modo móvil apaisado que se activa desde WorldMap mediante una clase CSS.
 function esMovilHorizontal(contenedor) {
   return contenedor.classList.contains("world-map-contenedor--movil-horizontal");
 }
 
+// Carga los scripts originales de Simplemaps en orden y evita duplicarlos si ya existen.
 export function cargarScript(rutaScript, id) {
   return new Promise((resolver, rechazar) => {
     const scriptActual = document.getElementById(id);
@@ -54,6 +57,7 @@ export function cargarScript(rutaScript, id) {
   });
 }
 
+// Lee la selección activa dentro de Simplemaps y la transforma en datos simples para React.
 function obtenerSeleccionMapa() {
   const mapa = window.simplemaps_worldmap;
   const datosMapa = window.simplemaps_worldmap_mapdata;
@@ -80,6 +84,7 @@ function obtenerSeleccionMapa() {
   return { titulo: id, pais: null };
 }
 
+// Conecta el evento interno de zoom de Simplemaps con un evento propio que WorldMap puede escuchar.
 export function registrarEventosMapa() {
   if (window.__simplemaps_hooks_registered__) return;
 
@@ -99,6 +104,7 @@ export function registrarEventosMapa() {
   });
 }
 
+// Calcula la altura máxima del mapa según el espacio real disponible y si el panel va debajo.
 export function calcularAltoMapa(contenedor, logo, encabezado, panelDebajo = false) {
   const estilos = window.getComputedStyle(contenedor);
   const separacion = parseFloat(estilos.rowGap || estilos.gap || "0");
@@ -129,6 +135,8 @@ export function calcularAltoMapa(contenedor, logo, encabezado, panelDebajo = fal
   return Math.max(ALTO_MINIMO_MAPA, Math.floor(altoDisponible));
 }
 
+// Calcula cuánto espacio queda para el panel cuando se coloca debajo del mapa.
+// La página no debe hacer scroll innecesario; el scroll principal queda dentro del panel.
 export function calcularAltoPanel(contenedor, logo, encabezado) {
   const estilos = window.getComputedStyle(contenedor);
   const separacion = parseFloat(estilos.rowGap || estilos.gap || "0");
