@@ -13,7 +13,7 @@ import { clasificarTemperatura, pedirPokemons } from "../utils/pokemon";
 const PanelPais = lazy(() => import("./PanelPais"));
 const ES_DESARROLLO = import.meta.env.DEV;
 
-export default function WorldMap() {
+export default function WorldMap({ onVolver }) {
   const [titulo, setTitulo] = useState(TITULO_INICIAL);
   const [paisSeleccionado, setPaisSeleccionado] = useState(null);
   const [panelAbierto, setPanelAbierto] = useState(false);
@@ -361,6 +361,11 @@ export default function WorldMap() {
 
   return (
     <main className="world-map-pagina">
+      {onVolver && (
+        <button className="mapa-btn-volver" onClick={onVolver}>
+          ← Inicio
+        </button>
+      )}
       <section
         ref={referenciaContenedor}
         className={clasesContenedor}

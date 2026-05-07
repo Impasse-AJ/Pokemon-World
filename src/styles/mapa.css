@@ -624,7 +624,7 @@
     .world-map-pagina::after {
   animation: none !important;
   }
-  
+
     .world-map-subtitulo,
     .world-map-titulo,
     .world-map-cabecera::after,
@@ -632,4 +632,45 @@
       opacity: 1;
       transform: none;
     }
+}
+
+/* ── Botón "Volver al inicio" flotante ── */
+.mapa-btn-volver {
+  position: absolute;
+  top: clamp(0.55rem, 1.4vw, 1rem);
+  left: clamp(0.55rem, 1.4vw, 1rem);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0.42rem 0.9rem 0.42rem 0.7rem;
+  background: rgba(9, 20, 45, 0.82);
+  border: 1px solid rgba(196, 217, 255, 0.16);
+  border-radius: 999px;
+  color: #cfe0ff;
+  font: 600 0.82rem/1 inherit;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.mapa-btn-volver:hover {
+  background: rgba(18, 42, 93, 0.92);
+  border-color: rgba(255, 216, 79, 0.38);
+  color: #ffd84f;
+}
+
+.mapa-btn-volver:focus-visible {
+  outline: 2px solid rgba(255, 220, 120, 0.65);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .mapa-btn-volver {
+    font-size: 0.74rem;
+    padding: 0.38rem 0.72rem 0.38rem 0.58rem;
+  }
 }

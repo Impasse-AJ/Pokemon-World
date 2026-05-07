@@ -1,0 +1,1009 @@
+/* ================================================================
+   AUTH.CSS — Landing · Login · Register
+   Paleta idéntica al proyecto real Pokemon World.
+   No modifica mapa.css ni panel.css.
+   ================================================================ */
+
+:root {
+  --auth-fondo:         #09142d;
+  --auth-azul-deep:     #122a5d;
+  --auth-azul-final:    #08101f;
+  --auth-dorado:        #ffd84f;
+  --auth-acento-azul:   #4a74df;
+  --auth-naranja:       #ff8c42;
+  --auth-texto:         #f4f8ff;
+  --auth-texto-sub:     #cfe0ff;
+  --auth-borde-azul:    #2247a6;
+  --auth-fuente-body:   "Manrope", "Trebuchet MS", "Segoe UI", sans-serif;
+  --auth-fuente-titulo: "Space Grotesk", "Arial Black", sans-serif;
+}
+
+/* ================================================================
+   BASE
+   ================================================================ */
+
+.auth-pantalla {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at top, rgba(120, 172, 255, 0.18), transparent 30%),
+    linear-gradient(180deg, #09142d 0%, #122a5d 52%, #08101f 100%);
+  font-family: var(--auth-fuente-body);
+  color: var(--auth-texto);
+  overflow-x: hidden;
+}
+
+.auth-main {
+  flex: 1;
+  padding-top: 5rem; /* compensa nav fija */
+}
+
+.auth-glass {
+  background: rgba(18, 42, 93, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 116, 223, 0.2);
+}
+
+/* ================================================================
+   NAVEGACIÓN
+   ================================================================ */
+
+.auth-nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+  background: rgba(8, 16, 31, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(74, 116, 223, 0.2);
+}
+
+.auth-nav-inner {
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  height: 5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.auth-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: default;
+  user-select: none;
+}
+
+.auth-nav-logo-icono {
+  padding: 0.45rem;
+  background: var(--auth-azul-deep);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(74, 116, 223, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--auth-dorado);
+}
+
+.auth-nav-logo-texto {
+  font-family: var(--auth-fuente-titulo);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  color: var(--auth-texto);
+}
+
+.auth-nav-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.auth-nav-separador {
+  width: 1px;
+  height: 1.4rem;
+  background: rgba(74, 116, 223, 0.2);
+}
+
+/* Botones de nav */
+.auth-btn-nav-texto {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--auth-texto-sub);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.25rem 0.4rem;
+  transition: color 180ms ease;
+}
+
+.auth-btn-nav-texto:hover:not(:disabled) { color: var(--auth-texto); }
+.auth-btn-nav-texto:disabled { cursor: default; }
+
+.auth-btn-nav-activo {
+  color: var(--auth-dorado) !important;
+  border-bottom: 2px solid var(--auth-dorado);
+}
+
+.auth-btn-nav-outline {
+  padding: 0.45rem 0.9rem;
+  background: var(--auth-azul-deep);
+  border: 1px solid rgba(74, 116, 223, 0.3);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: var(--auth-texto);
+  font: inherit;
+  font-size: 0.875rem;
+  transition: background 180ms, border-color 180ms;
+}
+
+.auth-btn-nav-outline:hover {
+  background: rgba(74, 116, 223, 0.2);
+  border-color: rgba(74, 116, 223, 0.5);
+}
+
+.auth-btn-nav-dorado {
+  padding: 0.45rem 0.9rem;
+  background: var(--auth-dorado);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: var(--auth-azul-final);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: box-shadow 180ms, transform 100ms;
+}
+
+.auth-btn-nav-dorado:hover { box-shadow: 0 0 14px rgba(255, 216, 79, 0.4); }
+.auth-btn-nav-dorado:active { transform: scale(0.97); }
+
+/* ================================================================
+   HERO
+   ================================================================ */
+
+.landing-hero {
+  position: relative;
+  padding: 4rem 1.25rem 3rem;
+  max-width: 90rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.landing-hero-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.landing-hero-burbuja-1 {
+  position: absolute;
+  top: 5%;
+  left: 2%;
+  width: min(600px, 60vw);
+  height: min(600px, 60vw);
+  background: rgba(74, 116, 223, 0.1);
+  border-radius: 50%;
+  filter: blur(100px);
+}
+
+.landing-hero-burbuja-2 {
+  position: absolute;
+  bottom: 10%;
+  right: 5%;
+  width: min(400px, 45vw);
+  height: min(400px, 45vw);
+  background: rgba(255, 216, 79, 0.05);
+  border-radius: 50%;
+  filter: blur(80px);
+}
+
+.landing-hero-contenido {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Wrapper para el titular del hero — misma estructura que world-map-cabecera */
+.landing-encabezado {
+  display: grid;
+  gap: 0.52rem;
+  justify-items: center;
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+/* Línea decorativa animada — idéntica a la del mapa real */
+.landing-encabezado::after {
+  content: "";
+  width: clamp(7rem, 11vw, 10.5rem);
+  height: 0.36rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffdf5e 0%, #ff8c42 52%, #ff4f5e 100%);
+  box-shadow:
+    0 10px 22px rgba(255, 143, 66, 0.3),
+    0 0 0 2px rgba(18, 42, 93, 0.22);
+  transform: scaleX(0.7);
+  transform-origin: center;
+  opacity: 0;
+  animation: subrayadoLanding 500ms ease-out 350ms forwards;
+}
+
+@keyframes subrayadoLanding {
+  to { opacity: 1; transform: scaleX(1); }
+}
+
+/* Subtítulo — idéntico a .world-map-subtitulo */
+.landing-subtitulo {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #cfe0ff;
+  text-shadow: 0 2px 10px rgba(6, 15, 38, 0.35);
+}
+
+/* Título — idéntico a .world-map-titulo (misma fuente, mismo stroke de sombra) */
+.landing-titulo {
+  margin: 0;
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  font-family: "Arial Black", "Trebuchet MS", "Segoe UI", sans-serif;
+  font-size: clamp(2.2rem, 5.5vw, 6.5rem);
+  line-height: 0.9;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  color: #ffd84f;
+  text-shadow:
+    -3px -3px 0 #2247a6,
+     3px -3px 0 #2247a6,
+    -3px  3px 0 #2247a6,
+     3px  3px 0 #2247a6,
+    0 12px 24px rgba(5, 12, 31, 0.36);
+}
+
+/* Barrido de brillo sobre el título — igual que en el mapa */
+.landing-titulo::after {
+  content: attr(data-title);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0) 28%,
+    rgba(255, 255, 255, 0.07) 36%,
+    rgba(255, 255, 255, 0.72) 42%,
+    rgba(255, 245, 173, 0.24) 47%,
+    rgba(255, 255, 255, 0.05) 52%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  background-size: 220% 100%;
+  background-position: 140% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: barridoLanding 9s linear 1.8s infinite;
+}
+
+@keyframes barridoLanding {
+  0%, 12% { opacity: 0; background-position: 140% 0; }
+  20%      { opacity: 0.58; }
+  34%      { opacity: 0.58; background-position: -40% 0; }
+  44%, 100%{ opacity: 0; background-position: -40% 0; }
+}
+
+.landing-descripcion {
+  color: var(--auth-texto-sub);
+  font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+  max-width: 44rem;
+  line-height: 1.7;
+  font-weight: 500;
+  margin: 0 0 2.5rem;
+  padding: 0 0.5rem;
+}
+
+.landing-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Botones hero */
+.auth-btn-primario {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 2rem;
+  background: var(--auth-dorado);
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  color: var(--auth-azul-final);
+  font-family: var(--auth-fuente-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition: box-shadow 180ms, transform 100ms;
+}
+
+.auth-btn-primario:hover { box-shadow: 0 0 24px rgba(255, 216, 79, 0.35); }
+.auth-btn-primario:active { transform: scale(0.97); }
+
+.auth-btn-secundario {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 2rem;
+  background: var(--auth-azul-deep);
+  border: 1px solid rgba(74, 116, 223, 0.4);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  color: var(--auth-texto);
+  font-family: var(--auth-fuente-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: border-color 180ms, box-shadow 180ms, transform 100ms;
+}
+
+.auth-btn-secundario:hover {
+  border-color: var(--auth-dorado);
+  box-shadow: 0 0 22px rgba(74, 116, 223, 0.28);
+}
+.auth-btn-secundario:active { transform: scale(0.97); }
+
+.auth-icono-dorado { color: var(--auth-dorado); }
+
+/* ================================================================
+   PREVIEW DEL MAPA REAL
+   Replica la estructura visual de WorldMap + PanelPais
+   ================================================================ */
+
+.preview-outer {
+  margin-top: 4rem;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Marco exterior con glassmorphism */
+.preview-container {
+  width: 100%;
+  max-width: 90rem;
+  margin: 0 auto;
+  border-radius: 1.4rem;
+  overflow: hidden;
+  box-shadow:
+    0 28px 70px rgba(4, 10, 27, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+}
+
+/* ── Chrome superior: pokeball + título ── */
+.preview-header-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 1rem 1.5rem 0.85rem;
+  background: linear-gradient(180deg, rgba(9, 20, 45, 0.5) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(196, 217, 255, 0.06);
+}
+
+.preview-pokeball-img {
+  width: clamp(2rem, 3.5vw, 3rem);
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 6px 16px rgba(7, 15, 40, 0.34))
+    drop-shadow(0 2px 0 rgba(255, 255, 255, 0.12));
+}
+
+.preview-title-block {
+  text-align: center;
+}
+
+.preview-atlas-sub {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  font-size: clamp(0.52rem, 1vw, 0.68rem);
+  font-weight: 700;
+  color: #cfe0ff;
+}
+
+/* Réplica exacta del .world-map-titulo (dorado + contorno azul) */
+.preview-map-title {
+  margin: 0.1rem 0 0;
+  font-family: "Arial Black", "Trebuchet MS", sans-serif;
+  font-size: clamp(0.9rem, 2.5vw, 1.85rem);
+  line-height: 1;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  color: #ffd84f;
+  text-shadow:
+    -2px -2px 0 #2247a6,
+     2px -2px 0 #2247a6,
+    -2px  2px 0 #2247a6,
+     2px  2px 0 #2247a6,
+    0 8px 18px rgba(5, 12, 31, 0.36);
+}
+
+/* ── Marco del mapa: imagen real del Simplemaps ── */
+.preview-map-frame {
+  position: relative;
+  overflow: hidden;
+  line-height: 0;
+}
+
+/* Imagen real — ocupa todo el ancho, ratio natural de la captura */
+.preview-map-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Degradado lateral para fundir con el panel */
+.preview-map-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 58%,
+    rgba(9, 20, 45, 0.15) 78%,
+    rgba(9, 20, 45, 0.55) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* CTA flotante centrado sobre el mapa */
+.preview-cta-movil {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 0.65rem 1.75rem;
+  background: rgba(18, 42, 93, 0.88);
+  border: 1px solid rgba(255, 216, 79, 0.45);
+  border-radius: 999px;
+  color: #ffd84f;
+  font: 700 0.88rem/1 inherit;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  transition: background 180ms, box-shadow 180ms;
+}
+
+.preview-cta-movil:hover {
+  background: rgba(18, 42, 93, 0.98);
+  box-shadow: 0 0 18px rgba(255, 216, 79, 0.25);
+}
+
+/* ================================================================
+   RESPONSIVE PREVIEW
+   ================================================================ */
+
+@media (max-width: 480px) {
+  .preview-header-area { padding: 0.75rem 1rem 0.65rem; }
+  .preview-outer { margin-top: 2.5rem; }
+}
+
+/* ================================================================
+   SECCIÓN "CÓMO FUNCIONA"
+   ================================================================ */
+
+.landing-features {
+  padding: 5rem 1.25rem;
+  background: rgba(8, 16, 31, 0.3);
+}
+
+.landing-features-inner {
+  max-width: 90rem;
+  margin: 0 auto;
+}
+
+.landing-features-cabecera {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.landing-features-titulo {
+  font-family: var(--auth-fuente-titulo);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  color: var(--auth-texto);
+  margin: 0 0 0.85rem;
+}
+
+.landing-features-desc {
+  color: var(--auth-texto-sub);
+  max-width: 34rem;
+  margin: 0 auto;
+  line-height: 1.65;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.landing-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1.5rem;
+}
+
+.feature-card {
+  padding: 1.75rem;
+  border-radius: 1.2rem;
+  transition: transform 240ms ease, border-color 240ms ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 216, 79, 0.4);
+}
+
+.feature-card-icono {
+  width: 3.5rem;
+  height: 3.5rem;
+  background: var(--auth-azul-deep);
+  border: 1px solid rgba(74, 116, 223, 0.2);
+  border-radius: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--auth-acento-azul);
+  margin-bottom: 1.25rem;
+  transition: color 240ms, background 240ms;
+}
+
+.feature-card:hover .feature-card-icono {
+  color: var(--auth-dorado);
+  background: rgba(74, 116, 223, 0.1);
+}
+
+.feature-card-titulo {
+  font-family: var(--auth-fuente-titulo);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--auth-texto);
+  margin: 0 0 0.65rem;
+}
+
+.feature-card-desc {
+  color: var(--auth-texto-sub);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ================================================================
+   FLUJO DE DATOS
+   ================================================================ */
+
+.flujo-section {
+  padding: 2rem 1.25rem 4rem;
+  background: rgba(8, 16, 31, 0.5);
+}
+
+.flujo-inner {
+  max-width: 56rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.flujo-titulo {
+  margin: 0 0 1.25rem;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-weight: 700;
+  color: var(--auth-texto-sub);
+}
+
+.flujo-pasos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.flujo-paso-grupo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.flujo-paso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.65rem 0.95rem;
+  background: rgba(18, 42, 93, 0.4);
+  border: 1px solid rgba(74, 116, 223, 0.2);
+  border-radius: 0.8rem;
+  backdrop-filter: blur(8px);
+  transition: border-color 200ms, transform 200ms;
+  min-width: 4.5rem;
+}
+
+.flujo-paso:hover {
+  border-color: rgba(255, 216, 79, 0.35);
+  transform: translateY(-2px);
+}
+
+.flujo-paso-icono { font-size: 1.3rem; line-height: 1; }
+
+.flujo-paso-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--auth-texto-sub);
+  white-space: nowrap;
+}
+
+.flujo-flecha {
+  color: rgba(74, 116, 223, 0.5);
+  font-size: 1rem;
+  font-weight: 700;
+  user-select: none;
+}
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+
+.auth-footer {
+  background: var(--auth-azul-final);
+  padding: 2.75rem 1.25rem;
+  border-top: 1px solid rgba(74, 116, 223, 0.1);
+}
+
+.auth-footer-inner {
+  max-width: 90rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .auth-footer-inner {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.auth-footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--auth-dorado);
+}
+
+.auth-footer-logo-texto p { margin: 0; }
+
+.auth-footer-logo-texto .nombre {
+  font-family: var(--auth-fuente-titulo);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--auth-texto);
+}
+
+.auth-footer-logo-texto .sub {
+  font-size: 0.7rem;
+  color: var(--auth-texto-sub);
+}
+
+.auth-footer-links {
+  display: flex;
+  gap: 1.75rem;
+  font-size: 0.85rem;
+  color: var(--auth-texto-sub);
+}
+
+.auth-footer-links a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 180ms;
+}
+
+.auth-footer-links a:hover { color: var(--auth-dorado); }
+
+/* Barra de copyright inferior */
+.auth-footer-copy {
+  max-width: 90rem;
+  margin: 1.75rem auto 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(74, 116, 223, 0.08);
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.85rem;
+  font-size: 0.75rem;
+  color: rgba(207, 224, 255, 0.45);
+}
+
+.auth-footer-copy a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 180ms;
+}
+
+.auth-footer-copy a:hover { color: var(--auth-texto-sub); }
+
+.auth-footer-copy-sep { opacity: 0.35; }
+
+/* ================================================================
+   LOGIN / REGISTER — Formularios
+   ================================================================ */
+
+.form-pantalla {
+  min-height: calc(100dvh - 5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.25rem;
+}
+
+.form-panel {
+  width: 100%;
+  max-width: 27rem;
+  border-radius: 1.2rem;
+  padding: 2.25rem;
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.42);
+  position: relative;
+  overflow: hidden;
+}
+
+.form-panel--ancho { max-width: 33rem; }
+
+.form-panel-brillo {
+  position: absolute;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  filter: blur(36px);
+  pointer-events: none;
+}
+
+.form-panel-brillo--tr {
+  top: 0; right: 0;
+  background: rgba(255, 216, 79, 0.05);
+}
+
+.form-panel-brillo--tl {
+  top: 0; left: 0;
+  background: rgba(74, 116, 223, 0.1);
+}
+
+.form-cabecera {
+  text-align: center;
+  margin-bottom: 2.25rem;
+}
+
+.form-icono-wrapper {
+  display: inline-flex;
+  padding: 0.9rem;
+  background: var(--auth-azul-deep);
+  border: 1px solid rgba(74, 116, 223, 0.3);
+  border-radius: 0.9rem;
+  color: var(--auth-dorado);
+  margin-bottom: 1.25rem;
+}
+
+.form-titulo {
+  font-family: var(--auth-fuente-titulo);
+  font-weight: 700;
+  font-size: 1.7rem;
+  margin: 0 0 0.4rem;
+  color: var(--auth-texto);
+}
+
+.form-subtitulo {
+  color: var(--auth-texto-sub);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Campos */
+.form-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.form-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.form-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--auth-texto-sub);
+  padding-left: 0.2rem;
+}
+
+.form-input-wrapper { position: relative; }
+
+.form-input-icono {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--auth-acento-azul);
+  pointer-events: none;
+  display: flex;
+}
+
+.form-input {
+  width: 100%;
+  height: 3.25rem;
+  background: var(--auth-azul-final);
+  border: 1px solid rgba(74, 116, 223, 0.2);
+  border-radius: 0.75rem;
+  padding: 0 1rem 0 2.75rem;
+  color: var(--auth-texto);
+  font: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 180ms;
+  box-sizing: border-box;
+}
+
+.form-input::placeholder { color: rgba(207, 224, 255, 0.32); }
+.form-input:focus { border-color: rgba(255, 216, 79, 0.55); }
+
+/* Botón submit */
+.form-btn-submit {
+  width: 100%;
+  height: 3.25rem;
+  background: var(--auth-dorado);
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  color: var(--auth-azul-final);
+  font-family: var(--auth-fuente-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  transition: box-shadow 180ms, transform 100ms;
+  margin-top: 0.25rem;
+}
+
+.form-btn-submit:hover { box-shadow: 0 0 18px rgba(255, 216, 79, 0.3); }
+.form-btn-submit:active { transform: scale(0.98); }
+
+/* Pie del formulario */
+.form-pie {
+  margin-top: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.form-pie-texto {
+  color: var(--auth-texto-sub);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.form-pie-enlace {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--auth-dorado);
+  font: inherit;
+  font-weight: 700;
+  padding: 0;
+}
+
+.form-pie-enlace:hover { text-decoration: underline; }
+
+.form-btn-volver {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(207, 224, 255, 0.45);
+  font: inherit;
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: color 180ms;
+  padding: 0;
+}
+
+.form-btn-volver:hover { color: var(--auth-texto); }
+
+/* Grid Register */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.35rem;
+}
+
+.form-campo-completo { grid-column: 1 / -1; }
+
+/* ================================================================
+   RESPONSIVE GLOBAL
+   ================================================================ */
+
+@media (max-width: 768px) {
+  .landing-hero { padding: 3rem 1.5rem 2.5rem; }
+  .landing-features { padding: 4rem 1.5rem; }
+}
+
+/* Mobile — ocultar solo lo innecesario */
+@media (max-width: 540px) {
+  .auth-nav-logo-texto   { display: none; }
+  .auth-nav-separador    { display: none; }
+  .auth-nav-solo-desktop { display: none; }
+
+  .auth-nav-inner { height: 4.5rem; padding: 0 1rem; }
+  .auth-main      { padding-top: 4.5rem; }
+
+  .landing-hero   { padding: 2.5rem 1.25rem 2rem; }
+
+  .landing-features { padding: 3.5rem 1.25rem; }
+  .flujo-section    { padding: 1.5rem 1.25rem 3rem; }
+}
+
+/* Mobile pequeño */
+@media (max-width: 400px) {
+  .auth-btn-nav-outline,
+  .auth-btn-nav-dorado { padding: 0.38rem 0.65rem; font-size: 0.8rem; }
+
+  .landing-titulo { font-size: clamp(1.8rem, 11vw, 2.4rem); }
+
+  .auth-btn-primario,
+  .auth-btn-secundario {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .landing-features-grid { gap: 1rem; }
+  .feature-card           { padding: 1.25rem; border-radius: 1rem; }
+
+  .flujo-paso       { padding: 0.5rem 0.7rem; min-width: 3.8rem; }
+  .flujo-paso-icono { font-size: 1.1rem; }
+  .flujo-paso-label { font-size: 0.6rem; }
+  .flujo-flecha     { font-size: 0.85rem; }
+
+  .form-pantalla { padding: 1.75rem 0.85rem; }
+  .form-panel    { padding: 1.75rem 1.25rem; border-radius: 1rem; }
+  .form-titulo   { font-size: 1.5rem; }
+  .form-grid-2   { grid-template-columns: 1fr; }
+  .form-campo-completo { grid-column: 1; }
+}
