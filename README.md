@@ -1,6 +1,11 @@
 # Pokemon World Map
 
-Aplicación React + Vite que muestra una landing de presentación, pantallas visuales de login/registro y un mapa mundial interactivo con estética Pokémon. El usuario puede entrar al atlas, seleccionar un país en el mapa y abrir una ficha con datos reales del país, clima actual y una lista de Pokémon recomendados según la temperatura.
+Proyecto preparado para separarse en dos responsabilidades:
+
+- `front/`: aplicación React + Vite actual, encargada de landing, login/register visuales y mapa interactivo.
+- `back/`: espacio reservado para el futuro backend Spring Boot.
+
+El frontend muestra una landing de presentación, pantallas visuales de login/registro y un mapa mundial interactivo con estética Pokémon. El usuario puede entrar al atlas, seleccionar un país en el mapa y abrir una ficha con datos reales del país, clima actual y una lista de Pokémon recomendados según la temperatura.
 
 El mapa es el elemento principal de la interfaz. El panel del país es una capa informativa que se adapta al espacio disponible sin sustituir el protagonismo del mapa.
 
@@ -19,34 +24,50 @@ El mapa es el elemento principal de la interfaz. El panel del país es una capa 
 
 ## Instalación Y Ejecución
 
+Los comandos del frontend se ejecutan dentro de `front/`:
+
 Instalar dependencias:
 
 ```bash
+cd front
 npm install
 ```
 
 Arrancar en desarrollo:
 
 ```bash
+cd front
 npm run dev
 ```
 
 Generar build de producción:
 
 ```bash
+cd front
 npm run build
 ```
 
 Levantar la build real:
 
 ```bash
+cd front
 npm run preview
 ```
 
 Revisar lint:
 
 ```bash
+cd front
 npm run lint
+```
+
+Alternativa desde la raíz:
+
+```bash
+npm --prefix front run dev
+npm --prefix front run build
+npm --prefix front run preview
+npm --prefix front run lint
 ```
 
 Para validar rendimiento y comportamiento final, la referencia correcta es `npm run build` + `npm run preview`. El modo `dev` incluye cliente de Vite, HMR y comportamiento propio de desarrollo.
@@ -55,37 +76,44 @@ Para validar rendimiento y comportamiento final, la referencia correcta es `npm 
 
 ```text
 Pokemon World/
-├── public/
-│   ├── media/
-│   │   ├── mapa-preview.png
-│   │   └── pokeball-logo.png
-│   └── simplemaps/
-│       ├── mapdata.js
-│       └── worldmap.js
-├── src/
-│   ├── components/
-│   │   ├── LandingPage.jsx
-│   │   ├── LoginPage.jsx
-│   │   ├── PanelPais.jsx
-│   │   ├── RegisterPage.jsx
-│   │   └── WorldMap.jsx
-│   ├── styles/
-│   │   ├── auth.css
-│   │   ├── mapa.css
-│   │   └── panel.css
-│   ├── utils/
-│   │   ├── mapa.js
-│   │   ├── paisClima.js
-│   │   └── pokemon.js
-│   ├── App.jsx
-│   ├── index.css
-│   └── main.jsx
-├── index.html
-├── CAMBIOS_SESION.md
-├── MEJORAS_VISUALES.md
-├── package.json
+├── front/
+│   ├── public/
+│   │   ├── media/
+│   │   │   ├── mapa-preview.png
+│   │   │   └── pokeball-logo.png
+│   │   └── simplemaps/
+│   │       ├── mapdata.js
+│   │       └── worldmap.js
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── LoginPage.jsx
+│   │   │   ├── PanelPais.jsx
+│   │   │   ├── RegisterPage.jsx
+│   │   │   └── WorldMap.jsx
+│   │   ├── styles/
+│   │   │   ├── auth.css
+│   │   │   ├── mapa.css
+│   │   │   └── panel.css
+│   │   ├── utils/
+│   │   │   ├── mapa.js
+│   │   │   ├── paisClima.js
+│   │   │   └── pokemon.js
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   └── vite.config.js
+├── back/
+│   └── .gitkeep
+├── .gitignore
 └── README.md
 ```
+
+Las rutas `src/...`, `public/...` y `styles/...` que aparecen en las secciones siguientes pertenecen al proyecto frontend dentro de `front/`.
 
 ## Responsabilidad De Archivos
 
@@ -534,9 +562,7 @@ Estas variables se usan en CSS para mantener el mapa y el panel ajustados al vie
 
 ## Mejoras Visuales Actuales
 
-El archivo `MEJORAS_VISUALES.md` registra cambios visuales aplicados sin modificar la lógica.
-
-Resumen:
+Mejoras visuales aplicadas sin modificar la lógica de datos, endpoints ni flujo principal:
 
 - mejora de `line-height` del nombre del país
 - `:focus-visible` en botón de cierre
@@ -548,6 +574,42 @@ Resumen:
 - consolidación del `text-shadow` del título con variables CSS
 - estado de carga pulsante con `panel-estado--cargando`
 - soporte de `prefers-reduced-motion`
+
+Detalles relevantes:
+
+- los tipos Pokémon se pintan mediante `data-tipo`
+- el clima adapta color mediante `data-categoria`
+- el título del mapa usa variables CSS para evitar repetir bloques largos de `text-shadow`
+- el fondo de imagen Pokémon se neutralizó para no favorecer ningún tipo concreto
+
+## Evolución Reciente Del Frontend
+
+El proyecto pasó de estar centrado casi exclusivamente en el mapa a tener una estructura frontend más completa.
+
+Antes de esta fase:
+
+- `WorldMap.jsx` era el componente central de entrada.
+- `PanelPais.jsx` mostraba datos del país, clima y Pokémon.
+- No existían vistas reales de landing, login o register.
+- No existía separación física entre frontend y backend.
+
+Cambios aplicados:
+
+- se añadió `LandingPage.jsx`
+- se añadió `LoginPage.jsx`
+- se añadió `RegisterPage.jsx`
+- se añadió `auth.css` para landing/login/register
+- se añadió `mapa-preview.png` como captura estática del mapa real
+- `App.jsx` pasó a gestionar vistas internas: `landing`, `login`, `register`, `mapa`
+- `WorldMap` se mantiene montado tras inicializarse para no reiniciar Simplemaps
+- se eliminó `App.css` porque estaba vacío y no se importaba
+- se movieron estilos inline simples a CSS
+- se limpiaron props muertas como `onMapa` en `PieNav`
+- se sustituyeron enlaces decorativos `href="#"` por texto visual
+- el proyecto Vite completo se movió a `front/`
+- se dejó `back/` reservado para Spring Boot
+
+La lógica principal del mapa no se cambió en esta fase.
 
 ## Rendimiento
 
@@ -608,6 +670,88 @@ Extensiones coherentes con la arquitectura actual:
 - reintentos manuales en errores de API
 - backend futuro para usuarios, favoritos o historial
 
+## Archivos Clave Para Compartir Con Otra IA
+
+Si otra IA necesita entender el estado actual del proyecto, los archivos importantes son:
+
+```text
+README.md
+.gitignore
+front/package.json
+front/package-lock.json
+front/index.html
+front/vite.config.js
+front/eslint.config.js
+front/src/App.jsx
+front/src/index.css
+front/src/main.jsx
+front/src/components/LandingPage.jsx
+front/src/components/LoginPage.jsx
+front/src/components/RegisterPage.jsx
+front/src/components/WorldMap.jsx
+front/src/components/PanelPais.jsx
+front/src/styles/auth.css
+front/src/styles/mapa.css
+front/src/styles/panel.css
+front/src/utils/mapa.js
+front/src/utils/paisClima.js
+front/src/utils/pokemon.js
+front/public/media/mapa-preview.png
+front/public/media/pokeball-logo.png
+front/public/simplemaps/mapdata.js
+front/public/simplemaps/worldmap.js
+```
+
+No hace falta compartir:
+
+```text
+front/node_modules/
+front/dist/
+dist/
+.vite/
+```
+
+Motivo:
+
+- `node_modules/` son dependencias instaladas.
+- `dist/` es build generado.
+- `.vite/` es caché.
+- No son fuente de verdad.
+
+## Siguiente Paso Backend
+
+El siguiente paso lógico es crear el backend Spring Boot dentro de `back/`.
+
+Responsabilidades previstas del backend:
+
+- registro de usuarios
+- login
+- validación de credenciales
+- autenticación
+- conexión con base de datos propia
+- API REST consumida por el frontend
+
+Conexión futura esperada desde el frontend:
+
+```text
+front/src/services/auth.js
+```
+
+Variable futura probable:
+
+```env
+VITE_API_URL=http://localhost:8080
+```
+
+Flujo futuro esperado:
+
+1. El usuario rellena login o registro.
+2. El frontend valida mínimos de formulario.
+3. El frontend llama al backend Spring Boot.
+4. El backend valida y responde.
+5. El backend persiste usuarios en base de datos.
+6. El frontend gestiona sesión, token o estado autenticado.
+
 ## Estado Del Proyecto
 
 Estado actual:
@@ -624,5 +768,4 @@ Estado actual:
 - panel lazy
 - validaciones de imagen
 - control de peticiones concurrentes
-- documentación visual adicional en `MEJORAS_VISUALES.md`
-- registro de cambios de sesión en `CAMBIOS_SESION.md`
+- README como documentación única del proyecto
