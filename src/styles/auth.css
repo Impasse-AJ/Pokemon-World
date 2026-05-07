@@ -77,6 +77,20 @@
   user-select: none;
 }
 
+.auth-nav-logo-boton {
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+.auth-nav-logo-boton:focus-visible {
+  outline: 2px solid rgba(255, 216, 79, 0.65);
+  outline-offset: 0.3rem;
+  border-radius: 0.6rem;
+}
+
 .auth-nav-logo-icono {
   padding: 0.45rem;
   background: var(--auth-azul-deep);
@@ -161,6 +175,18 @@
 
 .auth-btn-nav-dorado:hover { box-shadow: 0 0 14px rgba(255, 216, 79, 0.4); }
 .auth-btn-nav-dorado:active { transform: scale(0.97); }
+
+.auth-btn-nav-suave {
+  background: rgba(74, 116, 223, 0.15);
+  color: var(--auth-texto-sub);
+  border: 1px solid rgba(74, 116, 223, 0.3);
+}
+
+.auth-btn-nav-suave:hover {
+  box-shadow: none;
+  border-color: rgba(255, 216, 79, 0.36);
+  color: var(--auth-texto);
+}
 
 /* ================================================================
    HERO
@@ -723,9 +749,13 @@
   color: var(--auth-texto-sub);
 }
 
-.auth-footer-links a {
+.auth-footer-links a,
+.auth-footer-link {
   color: inherit;
   text-decoration: none;
+}
+
+.auth-footer-links a {
   transition: color 180ms;
 }
 
@@ -747,9 +777,13 @@
   color: rgba(207, 224, 255, 0.45);
 }
 
-.auth-footer-copy a {
+.auth-footer-copy a,
+.auth-footer-copy .auth-footer-link {
   color: inherit;
   text-decoration: none;
+}
+
+.auth-footer-copy a {
   transition: color 180ms;
 }
 
@@ -955,6 +989,8 @@
 }
 
 .form-campo-completo { grid-column: 1 / -1; }
+
+.form-submit-registro { margin-top: 0.5rem; }
 
 /* ================================================================
    RESPONSIVE GLOBAL

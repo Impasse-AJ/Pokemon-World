@@ -12,6 +12,7 @@ function App() {
   // Simplemaps se inicializa una sola vez. Una vez que WorldMap se monta,
   // lo mantenemos en el DOM y solo lo ocultamos para no romper el mapa.
   const [mapaInicializado, setMapaInicializado] = useState(false);
+  const clasesVistaMapa = vista === "mapa" ? "vista-mapa vista-mapa--activa" : "vista-mapa";
 
   const irAlMapa = () => {
     setMapaInicializado(true);
@@ -21,7 +22,7 @@ function App() {
   return (
     <>
       {/* WorldMap: se monta cuando el usuario entra por primera vez y nunca se desmonta */}
-      <div style={{ display: vista === "mapa" ? "block" : "none" }}>
+      <div className={clasesVistaMapa}>
         {mapaInicializado && <WorldMap onVolver={() => setVista("landing")} />}
       </div>
 

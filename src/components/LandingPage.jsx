@@ -102,7 +102,7 @@ function MapaPreview({ onMapa }) {
         </div>
       </div>
 
-      {/* Marco del mapa: imagen real del mapa + panel lateral superpuesto */}
+      {/* Marco del mapa: imagen real del mapa + CTA flotante */}
       <div className="preview-map-frame">
         <img
           src="/media/mapa-preview.png"
@@ -221,16 +221,16 @@ function Footer() {
           </div>
         </div>
         <div className="auth-footer-links">
-          <a href="#">TFG Project</a>
-          <a href="#">Abraham Pauta</a>
+          <span className="auth-footer-link">TFG Project</span>
+          <span className="auth-footer-link">Abraham Pauta</span>
         </div>
       </div>
       <div className="auth-footer-copy">
         <span>&copy; 2026 Pokemon World Atlas. Todos los derechos reservados.</span>
         <span className="auth-footer-copy-sep">·</span>
-        <a href="#">Política de privacidad</a>
+        <span className="auth-footer-link">Política de privacidad</span>
         <span className="auth-footer-copy-sep">·</span>
-        <a href="#">Aviso legal</a>
+        <span className="auth-footer-link">Aviso legal</span>
       </div>
     </footer>
   );

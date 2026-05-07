@@ -138,16 +138,16 @@ A pantalla completa del navegador, el contenido del landing se veía "minimizado
       </div>
     </div>
     <div className="auth-footer-links">
-      <a href="#">TFG Project</a>
-      <a href="#">Abraham Pauta</a>
+      <span className="auth-footer-link">TFG Project</span>
+      <span className="auth-footer-link">Abraham Pauta</span>
     </div>
   </div>
   <div className="auth-footer-copy">
     <span>&copy; 2026 Pokemon World Atlas. Todos los derechos reservados.</span>
     <span className="auth-footer-copy-sep">·</span>
-    <a href="#">Política de privacidad</a>
+    <span className="auth-footer-link">Política de privacidad</span>
     <span className="auth-footer-copy-sep">·</span>
-    <a href="#">Aviso legal</a>
+    <span className="auth-footer-link">Aviso legal</span>
   </div>
 </footer>
 ```
@@ -215,7 +215,15 @@ function PieNav({ onMapa }) {   // onMapa nunca se usaba dentro
 function PieNav() {
 ```
 
-El `onMapa` en la llamada `<PieNav onMapa={onMapa} />` (línea 79) también se podría limpiar opcionalmente, pero se dejó intacto ya que React ignora props no consumidas sin error.
+También se limpió la llamada para no pasar una prop que ya no se consume:
+
+```jsx
+// Antes
+<PieNav onMapa={onMapa} />
+
+// Después
+<PieNav />
+```
 
 ---
 
@@ -223,7 +231,7 @@ El `onMapa` en la llamada `<PieNav onMapa={onMapa} />` (línea 79) también se p
 
 ```
 npm run lint   → 0 errores, 0 warnings
-npm run build  → ✓ 2154 modules transformed, build en 3.76s
+npm run build  → ✓ build de producción correcto
 ```
 
 ---
@@ -238,21 +246,26 @@ public/
 src/
   App.css                     ← ELIMINADO (estaba vacío)
 
+  App.jsx                     ← MODIFICADO
+      · visibilidad del mapa movida de style inline a clases globales
+
   components/
     LandingPage.jsx           ← MODIFICADO
       · MapaPreview: SVG → imagen real
       · Panel lateral eliminado
       · motion → Motion
-      · Footer con copyright 2026 + Política/Aviso
+      · Footer con copyright 2026 + textos legales sin href placeholder
 
     LoginPage.jsx             ← MODIFICADO
       · motion → Motion
-      · PieNav: onMapa eliminado del destructuring
+      · PieNav: onMapa eliminado del destructuring y de la llamada
       · Copyright 2024 → 2026
+      · Reset visual del botón logo movido a auth.css
 
     RegisterPage.jsx          ← MODIFICADO
       · motion → Motion
       · Copyright 2024 → 2026
+      · Estilos inline simples movidos a auth.css
 
   styles/
     auth.css                  ← MODIFICADO
@@ -263,18 +276,32 @@ src/
       · .preview-map-overlay: degradado lateral derecho
       · Estilos .psp-* y .preview-side-panel: ELIMINADOS
       · .auth-footer-copy: AÑADIDO
+      · .auth-nav-logo-boton, .auth-btn-nav-suave y .form-submit-registro: AÑADIDOS
 ```
 
 ---
 
-## 9. Archivos NO modificados (contexto para el AI)
+## 9. Archivos base y estado actual (contexto para el AI)
 
-| Archivo | Por qué se conservó intacto |
+| Archivo | Estado actual |
 |---|---|
-| `src/App.jsx` | Navegación y lógica de vistas sin cambios |
-| `src/components/WorldMap.jsx` | Mapa principal, sin tocar |
+| `src/App.jsx` | Gestiona las vistas `landing`, `login`, `register` y `mapa`. Mantiene `WorldMap` montado tras inicializarlo para no reiniciar Simplemaps. |
+| `src/components/WorldMap.jsx` | Mantiene la lógica principal del mapa. Recibe `onVolver` para volver a la landing y muestra el botón `← Inicio`. |
 | `src/components/PanelPais.jsx` | Panel de info de país, sin tocar |
 | `src/styles/mapa.css` | Estilos del mapa real, sin tocar |
 | `src/index.css` | Variables de diseño conservadas |
 | `src/utils/*` | Lógica de negocio (clima, pokémon, mapa) sin tocar |
 | `public/simplemaps/*` | Librería Simplemaps, intocable |
+
+---
+
+## 10. Limpieza posterior de coherencia
+
+Se revisó el proyecto completo después de estos cambios para eliminar incoherencias menores sin alterar lógica ni diseño:
+
+- comentario obsoleto de `MapaPreview` actualizado: ya no habla de panel lateral superpuesto
+- enlaces `href="#"` puramente decorativos del footer convertidos a texto visual (`span.auth-footer-link`)
+- estilos inline simples de `LoginPage.jsx` y `RegisterPage.jsx` movidos a `auth.css`
+- visibilidad de `WorldMap` en `App.jsx` movida de style inline a clases `vista-mapa`
+- llamada `<PieNav onMapa={onMapa} />` simplificada a `<PieNav />`
+- `README.md` actualizado para reflejar landing, login, registro, `auth.css`, `motion`, `lucide-react` y `mapa-preview.png`

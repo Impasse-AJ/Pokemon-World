@@ -35,6 +35,14 @@ body {
   min-height: 100dvh;
 }
 
+.vista-mapa {
+  display: none;
+}
+
+.vista-mapa--activa {
+  display: block;
+}
+
 button,
 input,
 select,

@@ -1,6 +1,6 @@
 # Pokemon World Map
 
-Aplicación React + Vite que muestra un mapa mundial interactivo con estética Pokémon. El usuario selecciona un país en el mapa y la aplicación abre una ficha con datos reales del país, clima actual y una lista de Pokémon recomendados según la temperatura.
+Aplicación React + Vite que muestra una landing de presentación, pantallas visuales de login/registro y un mapa mundial interactivo con estética Pokémon. El usuario puede entrar al atlas, seleccionar un país en el mapa y abrir una ficha con datos reales del país, clima actual y una lista de Pokémon recomendados según la temperatura.
 
 El mapa es el elemento principal de la interfaz. El panel del país es una capa informativa que se adapta al espacio disponible sin sustituir el protagonismo del mapa.
 
@@ -13,6 +13,8 @@ El mapa es el elemento principal de la interfaz. El panel del país es una capa 
 - REST Countries API
 - Open-Meteo API
 - PokéAPI
+- Motion
+- Lucide React
 - ESLint
 
 ## Instalación Y Ejecución
@@ -55,15 +57,20 @@ Para validar rendimiento y comportamiento final, la referencia correcta es `npm 
 Pokemon World/
 ├── public/
 │   ├── media/
+│   │   ├── mapa-preview.png
 │   │   └── pokeball-logo.png
 │   └── simplemaps/
 │       ├── mapdata.js
 │       └── worldmap.js
 ├── src/
 │   ├── components/
+│   │   ├── LandingPage.jsx
+│   │   ├── LoginPage.jsx
 │   │   ├── PanelPais.jsx
+│   │   ├── RegisterPage.jsx
 │   │   └── WorldMap.jsx
 │   ├── styles/
+│   │   ├── auth.css
 │   │   ├── mapa.css
 │   │   └── panel.css
 │   ├── utils/
@@ -74,6 +81,7 @@ Pokemon World/
 │   ├── index.css
 │   └── main.jsx
 ├── index.html
+├── CAMBIOS_SESION.md
 ├── MEJORAS_VISUALES.md
 ├── package.json
 └── README.md
@@ -87,7 +95,37 @@ Punto de entrada de React. Importa `index.css`, monta `App` con `createRoot` y e
 
 ### `src/App.jsx`
 
-Componente raíz. Renderiza `WorldMap`. No importa estilos propios ni depende de `App.css`.
+Componente raíz. Gestiona las vistas internas de la aplicación sin usar router:
+
+- `landing`
+- `login`
+- `register`
+- `mapa`
+
+Cuando el usuario entra al mapa por primera vez, `App.jsx` monta `WorldMap`. Después lo mantiene en el DOM y solo lo oculta cuando se vuelve a otras vistas. Esta decisión evita desmontar Simplemaps y reduce riesgos de reinicialización del mapa.
+
+No importa estilos propios ni depende de `App.css`.
+
+### `src/components/LandingPage.jsx`
+
+Pantalla inicial del proyecto. Contiene:
+
+- navegación superior
+- hero principal
+- vista previa del mapa real usando `public/media/mapa-preview.png`
+- explicación de funcionamiento
+- flujo de datos
+- footer informativo
+
+Usa `Motion` para animaciones de entrada y `lucide-react` para iconos.
+
+### `src/components/LoginPage.jsx`
+
+Pantalla visual de inicio de sesión. Actualmente no conecta con backend. Su formulario previene el submit por defecto y, al enviar, lleva al usuario al mapa mediante `onMapa`.
+
+### `src/components/RegisterPage.jsx`
+
+Pantalla visual de registro. Actualmente no conecta con backend. Mantiene estructura preparada para usuario, email, contraseña y repetición de contraseña.
 
 ### `src/components/WorldMap.jsx`
 
@@ -103,6 +141,7 @@ Componente principal de la aplicación. Controla:
 - limpieza de datos al cambiar de país
 - control de peticiones tardías
 - cálculo dinámico de alto del mapa y panel
+- botón opcional para volver a la landing mediante `onVolver`
 - importación de `src/styles/mapa.css`
 - carga lazy de `PanelPais`
 
@@ -173,6 +212,7 @@ Base global de la app:
 - tipografía base
 - `min-width: 320px`
 - `overflow-x: hidden`
+- clases `vista-mapa` y `vista-mapa--activa` para ocultar o mostrar el mapa sin desmontarlo
 
 ### `src/styles/mapa.css`
 
@@ -203,6 +243,21 @@ Estilos del panel:
 - estados de carga, error y vacío
 - responsive interno del panel
 
+### `src/styles/auth.css`
+
+Estilos de landing, login y registro:
+
+- navegación superior
+- hero
+- preview estático del mapa
+- tarjetas de explicación
+- flujo de datos
+- formularios
+- footer
+- responsive de las vistas de autenticación
+
+No contiene estilos del mapa real ni del panel del país.
+
 ### `public/simplemaps/mapdata.js`
 
 Configuración del mapa:
@@ -218,9 +273,27 @@ Configuración del mapa:
 
 Bundle externo de Simplemaps. No debe editarse salvo que se quiera sustituir toda la librería.
 
+### `public/media/`
+
+Carpeta de recursos visuales públicos:
+
+- `pokeball-logo.png`: logo usado en landing, mapa y favicon.
+- `mapa-preview.png`: captura estática del mapa real usada en la landing para no cargar Simplemaps antes de entrar al atlas.
+
 ## Flujo Funcional
 
-El flujo completo es:
+### Flujo De Navegación
+
+1. La aplicación arranca en `landing`.
+2. Desde la landing se puede ir a login, registro o mapa.
+3. Login permite volver a la landing, ir a registro o entrar al mapa.
+4. Registro permite volver a la landing o ir a login.
+5. Al entrar al mapa, `App.jsx` marca `mapaInicializado` como `true`.
+6. A partir de ese momento `WorldMap` se mantiene montado para no reiniciar Simplemaps.
+
+### Flujo Del Mapa
+
+El flujo completo del mapa es:
 
 1. El usuario hace click en un país del mapa.
 2. Simplemaps actualiza su selección interna.
@@ -413,6 +486,7 @@ La app no usa `App.css`.
 
 Los estilos están separados por responsabilidad:
 
+- `src/styles/auth.css`: landing, login, registro, formularios, preview estático y footer.
 - `src/styles/mapa.css`: mapa, página, título, logo, marco, animaciones y responsive del mapa.
 - `src/styles/panel.css`: panel, datos del país, clima, tipos, Pokémon, estados y responsive del panel.
 - `src/index.css`: estilos globales mínimos y tokens base.
@@ -479,12 +553,17 @@ Resumen:
 
 `PanelPais` se carga con `lazy()` y `Suspense`, por lo que el panel se separa en un chunk propio en producción.
 
+Las vistas de landing, login y registro usan `motion` y `lucide-react`. Esto aumenta el bundle principal respecto a la versión que solo renderizaba el mapa, pero permite una entrada visual completa al proyecto.
+
 Los estilos también quedan separados:
 
+- CSS de landing/login/register
 - CSS principal del mapa
 - CSS del panel cargado junto al chunk del panel
 
 Los scripts de Simplemaps se cargan dinámicamente mediante `cargarScript()`. La función evita duplicar scripts y marca los scripts cargados con `data-loaded`.
+
+La preview del landing usa una imagen estática del mapa real (`public/media/mapa-preview.png`). Esto evita cargar Simplemaps dos veces solo para enseñar una vista previa.
 
 Los logs de estudio están protegidos por:
 
@@ -500,7 +579,9 @@ Eso evita que los logs de desarrollo se ejecuten en producción.
 - Mantener frontend puro.
 - No usar backend todavía.
 - No usar router todavía.
+- Mantener login y registro como vistas visuales sin autenticación real hasta implementar backend.
 - No usar librerías de estado global.
+- Mantener `WorldMap` montado después de inicializarlo para no romper Simplemaps al navegar entre vistas.
 - No modificar `public/simplemaps/worldmap.js`.
 - No usar versiones `.min` experimentales de Simplemaps.
 - Mantener `mapdata.js` y `worldmap.js` originales.
@@ -532,11 +613,16 @@ Extensiones coherentes con la arquitectura actual:
 Estado actual:
 
 - aplicación funcional
+- landing funcional
+- login visual funcional
+- registro visual funcional
 - mapa operativo
 - panel operativo
 - estilos separados
+- preview estática del mapa en la landing
 - lógica de APIs separada en utilidades
 - panel lazy
 - validaciones de imagen
 - control de peticiones concurrentes
 - documentación visual adicional en `MEJORAS_VISUALES.md`
+- registro de cambios de sesión en `CAMBIOS_SESION.md`

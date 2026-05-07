@@ -87,7 +87,7 @@ export default function RegisterPage({ onVolver, onLogin }) {
                   </div>
                 </div>
 
-                <div className="form-campo-completo" style={{ marginTop: "0.5rem" }}>
+                <div className="form-campo-completo form-submit-registro">
                   <button type="submit" className="form-btn-submit">
                     Registrarse <ArrowRight size={18} />
                   </button>
@@ -120,8 +120,8 @@ export default function RegisterPage({ onVolver, onLogin }) {
             </div>
           </div>
           <div className="auth-footer-links">
-            <a href="#">TFG Project</a>
-            <a href="#">Abraham Pauta</a>
+            <span className="auth-footer-link">TFG Project</span>
+            <span className="auth-footer-link">Abraham Pauta</span>
           </div>
         </div>
       </footer>
@@ -134,9 +134,8 @@ function Nav({ onVolver, onLogin }) {
     <nav className="auth-nav">
       <div className="auth-nav-inner">
         <button
-          className="auth-nav-logo"
+          className="auth-nav-logo auth-nav-logo-boton"
           onClick={onVolver}
-          style={{ background: "none", border: "none" }}
         >
           <span className="auth-nav-logo-icono">
             <Compass size={22} />
@@ -149,7 +148,7 @@ function Nav({ onVolver, onLogin }) {
             Entrar
           </button>
           <div className="auth-nav-separador" />
-          <button className="auth-btn-nav-dorado" style={{ background: "rgba(74,116,223,0.15)", color: "var(--auth-texto-sub)", border: "1px solid rgba(74,116,223,0.3)" }} onClick={onVolver}>
+          <button className="auth-btn-nav-dorado auth-btn-nav-suave" onClick={onVolver}>
             Volver
           </button>
         </div>

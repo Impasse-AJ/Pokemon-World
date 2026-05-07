@@ -76,7 +76,7 @@ export default function LoginPage({ onVolver, onRegistro, onMapa }) {
         </div>
       </main>
 
-      <PieNav onMapa={onMapa} />
+      <PieNav />
     </div>
   );
 }
@@ -86,9 +86,8 @@ function Nav({ onVolver, onRegistro, onMapa }) {
     <nav className="auth-nav">
       <div className="auth-nav-inner">
         <button
-          className="auth-nav-logo"
+          className="auth-nav-logo auth-nav-logo-boton"
           onClick={onVolver}
-          style={{ background: "none", border: "none" }}
         >
           <span className="auth-nav-logo-icono">
             <Compass size={22} />
@@ -122,8 +121,8 @@ function PieNav() {
           </div>
         </div>
         <div className="auth-footer-links">
-          <a href="#">TFG Project</a>
-          <a href="#">Abraham Pauta</a>
+          <span className="auth-footer-link">TFG Project</span>
+          <span className="auth-footer-link">Abraham Pauta</span>
         </div>
       </div>
     </footer>
