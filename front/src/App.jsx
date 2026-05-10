@@ -3,7 +3,7 @@ import WorldMap from "./components/WorldMap";
 import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
-import { obtenerUsuarioActual } from "./services/auth";
+import { cerrarSesion, obtenerUsuarioActual } from "./services/auth";
 
 // Vistas posibles: 'landing' | 'login' | 'register' | 'mapa'
 const VISTA_INICIAL = "landing";
@@ -62,12 +62,6 @@ function App() {
       return;
     }
 
-    if (usuario) {
-      setMapaInicializado(true);
-      setVista("mapa");
-      return;
-    }
-
     try {
       const usuarioActual = await obtenerUsuarioActual();
       setUsuario(usuarioActual);
@@ -93,6 +87,18 @@ function App() {
     setVista("login");
   };
 
+  const manejarLogout = async () => {
+    try {
+      await cerrarSesion();
+    } catch {
+      // Si el backend ya cerro la sesion, limpiamos igualmente el estado local.
+    } finally {
+      setUsuario(null);
+      setMensajeLogin("");
+      setVista("landing");
+    }
+  };
+
   return (
     <>
       {/* WorldMap: se monta cuando el usuario entra por primera vez y nunca se desmonta */}
@@ -100,9 +106,20 @@ function App() {
         {mapaInicializado && <WorldMap onVolver={() => setVista("landing")} />}
       </div>
 
+      {vista === "mapa" && usuario ? (
+        <div className="sesion-mapa-barra">
+          <span>Hola, {usuario.username}</span>
+          <button type="button" onClick={manejarLogout}>
+            Cerrar sesion
+          </button>
+        </div>
+      ) : null}
+
       {vista === "landing" && (
         <LandingPage
+          usuario={usuario}
           onMapa={irAlMapa}
+          onLogout={manejarLogout}
           onLogin={() => irALogin()}
           onRegistro={irARegistro}
         />

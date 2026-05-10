@@ -2,12 +2,18 @@ import { motion as Motion } from "motion/react";
 import { Compass, Map as MapIcon, Globe, ThermometerSun, Sparkles } from "lucide-react";
 import "../styles/auth.css";
 
-export default function LandingPage({ onLogin, onRegistro, onMapa }) {
+export default function LandingPage({ usuario, onLogout, onLogin, onRegistro, onMapa }) {
   return (
     <div className="auth-pantalla">
-      <Nav onLogin={onLogin} onRegistro={onRegistro} onMapa={onMapa} />
+      <Nav
+        usuario={usuario}
+        onLogout={onLogout}
+        onLogin={onLogin}
+        onRegistro={onRegistro}
+        onMapa={onMapa}
+      />
       <main className="auth-main">
-        <HeroSection onMapa={onMapa} onLogin={onLogin} />
+        <HeroSection usuario={usuario} onMapa={onMapa} onLogin={onLogin} />
         <FeaturesSection />
         <FlujoDatosSection />
       </main>
@@ -17,7 +23,7 @@ export default function LandingPage({ onLogin, onRegistro, onMapa }) {
 }
 
 /* ── Navegación ── */
-function Nav({ onLogin, onRegistro, onMapa }) {
+function Nav({ usuario, onLogout, onLogin, onRegistro, onMapa }) {
   return (
     <nav className="auth-nav">
       <div className="auth-nav-inner">
@@ -29,8 +35,19 @@ function Nav({ onLogin, onRegistro, onMapa }) {
           <button className="auth-btn-nav-texto auth-btn-nav-activo" disabled>Inicio</button>
           <button className="auth-btn-nav-outline" onClick={onMapa}>Explorar Mapa</button>
           <div className="auth-nav-separador" />
-          <button className="auth-btn-nav-texto auth-nav-solo-desktop" onClick={onLogin}>Entrar</button>
-          <button className="auth-btn-nav-dorado" onClick={onRegistro}>Registrarse</button>
+          {usuario ? (
+            <>
+              <span className="auth-nav-usuario">Hola, {usuario.username}</span>
+              <button className="auth-btn-nav-dorado auth-btn-nav-suave" onClick={onLogout}>
+                Cerrar sesion
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="auth-btn-nav-texto auth-nav-solo-desktop" onClick={onLogin}>Entrar</button>
+              <button className="auth-btn-nav-dorado" onClick={onRegistro}>Registrarse</button>
+            </>
+          )}
         </div>
       </div>
     </nav>
@@ -38,7 +55,7 @@ function Nav({ onLogin, onRegistro, onMapa }) {
 }
 
 /* ── Sección Hero ── */
-function HeroSection({ onMapa, onLogin }) {
+function HeroSection({ usuario, onMapa, onLogin }) {
   return (
     <section className="landing-hero">
       <div className="landing-hero-fondo">
@@ -65,9 +82,15 @@ function HeroSection({ onMapa, onLogin }) {
             <MapIcon size={20} className="auth-icono-dorado" />
             Explorar el Atlas
           </button>
-          <button className="auth-btn-primario" onClick={onLogin}>
-            Iniciar mi Sesión
-          </button>
+          {usuario ? (
+            <button className="auth-btn-primario" onClick={onMapa}>
+              Continuar como {usuario.username}
+            </button>
+          ) : (
+            <button className="auth-btn-primario" onClick={onLogin}>
+              Iniciar mi Sesión
+            </button>
+          )}
         </div>
       </Motion.div>
 

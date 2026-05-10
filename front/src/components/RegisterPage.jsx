@@ -1,8 +1,17 @@
 import { useState } from "react";
 import { motion as Motion } from "motion/react";
 import { Compass, UserPlus, User, Mail, Lock, ArrowRight, ArrowLeft } from "lucide-react";
-import { registrarUsuario } from "../services/auth";
+import { confirmarCuenta, registrarUsuario } from "../services/auth";
 import "../styles/auth.css";
+
+function obtenerTokenDesdeUrl(url) {
+  try {
+    const urlObjeto = new URL(url);
+    return urlObjeto.searchParams.get("token");
+  } catch {
+    return null;
+  }
+}
 
 export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) {
   const [username, setUsername] = useState("");
@@ -13,12 +22,14 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [urlConfirmacionDev, setUrlConfirmacionDev] = useState("");
+  const [cuentaActivada, setCuentaActivada] = useState(false);
 
   const manejarSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setMensaje("");
     setUrlConfirmacionDev("");
+    setCuentaActivada(false);
 
     if (!username.trim() || !email.trim() || !password || !confirmPassword) {
       setError("Completa todos los campos antes de registrarte.");
@@ -46,6 +57,30 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
 
       setMensaje(textoMensaje);
       setUrlConfirmacionDev(respuesta?.urlConfirmacionDev ?? "");
+    } catch (errorPeticion) {
+      setError(errorPeticion.message);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const manejarActivacionDev = async () => {
+    const token = obtenerTokenDesdeUrl(urlConfirmacionDev);
+
+    if (!token) {
+      setError("No se pudo obtener el token de activacion.");
+      return;
+    }
+
+    try {
+      setCargando(true);
+      setError("");
+
+      const respuesta = await confirmarCuenta(token);
+
+      setMensaje(respuesta?.mensaje ?? "Cuenta confirmada correctamente. Ya puedes iniciar sesion.");
+      setUrlConfirmacionDev("");
+      setCuentaActivada(true);
     } catch (errorPeticion) {
       setError(errorPeticion.message);
     } finally {
@@ -81,6 +116,14 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
               <div className="auth-mensaje auth-mensaje--dev">
                 <p>Enlace de activacion para desarrollo:</p>
                 <a href={urlConfirmacionDev}>{urlConfirmacionDev}</a>
+                <button
+                  type="button"
+                  className="auth-mensaje-accion"
+                  onClick={manejarActivacionDev}
+                  disabled={cargando}
+                >
+                  {cargando ? "Activando..." : "Activar cuenta ahora"}
+                </button>
               </div>
             ) : null}
 
@@ -156,13 +199,20 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
 
                 <div className="form-campo-completo form-submit-registro">
                   {mensaje ? (
-                    <button
-                      type="button"
-                      className="form-btn-submit"
-                      onClick={() => onRegistroCorrecto?.(mensaje)}
-                    >
-                      Ir al login <ArrowRight size={18} />
-                    </button>
+                    <div className="registro-acciones-finales">
+                      <button
+                        type="button"
+                        className="form-btn-submit"
+                        onClick={() => onRegistroCorrecto?.(mensaje)}
+                      >
+                        Ir a iniciar sesion <ArrowRight size={18} />
+                      </button>
+                      {!cuentaActivada && urlConfirmacionDev ? (
+                        <p className="registro-ayuda">
+                          Activa la cuenta antes de iniciar sesion.
+                        </p>
+                      ) : null}
+                    </div>
                   ) : (
                     <button type="submit" className="form-btn-submit" disabled={cargando}>
                       {cargando ? "Registrando..." : "Registrarse"} <ArrowRight size={18} />

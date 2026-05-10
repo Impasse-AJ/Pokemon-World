@@ -48,6 +48,12 @@ export function iniciarSesion({ email, password }) {
   });
 }
 
+export function confirmarCuenta(token) {
+  return pedirJson(`/auth/confirm?token=${encodeURIComponent(token)}`, {
+    method: "GET",
+  });
+}
+
 export function obtenerUsuarioActual() {
   return pedirJson("/auth/me", {
     method: "GET",

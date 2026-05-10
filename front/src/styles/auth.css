@@ -984,6 +984,42 @@
   text-underline-offset: 0.18rem;
 }
 
+.auth-mensaje-accion {
+  justify-self: start;
+  border: none;
+  border-radius: 999px;
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+  background: #ffd84f;
+  color: var(--auth-azul-final);
+  font-weight: 800;
+}
+
+.auth-mensaje-accion:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.registro-acciones-finales {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.registro-ayuda {
+  margin: 0;
+  color: var(--auth-texto-sub);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.auth-nav-usuario {
+  color: var(--auth-texto);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 /* Pie del formulario */
 .form-pie {
   margin-top: 2.25rem;
@@ -1052,6 +1088,7 @@
   .auth-nav-logo-texto   { display: none; }
   .auth-nav-separador    { display: none; }
   .auth-nav-solo-desktop { display: none; }
+  .auth-nav-usuario      { display: none; }
 
   .auth-nav-inner { height: 4.5rem; padding: 0 1rem; }
   .auth-main      { padding-top: 4.5rem; }
