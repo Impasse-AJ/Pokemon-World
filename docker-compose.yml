@@ -12,6 +12,40 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - pokemon_world_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u$${MYSQL_USER} -p$${MYSQL_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  back:
+    build:
+      context: ./back
+    container_name: pokemon_world_back
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "${BACK_PORT:-8080}:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+
+  front:
+    build:
+      context: ./front
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080/api}
+    container_name: pokemon_world_front
+    restart: unless-stopped
+    depends_on:
+      - back
+    ports:
+      - "${FRONT_PORT:-5173}:5173"
 
 volumes:
   pokemon_world_mysql_data:
