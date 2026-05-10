@@ -45,6 +45,15 @@ public class Usuario {
     @Column(nullable = false)
     private LocalDateTime fechaCreacion;
 
+    @Column(nullable = false)
+    private boolean activo = false;
+
+    @Column(name = "token_confirmacion", unique = true)
+    private String tokenConfirmacion;
+
+    @Column(name = "fecha_expiracion_token")
+    private LocalDateTime fechaExpiracionToken;
+
     public Usuario() {
     }
 
@@ -89,5 +98,29 @@ public class Usuario {
 
     public LocalDateTime getFechaCreacion() {
         return fechaCreacion;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    public String getTokenConfirmacion() {
+        return tokenConfirmacion;
+    }
+
+    public void setTokenConfirmacion(String tokenConfirmacion) {
+        this.tokenConfirmacion = tokenConfirmacion;
+    }
+
+    public LocalDateTime getFechaExpiracionToken() {
+        return fechaExpiracionToken;
+    }
+
+    public void setFechaExpiracionToken(LocalDateTime fechaExpiracionToken) {
+        this.fechaExpiracionToken = fechaExpiracionToken;
     }
 }

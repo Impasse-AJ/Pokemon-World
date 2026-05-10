@@ -3,6 +3,7 @@ package com.pokemonworld.backend.controller;
 import com.pokemonworld.backend.dto.LoginRequest;
 import com.pokemonworld.backend.dto.MensajeResponse;
 import com.pokemonworld.backend.dto.RegisterRequest;
+import com.pokemonworld.backend.dto.RegisterResponse;
 import com.pokemonworld.backend.dto.UsuarioResponse;
 import com.pokemonworld.backend.entity.Usuario;
 import com.pokemonworld.backend.service.AuthService;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,8 +34,8 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
-            UsuarioResponse usuario = authService.registrar(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
+            RegisterResponse respuesta = authService.registrar(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
         } catch (IllegalArgumentException error) {
             return ResponseEntity.badRequest().body(new MensajeResponse(error.getMessage()));
         }
@@ -51,9 +53,26 @@ public class AuthController {
             session.setAttribute(CLAVE_USUARIO_SESION, usuario.getId());
 
             return ResponseEntity.ok(UsuarioResponse.desdeUsuario(usuario));
+        } catch (IllegalStateException error) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new MensajeResponse(error.getMessage()));
         } catch (IllegalArgumentException error) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new MensajeResponse(error.getMessage()));
+        }
+    }
+
+    @GetMapping("/confirm")
+    public ResponseEntity<?> confirmarCuenta(@RequestParam String token) {
+        try {
+            UsuarioResponse usuario = authService.confirmarCuenta(token);
+            return ResponseEntity.ok(new RegisterResponse(
+                    "Cuenta confirmada correctamente. Ya puedes iniciar sesion.",
+                    usuario,
+                    null
+            ));
+        } catch (IllegalArgumentException error) {
+            return ResponseEntity.badRequest().body(new MensajeResponse(error.getMessage()));
         }
     }
 

@@ -2,11 +2,15 @@ package com.pokemonworld.backend.service;
 
 import com.pokemonworld.backend.dto.LoginRequest;
 import com.pokemonworld.backend.dto.RegisterRequest;
+import com.pokemonworld.backend.dto.RegisterResponse;
 import com.pokemonworld.backend.dto.UsuarioResponse;
 import com.pokemonworld.backend.entity.Usuario;
 import com.pokemonworld.backend.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -19,7 +23,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UsuarioResponse registrar(RegisterRequest request) {
+    public RegisterResponse registrar(RegisterRequest request) {
         String username = request.getUsername().trim();
         String email = request.getEmail().trim().toLowerCase();
 
@@ -36,11 +40,21 @@ public class AuthService {
         }
 
         String passwordHasheada = passwordEncoder.encode(request.getPassword());
+        String token = UUID.randomUUID().toString();
 
         Usuario usuario = new Usuario(username, email, passwordHasheada);
-        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+        usuario.setActivo(false);
+        usuario.setTokenConfirmacion(token);
+        usuario.setFechaExpiracionToken(LocalDateTime.now().plusHours(24));
 
-        return UsuarioResponse.desdeUsuario(usuarioGuardado);
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+        String urlConfirmacionDev = "http://localhost:8080/api/auth/confirm?token=" + token;
+
+        return new RegisterResponse(
+                "Registro completado. Revisa tu bandeja de entrada para activar tu cuenta.",
+                UsuarioResponse.desdeUsuario(usuarioGuardado),
+                urlConfirmacionDev
+        );
     }
 
     public Usuario login(LoginRequest request) {
@@ -53,7 +67,37 @@ public class AuthService {
             throw new IllegalArgumentException("Credenciales incorrectas");
         }
 
+        if (!usuario.isActivo()) {
+            throw new IllegalStateException("Debes confirmar tu cuenta antes de iniciar sesion");
+        }
+
         return usuario;
+    }
+
+    public UsuarioResponse confirmarCuenta(String token) {
+        if (token == null || token.isBlank()) {
+            throw new IllegalArgumentException("Token de confirmacion no valido");
+        }
+
+        Usuario usuario = usuarioRepository.findByTokenConfirmacion(token)
+                .orElseThrow(() -> new IllegalArgumentException("Token de confirmacion no valido"));
+
+        if (usuario.isActivo()) {
+            return UsuarioResponse.desdeUsuario(usuario);
+        }
+
+        if (usuario.getFechaExpiracionToken() == null
+                || usuario.getFechaExpiracionToken().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("El token de confirmacion ha expirado");
+        }
+
+        usuario.setActivo(true);
+        usuario.setTokenConfirmacion(null);
+        usuario.setFechaExpiracionToken(null);
+
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+
+        return UsuarioResponse.desdeUsuario(usuarioGuardado);
     }
 
     public Usuario buscarPorId(Long id) {
