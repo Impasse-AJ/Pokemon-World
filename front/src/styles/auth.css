@@ -938,6 +938,52 @@
 .form-btn-submit:hover { box-shadow: 0 0 18px rgba(255, 216, 79, 0.3); }
 .form-btn-submit:active { transform: scale(0.98); }
 
+.form-btn-submit:disabled,
+.auth-btn-primario:disabled,
+.auth-btn-secundario:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-mensaje {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.9rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+.auth-mensaje--exito {
+  color: #d9fbe3;
+  background: rgba(74, 180, 104, 0.14);
+  border: 1px solid rgba(110, 220, 140, 0.28);
+}
+
+.auth-mensaje--error {
+  color: #ffd7db;
+  background: rgba(255, 95, 122, 0.12);
+  border: 1px solid rgba(255, 128, 150, 0.22);
+}
+
+.auth-mensaje--dev {
+  display: grid;
+  gap: 0.45rem;
+  color: #ffe9a6;
+  background: rgba(255, 216, 79, 0.1);
+  border: 1px solid rgba(255, 216, 79, 0.28);
+  word-break: break-word;
+}
+
+.auth-mensaje--dev p { margin: 0; }
+
+.auth-mensaje--dev a {
+  color: #ffd84f;
+  text-decoration: underline;
+  text-underline-offset: 0.18rem;
+}
+
 /* Pie del formulario */
 .form-pie {
   margin-top: 2.25rem;

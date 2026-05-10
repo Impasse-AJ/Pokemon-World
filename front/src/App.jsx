@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import WorldMap from "./components/WorldMap";
 import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
+import { obtenerUsuarioActual } from "./services/auth";
 
 // Vistas posibles: 'landing' | 'login' | 'register' | 'mapa'
 const VISTA_INICIAL = "landing";
@@ -12,11 +13,84 @@ function App() {
   // Simplemaps se inicializa una sola vez. Una vez que WorldMap se monta,
   // lo mantenemos en el DOM y solo lo ocultamos para no romper el mapa.
   const [mapaInicializado, setMapaInicializado] = useState(false);
+  const [usuario, setUsuario] = useState(null);
+  const [comprobandoSesion, setComprobandoSesion] = useState(true);
+  const [mensajeLogin, setMensajeLogin] = useState("");
   const clasesVistaMapa = vista === "mapa" ? "vista-mapa vista-mapa--activa" : "vista-mapa";
 
-  const irAlMapa = () => {
+  useEffect(() => {
+    let componenteActivo = true;
+
+    async function comprobarSesion() {
+      try {
+        const usuarioActual = await obtenerUsuarioActual();
+
+        if (componenteActivo) {
+          setUsuario(usuarioActual);
+        }
+      } catch {
+        if (componenteActivo) {
+          setUsuario(null);
+        }
+      } finally {
+        if (componenteActivo) {
+          setComprobandoSesion(false);
+        }
+      }
+    }
+
+    comprobarSesion();
+
+    return () => {
+      componenteActivo = false;
+    };
+  }, []);
+
+  const irALogin = (mensaje = "") => {
+    setMensajeLogin(mensaje);
+    setVista("login");
+  };
+
+  const irARegistro = () => {
+    setMensajeLogin("");
+    setVista("register");
+  };
+
+  const irAlMapa = async () => {
+    if (comprobandoSesion) {
+      irALogin("Estamos comprobando tu sesion. Intentalo de nuevo en un momento.");
+      return;
+    }
+
+    if (usuario) {
+      setMapaInicializado(true);
+      setVista("mapa");
+      return;
+    }
+
+    try {
+      const usuarioActual = await obtenerUsuarioActual();
+      setUsuario(usuarioActual);
+      setMapaInicializado(true);
+      setVista("mapa");
+    } catch {
+      setUsuario(null);
+      irALogin("Inicia sesion para acceder al mapa.");
+    }
+  };
+
+  const manejarLoginCorrecto = (usuarioLogeado) => {
+    setUsuario(usuarioLogeado);
+    setMensajeLogin("");
     setMapaInicializado(true);
     setVista("mapa");
+  };
+
+  const manejarRegistroCorrecto = (mensaje) => {
+    setMensajeLogin(
+      mensaje || "Registro completado. Revisa tu bandeja de entrada para activar tu cuenta.",
+    );
+    setVista("login");
   };
 
   return (
@@ -29,23 +103,26 @@ function App() {
       {vista === "landing" && (
         <LandingPage
           onMapa={irAlMapa}
-          onLogin={() => setVista("login")}
-          onRegistro={() => setVista("register")}
+          onLogin={() => irALogin()}
+          onRegistro={irARegistro}
         />
       )}
 
       {vista === "login" && (
         <LoginPage
           onVolver={() => setVista("landing")}
-          onRegistro={() => setVista("register")}
+          onRegistro={irARegistro}
           onMapa={irAlMapa}
+          onLoginCorrecto={manejarLoginCorrecto}
+          mensajeInicial={mensajeLogin}
         />
       )}
 
       {vista === "register" && (
         <RegisterPage
           onVolver={() => setVista("landing")}
-          onLogin={() => setVista("login")}
+          onLogin={() => irALogin()}
+          onRegistroCorrecto={manejarRegistroCorrecto}
         />
       )}
     </>

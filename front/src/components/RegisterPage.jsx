@@ -1,8 +1,58 @@
+import { useState } from "react";
 import { motion as Motion } from "motion/react";
 import { Compass, UserPlus, User, Mail, Lock, ArrowRight, ArrowLeft } from "lucide-react";
+import { registrarUsuario } from "../services/auth";
 import "../styles/auth.css";
 
-export default function RegisterPage({ onVolver, onLogin }) {
+export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [urlConfirmacionDev, setUrlConfirmacionDev] = useState("");
+
+  const manejarSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setMensaje("");
+    setUrlConfirmacionDev("");
+
+    if (!username.trim() || !email.trim() || !password || !confirmPassword) {
+      setError("Completa todos los campos antes de registrarte.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    try {
+      setCargando(true);
+
+      const respuesta = await registrarUsuario({
+        username,
+        email,
+        password,
+        confirmPassword,
+      });
+
+      const textoMensaje =
+        respuesta?.mensaje ??
+        "Registro completado. Revisa tu bandeja de entrada para activar tu cuenta.";
+
+      setMensaje(textoMensaje);
+      setUrlConfirmacionDev(respuesta?.urlConfirmacionDev ?? "");
+    } catch (errorPeticion) {
+      setError(errorPeticion.message);
+    } finally {
+      setCargando(false);
+    }
+  };
+
   return (
     <div className="auth-pantalla">
       <Nav onVolver={onVolver} onLogin={onLogin} />
@@ -25,7 +75,16 @@ export default function RegisterPage({ onVolver, onLogin }) {
               <p className="form-subtitulo">Empieza tu aventura hoy mismo</p>
             </div>
 
-            <form onSubmit={(e) => e.preventDefault()}>
+            {error ? <p className="auth-mensaje auth-mensaje--error">{error}</p> : null}
+            {mensaje ? <p className="auth-mensaje auth-mensaje--exito">{mensaje}</p> : null}
+            {urlConfirmacionDev ? (
+              <div className="auth-mensaje auth-mensaje--dev">
+                <p>Enlace de activacion para desarrollo:</p>
+                <a href={urlConfirmacionDev}>{urlConfirmacionDev}</a>
+              </div>
+            ) : null}
+
+            <form onSubmit={manejarSubmit}>
               <div className="form-grid-2">
                 <div className="form-grupo form-campo-completo">
                   <label className="form-label">Usuario</label>
@@ -38,6 +97,8 @@ export default function RegisterPage({ onVolver, onLogin }) {
                       placeholder="EntrenadorLegendario"
                       className="form-input"
                       autoComplete="username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                     />
                   </div>
                 </div>
@@ -53,6 +114,8 @@ export default function RegisterPage({ onVolver, onLogin }) {
                       placeholder="tu@email.com"
                       className="form-input"
                       autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
                 </div>
@@ -68,6 +131,8 @@ export default function RegisterPage({ onVolver, onLogin }) {
                       placeholder="••••••••"
                       className="form-input"
                       autoComplete="new-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                   </div>
                 </div>
@@ -83,14 +148,26 @@ export default function RegisterPage({ onVolver, onLogin }) {
                       placeholder="••••••••"
                       className="form-input"
                       autoComplete="new-password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                   </div>
                 </div>
 
                 <div className="form-campo-completo form-submit-registro">
-                  <button type="submit" className="form-btn-submit">
-                    Registrarse <ArrowRight size={18} />
-                  </button>
+                  {mensaje ? (
+                    <button
+                      type="button"
+                      className="form-btn-submit"
+                      onClick={() => onRegistroCorrecto?.(mensaje)}
+                    >
+                      Ir al login <ArrowRight size={18} />
+                    </button>
+                  ) : (
+                    <button type="submit" className="form-btn-submit" disabled={cargando}>
+                      {cargando ? "Registrando..." : "Registrarse"} <ArrowRight size={18} />
+                    </button>
+                  )}
                 </div>
               </div>
             </form>

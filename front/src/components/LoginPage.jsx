@@ -1,8 +1,52 @@
+import { useEffect, useState } from "react";
 import { motion as Motion } from "motion/react";
 import { Compass, LogIn, Mail, Lock, ArrowRight, ArrowLeft } from "lucide-react";
+import { iniciarSesion } from "../services/auth";
 import "../styles/auth.css";
 
-export default function LoginPage({ onVolver, onRegistro, onMapa }) {
+export default function LoginPage({
+  onVolver,
+  onRegistro,
+  onMapa,
+  onLoginCorrecto,
+  mensajeInicial,
+}) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState(mensajeInicial ?? "");
+
+  useEffect(() => {
+    setMensaje(mensajeInicial ?? "");
+  }, [mensajeInicial]);
+
+  const manejarSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setMensaje("");
+
+    if (!email.trim() || !password) {
+      setError("Introduce tu email y contraseña.");
+      return;
+    }
+
+    try {
+      setCargando(true);
+
+      const usuario = await iniciarSesion({
+        email,
+        password,
+      });
+
+      onLoginCorrecto?.(usuario);
+    } catch (errorPeticion) {
+      setError(errorPeticion.message);
+    } finally {
+      setCargando(false);
+    }
+  };
+
   return (
     <div className="auth-pantalla">
       <Nav onVolver={onVolver} onRegistro={onRegistro} onMapa={onMapa} />
@@ -25,7 +69,10 @@ export default function LoginPage({ onVolver, onRegistro, onMapa }) {
               <p className="form-subtitulo">Continúa tu viaje como explorador</p>
             </div>
 
-            <form className="form-campos" onSubmit={(e) => { e.preventDefault(); onMapa(); }}>
+            {mensaje ? <p className="auth-mensaje auth-mensaje--exito">{mensaje}</p> : null}
+            {error ? <p className="auth-mensaje auth-mensaje--error">{error}</p> : null}
+
+            <form className="form-campos" onSubmit={manejarSubmit}>
               <div className="form-grupo">
                 <label className="form-label">Email</label>
                 <div className="form-input-wrapper">
@@ -37,6 +84,8 @@ export default function LoginPage({ onVolver, onRegistro, onMapa }) {
                     placeholder="entrenador@atlas.com"
                     className="form-input"
                     autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
               </div>
@@ -52,12 +101,14 @@ export default function LoginPage({ onVolver, onRegistro, onMapa }) {
                     placeholder="••••••••"
                     className="form-input"
                     autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
               </div>
 
-              <button type="submit" className="form-btn-submit">
-                Entrar al Mapa <ArrowRight size={18} />
+              <button type="submit" className="form-btn-submit" disabled={cargando}>
+                {cargando ? "Entrando..." : "Entrar al Mapa"} <ArrowRight size={18} />
               </button>
             </form>
 
