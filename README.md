@@ -1,96 +1,85 @@
 # Pokemon World Map
 
-Proyecto preparado para separarse en dos responsabilidades:
+Pokemon World Map es una aplicacion web completa que combina un mapa mundial interactivo con autenticacion de usuarios, datos reales de paises, clima actual y recomendaciones Pokemon segun la temperatura.
 
-- `front/`: aplicación React + Vite actual, encargada de landing, login/register visuales y mapa interactivo.
-- `back/`: espacio reservado para el futuro backend Spring Boot.
+El usuario puede entrar en una landing, registrarse, activar su cuenta, iniciar sesion y acceder al mapa. Una vez dentro del atlas, puede seleccionar paises en el mapa y ver una ficha con informacion del pais, clima actual y una lista de Pokemon recomendados.
 
-El frontend muestra una landing de presentación, pantallas visuales de login/registro y un mapa mundial interactivo con estética Pokémon. El usuario puede entrar al atlas, seleccionar un país en el mapa y abrir una ficha con datos reales del país, clima actual y una lista de Pokémon recomendados según la temperatura.
+La aplicacion esta desplegada en produccion en:
 
-El mapa es el elemento principal de la interfaz. El panel del país es una capa informativa que se adapta al espacio disponible sin sustituir el protagonismo del mapa.
+```text
+https://pokemon-world.es
+```
 
-## Tecnologías
+Rutas publicas actuales:
+
+```text
+https://pokemon-world.es       -> frontend React/Vite
+https://pokemon-world.es/api   -> backend Spring Boot
+```
+
+## Tecnologias Utilizadas
+
+### Frontend
 
 - React 19
 - Vite 7
 - CSS puro
-- Simplemaps como mapa externo
-- REST Countries API
-- Open-Meteo API
-- PokéAPI
 - Motion
 - Lucide React
-- ESLint
+- Simplemaps
+- REST Countries
+- Open-Meteo
+- PokeAPI
 
-## Instalación Y Ejecución
+### Backend
 
-Los comandos del frontend se ejecutan dentro de `front/`:
+- Java 21
+- Spring Boot 3.5.14
+- Spring Web
+- Spring Security
+- Spring Data JPA
+- Validation
+- MySQL Driver
+- Maven
 
-Instalar dependencias:
+### Infraestructura
 
-```bash
-cd front
-npm install
-```
+- Docker
+- Docker Compose
+- MySQL 8.4
+- Apache como reverse proxy en VPS
+- Cloudflare
+- Certbot/HTTPS
+- Dominio IONOS
+- VPS Hostinger
 
-Arrancar en desarrollo:
+## Arquitectura Del Proyecto
 
-```bash
-cd front
-npm run dev
-```
+El proyecto esta separado en dos partes principales:
 
-Generar build de producción:
+- `front/`: frontend React + Vite.
+- `back/`: backend Spring Boot.
+- raiz del proyecto: Docker Compose, variables de ejemplo, README y configuracion general.
 
-```bash
-cd front
-npm run build
-```
-
-Levantar la build real:
-
-```bash
-cd front
-npm run preview
-```
-
-Revisar lint:
-
-```bash
-cd front
-npm run lint
-```
-
-Alternativa desde la raíz:
-
-```bash
-npm --prefix front run dev
-npm --prefix front run build
-npm --prefix front run preview
-npm --prefix front run lint
-```
-
-Para validar rendimiento y comportamiento final, la referencia correcta es `npm run build` + `npm run preview`. El modo `dev` incluye cliente de Vite, HMR y comportamiento propio de desarrollo.
-
-## Estructura Del Proyecto
+Estructura principal:
 
 ```text
 Pokemon World/
 ├── front/
+│   ├── Dockerfile
+│   ├── .dockerignore
 │   ├── public/
 │   │   ├── media/
-│   │   │   ├── mapa-preview.png
-│   │   │   └── pokeball-logo.png
 │   │   └── simplemaps/
-│   │       ├── mapdata.js
-│   │       └── worldmap.js
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── LandingPage.jsx
 │   │   │   ├── LoginPage.jsx
-│   │   │   ├── PanelPais.jsx
 │   │   │   ├── RegisterPage.jsx
-│   │   │   └── WorldMap.jsx
+│   │   │   ├── WorldMap.jsx
+│   │   │   └── PanelPais.jsx
+│   │   ├── services/
+│   │   │   └── auth.js
 │   │   ├── styles/
 │   │   │   ├── auth.css
 │   │   │   ├── mapa.css
@@ -102,245 +91,110 @@ Pokemon World/
 │   │   ├── App.jsx
 │   │   ├── index.css
 │   │   └── main.jsx
-│   ├── eslint.config.js
-│   ├── index.html
-│   ├── package-lock.json
 │   ├── package.json
-│   └── vite.config.js
+│   └── ...
 ├── back/
-│   └── .gitkeep
+│   ├── Dockerfile
+│   ├── .dockerignore
+│   ├── pom.xml
+│   ├── mvnw
+│   └── src/
+│       └── main/
+│           ├── java/com/pokemonworld/backend/
+│           │   ├── config/
+│           │   ├── controller/
+│           │   ├── dto/
+│           │   ├── entity/
+│           │   ├── exception/
+│           │   ├── repository/
+│           │   └── service/
+│           └── resources/
+│               └── application.properties
+├── docker-compose.yml
+├── .env.example
 ├── .gitignore
 └── README.md
 ```
 
-Las rutas `src/...`, `public/...` y `styles/...` que aparecen en las secciones siguientes pertenecen al proyecto frontend dentro de `front/`.
+El archivo `.env` existe en local o en la VPS, pero no debe subirse al repositorio.
 
-## Responsabilidad De Archivos
+## Frontend
 
-### `src/main.jsx`
+El frontend vive dentro de `front/` y esta construido con React + Vite.
 
-Punto de entrada de React. Importa `index.css`, monta `App` con `createRoot` y envuelve la app en `StrictMode`.
+Componentes principales:
 
-### `src/App.jsx`
+- `LandingPage.jsx`: pagina inicial, presentacion del proyecto, acceso a login, registro y mapa.
+- `LoginPage.jsx`: formulario de inicio de sesion conectado al backend.
+- `RegisterPage.jsx`: formulario de registro conectado al backend, con activacion dev y validacion visual.
+- `WorldMap.jsx`: componente principal del mapa.
+- `PanelPais.jsx`: ficha con datos del pais, clima y Pokemon.
 
-Componente raíz. Gestiona las vistas internas de la aplicación sin usar router:
+`App.jsx` gestiona las vistas internas sin React Router:
 
 - `landing`
 - `login`
 - `register`
 - `mapa`
 
-Cuando el usuario entra al mapa por primera vez, `App.jsx` monta `WorldMap`. Después lo mantiene en el DOM y solo lo oculta cuando se vuelve a otras vistas. Esta decisión evita desmontar Simplemaps y reduce riesgos de reinicialización del mapa.
+Cuando el usuario accede al mapa por primera vez, `WorldMap` se monta y despues se mantiene en el DOM. Solo se oculta con clases CSS cuando se cambia de vista. Esta decision evita reinicializar Simplemaps y reduce el riesgo de romper el mapa al navegar.
 
-No importa estilos propios ni depende de `App.css`.
+### Integracion Frontend-Backend
 
-### `src/components/LandingPage.jsx`
+`front/src/services/auth.js` centraliza las llamadas de autenticacion:
 
-Pantalla inicial del proyecto. Contiene:
+- `registrarUsuario()`
+- `confirmarCuenta()`
+- `iniciarSesion()`
+- `obtenerUsuarioActual()`
+- `cerrarSesion()`
 
-- navegación superior
-- hero principal
-- vista previa del mapa real usando `public/media/mapa-preview.png`
-- explicación de funcionamiento
-- flujo de datos
-- footer informativo
+Todas las llamadas usan:
 
-Usa `Motion` para animaciones de entrada y `lucide-react` para iconos.
+```js
+credentials: "include"
+```
 
-### `src/components/LoginPage.jsx`
+Esto es necesario porque el backend usa sesion con cookie `JSESSIONID`.
 
-Pantalla visual de inicio de sesión. Actualmente no conecta con backend. Su formulario previene el submit por defecto y, al enviar, lleva al usuario al mapa mediante `onMapa`.
+### Estilos Frontend
 
-### `src/components/RegisterPage.jsx`
+Los estilos estan separados por responsabilidad:
 
-Pantalla visual de registro. Actualmente no conecta con backend. Mantiene estructura preparada para usuario, email, contraseña y repetición de contraseña.
+- `front/src/styles/auth.css`: landing, login, registro, formularios, mensajes y footer.
+- `front/src/styles/mapa.css`: pagina del mapa, cabecera, marco, logo, titulo y responsive del mapa.
+- `front/src/styles/panel.css`: panel del pais, datos, clima, tipos, lista Pokemon y estados internos.
+- `front/src/index.css`: estilos globales minimos, tokens base y clases para mantener el mapa montado.
 
-### `src/components/WorldMap.jsx`
+El mapa es nucleo protegido. No se deben tocar sin motivo:
 
-Componente principal de la aplicación. Controla:
+- `front/src/components/WorldMap.jsx`
+- `front/src/components/PanelPais.jsx`
+- `front/src/utils/mapa.js`
+- `front/src/utils/paisClima.js`
+- `front/src/utils/pokemon.js`
+- `front/public/simplemaps/mapdata.js`
+- `front/public/simplemaps/worldmap.js`
 
-- carga de scripts de Simplemaps
-- escucha del evento `simplemaps-country-change`
-- país seleccionado
-- apertura y cierre del panel
-- carga de país, clima y Pokémon
-- errores por API
-- estados de carga
-- limpieza de datos al cambiar de país
-- control de peticiones tardías
-- cálculo dinámico de alto del mapa y panel
-- botón opcional para volver a la landing mediante `onVolver`
-- importación de `src/styles/mapa.css`
-- carga lazy de `PanelPais`
+## Flujo Funcional Del Mapa
 
-### `src/components/PanelPais.jsx`
+El flujo real del mapa es:
 
-Componente visual del panel. Muestra:
-
-- nombre del país
-- ID del país
-- bandera
-- capital
-- coordenadas
-- idiomas
-- temperatura actual
-- categoría climática
-- tipos Pokémon recomendados
-- lista de Pokémon
-- estados de carga, error y vacío
-
-También añade atributos visuales:
-
-- `data-tipo={tipo}` en chips de tipos Pokémon
-- `data-categoria={categoriaPokemon}` en el bloque de clima
-- `panel-estado--cargando` durante carga de clima o Pokémon
-
-Importa `src/styles/panel.css`.
-
-### `src/utils/mapa.js`
-
-Contiene la integración con Simplemaps y los cálculos de layout:
-
-- `TITULO_INICIAL`
-- `cargarScript()`
-- `registrarEventosMapa()`
-- `calcularAltoMapa()`
-- `calcularAltoPanel()`
-
-No modifica el bundle de Simplemaps. Solo usa sus objetos globales y su hook `plugin_hooks.zooming_complete`.
-
-### `src/utils/paisClima.js`
-
-Agrupa las peticiones a APIs de país y clima:
-
-- `pedirPais(idPais, senal)`
-- `pedirClima(coordenadas, senal)`
-- `pedirJson(ruta, senal, textoError)`
-
-### `src/utils/pokemon.js`
-
-Contiene la lógica Pokémon:
-
-- clasificación de temperatura
-- selección de tipos recomendados
-- generación determinista por semilla
-- mezcla pseudoaleatoria estable
-- control de duplicados
-- validación de imagen
-- carga de Pokémon por lotes
-
-### `src/index.css`
-
-Base global de la app:
-
-- `--world-map-proporcion`
-- tokens de color globales
-- `box-sizing`
-- fondo base
-- tipografía base
-- `min-width: 320px`
-- `overflow-x: hidden`
-- clases `vista-mapa` y `vista-mapa--activa` para ocultar o mostrar el mapa sin desmontarlo
-
-### `src/styles/mapa.css`
-
-Estilos del mapa y la estructura principal:
-
-- página
-- contenedor principal
-- logo Poké Ball
-- cabecera
-- título
-- marco del mapa
-- lienzo de Simplemaps
-- animaciones del mapa y cabecera
-- responsive del contenedor
-
-### `src/styles/panel.css`
-
-Estilos del panel:
-
-- capa del panel
-- ficha del país
-- cabecera del panel
-- bloques internos
-- bandera
-- clima
-- tipos Pokémon
-- lista de Pokémon
-- estados de carga, error y vacío
-- responsive interno del panel
-
-### `src/styles/auth.css`
-
-Estilos de landing, login y registro:
-
-- navegación superior
-- hero
-- preview estático del mapa
-- tarjetas de explicación
-- flujo de datos
-- formularios
-- footer
-- responsive de las vistas de autenticación
-
-No contiene estilos del mapa real ni del panel del país.
-
-### `public/simplemaps/mapdata.js`
-
-Configuración del mapa:
-
-- nombres de países
-- estilos base de Simplemaps
-- zoom
-- labels
-- `div: "map"`
-- `state_description: ""`
-
-### `public/simplemaps/worldmap.js`
-
-Bundle externo de Simplemaps. No debe editarse salvo que se quiera sustituir toda la librería.
-
-### `public/media/`
-
-Carpeta de recursos visuales públicos:
-
-- `pokeball-logo.png`: logo usado en landing, mapa y favicon.
-- `mapa-preview.png`: captura estática del mapa real usada en la landing para no cargar Simplemaps antes de entrar al atlas.
-
-## Flujo Funcional
-
-### Flujo De Navegación
-
-1. La aplicación arranca en `landing`.
-2. Desde la landing se puede ir a login, registro o mapa.
-3. Login permite volver a la landing, ir a registro o entrar al mapa.
-4. Registro permite volver a la landing o ir a login.
-5. Al entrar al mapa, `App.jsx` marca `mapaInicializado` como `true`.
-6. A partir de ese momento `WorldMap` se mantiene montado para no reiniciar Simplemaps.
-
-### Flujo Del Mapa
-
-El flujo completo del mapa es:
-
-1. El usuario hace click en un país del mapa.
-2. Simplemaps actualiza su selección interna.
-3. `registrarEventosMapa()` escucha `plugin_hooks.zooming_complete`.
-4. `obtenerSeleccionMapa()` resuelve el país seleccionado.
-5. Se lanza el evento global `simplemaps-country-change`.
-6. `WorldMap.jsx` recibe el evento.
-7. Se limpian datos anteriores.
-8. Se actualiza `paisSeleccionado`.
-9. Se abre el panel.
-10. Se actualiza el título visible.
-11. Se pide el país a REST Countries.
-12. Si hay coordenadas de capital, se pide el clima a Open-Meteo.
-13. Con la temperatura, se calcula categoría climática y tipos Pokémon.
-14. Con los tipos, se pide información a PokéAPI.
-15. Se genera una lista final de hasta 20 Pokémon válidos.
-16. `PanelPais.jsx` muestra la información.
-
-## Datos Externos
+1. El usuario intenta acceder al mapa.
+2. `App.jsx` comprueba la sesion con `/api/auth/me`.
+3. Si hay sesion, se muestra el mapa.
+4. El usuario selecciona un pais en Simplemaps.
+5. Simplemaps dispara el evento de cambio de pais.
+6. React captura la seleccion activa.
+7. Se limpian datos anteriores para evitar mezclas.
+8. Se consulta REST Countries.
+9. Se consulta Open-Meteo usando las coordenadas de la capital.
+10. Se clasifica la temperatura.
+11. Se seleccionan tres tipos Pokemon recomendados.
+12. Se consulta PokeAPI.
+13. Se genera una lista determinista de candidatos.
+14. Se descartan Pokemon sin imagen valida.
+15. Se muestran hasta 20 Pokemon en el panel.
 
 ### REST Countries
 
@@ -350,23 +204,14 @@ Endpoint usado:
 https://restcountries.com/v3.1/alpha/:id?fields=name,capital,capitalInfo,flags,languages,cca2
 ```
 
-Campos usados:
+Datos usados:
 
-- `name.common`
-- `capital`
-- `capitalInfo.latlng`
-- `flags.png`
-- `flags.svg`
-- `languages`
-- `cca2`
-
-Uso:
-
-- nombre del país
+- nombre del pais
 - capital
-- coordenadas de la capital
+- coordenadas de capital
 - bandera
 - idiomas
+- codigo `cca2`
 
 ### Open-Meteo
 
@@ -376,13 +221,11 @@ Endpoint construido con latitud y longitud:
 https://api.open-meteo.com/v1/forecast?latitude=:latitud&longitude=:longitud&current=temperature_2m
 ```
 
-Campo usado:
+Dato usado:
 
 - `current.temperature_2m`
 
-La temperatura decide la categoría climática y los tipos Pokémon recomendados.
-
-### PokéAPI
+### PokeAPI
 
 Primero se consultan tipos:
 
@@ -390,17 +233,17 @@ Primero se consultan tipos:
 https://pokeapi.co/api/v2/type/:tipo
 ```
 
-Luego se consulta detalle individual:
+Luego se consulta el detalle individual:
 
 ```text
 https://pokeapi.co/api/v2/pokemon/:nombre
 ```
 
-## Clasificación De Temperatura
+### Clasificacion De Temperatura
 
-La función `clasificarTemperatura()` devuelve una categoría y tres tipos Pokémon:
+La funcion `clasificarTemperatura()` traduce la temperatura a categoria climatica y tipos Pokemon:
 
-| Temperatura | Categoría | Tipos |
+| Temperatura | Categoria | Tipos |
 |---|---|---|
 | `<= -5` | `polar` | `ice`, `water`, `steel` |
 | `<= 3` | `muy frío` | `ice`, `water`, `flying` |
@@ -412,360 +255,438 @@ La función `clasificarTemperatura()` devuelve una categoría y tres tipos Poké
 | `<= 39` | `muy cálido` | `fire`, `rock`, `dragon` |
 | `> 39` | `extremo` | `fire`, `ground`, `dragon` |
 
-## Generación De Pokémon
+### Generacion De Pokemon
 
 La lista no es aleatoria pura. Es determinista.
 
-La semilla base es:
+La semilla base se construye con:
 
 ```js
 `${idPais}-${Math.round(temperatura)}`
 ```
 
-Con esa semilla:
+Con esa semilla se mezclan los pools de Pokemon por tipo, se eliminan duplicados y se piden detalles por lotes. La lista final puede mostrar hasta 20 Pokemon.
 
-- se mezclan los Pokémon del primer tipo
-- se mezclan los Pokémon del segundo tipo
-- se mezclan los Pokémon del tercer tipo
-- se combinan resultados sin duplicados
-- se genera una lista de hasta 40 candidatos
-- se cargan detalles por lotes de 10
-- se devuelven hasta 20 Pokémon válidos
+### Validacion De Imagen Pokemon
 
-## Validación De Imagen Pokémon
-
-No todos los Pokémon devueltos por PokéAPI tienen las mismas imágenes disponibles. Por eso se usa este orden de fallback:
+No todos los Pokemon tienen imagen disponible. El orden de fallback es:
 
 1. `official-artwork`
 2. `home`
 3. `dream_world`
 4. `front_default`
 
-Si un Pokémon no tiene ninguna imagen válida, se descarta y no aparece en el panel.
+Si un Pokemon no tiene ninguna imagen valida, se descarta.
 
-## Gestión De Estado
+## Backend
 
-Estados principales de `WorldMap.jsx`:
+El backend vive dentro de `back/` y esta construido con Spring Boot.
 
-- `titulo`
-- `paisSeleccionado`
-- `panelAbierto`
-- `datosPais`
-- `datosClima`
-- `listaPokemon`
-- `errorPais`
-- `errorClima`
-- `errorPokemons`
-- `cargandoPais`
-- `cargandoClima`
-- `cargandoPokemons`
-- `altoMapa`
-- `altoPanel`
-- `claveSeleccion`
-- `panelDebajo`
-- `movilHorizontal`
-
-Al seleccionar un país nuevo se limpian:
-
-- datos del país anterior
-- clima anterior
-- lista anterior de Pokémon
-- errores anteriores
-- estados de carga secundarios
-
-Para evitar mezclas por peticiones tardías se usa:
-
-- `AbortController`
-- `claveSeleccion`
-- `claveSeleccionActual`
-
-Antes de escribir datos en estado, cada petición comprueba que sigue perteneciendo a la selección activa.
-
-## Panel Del País
-
-El panel se abre cuando hay un país seleccionado y `panelAbierto` es `true`.
-
-Puede cerrarse manualmente con el botón `×`. Cerrar el panel no borra el país activo ni rompe el mapa. Si se selecciona otro país, el panel vuelve a abrirse automáticamente.
-
-El panel contempla:
-
-- carga de país
-- carga de clima
-- carga de Pokémon
-- error de REST Countries
-- error de Open-Meteo
-- error de PokéAPI
-- datos incompletos
-- lista vacía
-
-Mensajes principales:
-
-- `Cargando datos del país...`
-- `Cargando clima...`
-- `Cargando Pokémon...`
-- `No se pudo cargar la información del país`
-- `No se pudo obtener el clima`
-- `Error al cargar los Pokémon`
-- `No disponible`
-
-## Estilos Y Responsive
-
-La app no usa `App.css`.
-
-Los estilos están separados por responsabilidad:
-
-- `src/styles/auth.css`: landing, login, registro, formularios, preview estático y footer.
-- `src/styles/mapa.css`: mapa, página, título, logo, marco, animaciones y responsive del mapa.
-- `src/styles/panel.css`: panel, datos del país, clima, tipos, Pokémon, estados y responsive del panel.
-- `src/index.css`: estilos globales mínimos y tokens base.
-
-### Comportamiento Responsive
-
-En escritorio amplio:
-
-- el mapa queda centrado y grande
-- el panel aparece superpuesto lateralmente
-
-En ventanas más pequeñas:
-
-- el panel pasa debajo del mapa
-- el mapa mantiene prioridad visual
-- el panel usa scroll interno
-
-Condiciones principales:
-
-- panel debajo si `innerWidth <= 1100`
-- panel debajo si `innerWidth <= 1180 && innerHeight <= 760`
-- móvil horizontal específico si `innerWidth <= 932`, `innerWidth > innerHeight` e `innerHeight <= 540`
-
-En móvil horizontal:
-
-- cabecera más compacta
-- mapa protagonista
-- panel lateral superpuesto
-
-### Cálculo Dinámico
-
-`WorldMap.jsx` usa `ResizeObserver` para observar:
-
-- contenedor principal
-- logo
-- cabecera
-- panel, cuando corresponde
-
-Con eso calcula:
-
-- `--alto-maximo-mapa`
-- `--alto-maximo-panel`
-
-Estas variables se usan en CSS para mantener el mapa y el panel ajustados al viewport.
-
-## Mejoras Visuales Actuales
-
-Mejoras visuales aplicadas sin modificar la lógica de datos, endpoints ni flujo principal:
-
-- mejora de `line-height` del nombre del país
-- `:focus-visible` en botón de cierre
-- scrollbar del panel adaptado también para Firefox
-- colores por tipo Pokémon usando `data-tipo`
-- color semántico del clima usando `data-categoria`
-- tokens de color globales en `index.css`
-- fondo neutral para sprites Pokémon
-- consolidación del `text-shadow` del título con variables CSS
-- estado de carga pulsante con `panel-estado--cargando`
-- soporte de `prefers-reduced-motion`
-
-Detalles relevantes:
-
-- los tipos Pokémon se pintan mediante `data-tipo`
-- el clima adapta color mediante `data-categoria`
-- el título del mapa usa variables CSS para evitar repetir bloques largos de `text-shadow`
-- el fondo de imagen Pokémon se neutralizó para no favorecer ningún tipo concreto
-
-## Evolución Reciente Del Frontend
-
-El proyecto pasó de estar centrado casi exclusivamente en el mapa a tener una estructura frontend más completa.
-
-Antes de esta fase:
-
-- `WorldMap.jsx` era el componente central de entrada.
-- `PanelPais.jsx` mostraba datos del país, clima y Pokémon.
-- No existían vistas reales de landing, login o register.
-- No existía separación física entre frontend y backend.
-
-Cambios aplicados:
-
-- se añadió `LandingPage.jsx`
-- se añadió `LoginPage.jsx`
-- se añadió `RegisterPage.jsx`
-- se añadió `auth.css` para landing/login/register
-- se añadió `mapa-preview.png` como captura estática del mapa real
-- `App.jsx` pasó a gestionar vistas internas: `landing`, `login`, `register`, `mapa`
-- `WorldMap` se mantiene montado tras inicializarse para no reiniciar Simplemaps
-- se eliminó `App.css` porque estaba vacío y no se importaba
-- se movieron estilos inline simples a CSS
-- se limpiaron props muertas como `onMapa` en `PieNav`
-- se sustituyeron enlaces decorativos `href="#"` por texto visual
-- el proyecto Vite completo se movió a `front/`
-- se dejó `back/` reservado para Spring Boot
-
-La lógica principal del mapa no se cambió en esta fase.
-
-## Rendimiento
-
-`PanelPais` se carga con `lazy()` y `Suspense`, por lo que el panel se separa en un chunk propio en producción.
-
-Las vistas de landing, login y registro usan `motion` y `lucide-react`. Esto aumenta el bundle principal respecto a la versión que solo renderizaba el mapa, pero permite una entrada visual completa al proyecto.
-
-Los estilos también quedan separados:
-
-- CSS de landing/login/register
-- CSS principal del mapa
-- CSS del panel cargado junto al chunk del panel
-
-Los scripts de Simplemaps se cargan dinámicamente mediante `cargarScript()`. La función evita duplicar scripts y marca los scripts cargados con `data-loaded`.
-
-La preview del landing usa una imagen estática del mapa real (`public/media/mapa-preview.png`). Esto evita cargar Simplemaps dos veces solo para enseñar una vista previa.
-
-Los logs de estudio están protegidos por:
-
-```js
-import.meta.env.DEV
-```
-
-Eso evita que los logs de desarrollo se ejecuten en producción.
-
-## Decisiones Técnicas
-
-- Mantener React + Vite.
-- Mantener frontend puro.
-- No usar backend todavía.
-- No usar router todavía.
-- Mantener login y registro como vistas visuales sin autenticación real hasta implementar backend.
-- No usar librerías de estado global.
-- Mantener `WorldMap` montado después de inicializarlo para no romper Simplemaps al navegar entre vistas.
-- No modificar `public/simplemaps/worldmap.js`.
-- No usar versiones `.min` experimentales de Simplemaps.
-- Mantener `mapdata.js` y `worldmap.js` originales.
-- Mantener lógica determinista para Pokémon.
-- Mantener validación de imagen Pokémon.
-- Mantener separación de estilos por responsabilidad.
-
-## Archivos Que No Deben Tocarse Sin Motivo
-
-- `public/simplemaps/worldmap.js`: vendor externo.
-- `public/simplemaps/mapdata.js`: configuración base del mapa.
-
-Si se modifica Simplemaps, hay riesgo de romper la carga del mapa, el zoom o el evento de selección.
-
-## Posibles Mejoras Futuras
-
-Extensiones coherentes con la arquitectura actual:
-
-- página de detalle de Pokémon
-- router para navegar a detalles
-- caché ligera de respuestas de APIs
-- tests de interacción para cambios rápidos de país
-- tests de peticiones tardías
-- reintentos manuales en errores de API
-- backend futuro para usuarios, favoritos o historial
-
-## Archivos Clave Para Compartir Con Otra IA
-
-Si otra IA necesita entender el estado actual del proyecto, los archivos importantes son:
-
-```text
-README.md
-.gitignore
-front/package.json
-front/package-lock.json
-front/index.html
-front/vite.config.js
-front/eslint.config.js
-front/src/App.jsx
-front/src/index.css
-front/src/main.jsx
-front/src/components/LandingPage.jsx
-front/src/components/LoginPage.jsx
-front/src/components/RegisterPage.jsx
-front/src/components/WorldMap.jsx
-front/src/components/PanelPais.jsx
-front/src/styles/auth.css
-front/src/styles/mapa.css
-front/src/styles/panel.css
-front/src/utils/mapa.js
-front/src/utils/paisClima.js
-front/src/utils/pokemon.js
-front/public/media/mapa-preview.png
-front/public/media/pokeball-logo.png
-front/public/simplemaps/mapdata.js
-front/public/simplemaps/worldmap.js
-```
-
-No hace falta compartir:
-
-```text
-front/node_modules/
-front/dist/
-dist/
-.vite/
-```
-
-Motivo:
-
-- `node_modules/` son dependencias instaladas.
-- `dist/` es build generado.
-- `.vite/` es caché.
-- No son fuente de verdad.
-
-## Siguiente Paso Backend
-
-El siguiente paso lógico es crear el backend Spring Boot dentro de `back/`.
-
-Responsabilidades previstas del backend:
+Responsabilidades actuales:
 
 - registro de usuarios
+- activacion de cuenta por token
 - login
-- validación de credenciales
-- autenticación
-- conexión con base de datos propia
-- API REST consumida por el frontend
+- logout
+- consulta de sesion actual
+- validaciones de registro
+- conexion con MySQL
+- configuracion CORS por variables
 
-Conexión futura esperada desde el frontend:
+La configuracion CORS no esta hardcodeada en Java. Se lee desde `CORS_ALLOWED_ORIGINS` mediante `application.properties`, lo que permite usar el mismo codigo en local y produccion cambiando solo variables de entorno.
+
+Endpoints actuales:
 
 ```text
-front/src/services/auth.js
+GET  /api/health
+POST /api/auth/register
+GET  /api/auth/confirm?token=...
+POST /api/auth/login
+GET  /api/auth/me
+POST /api/auth/logout
 ```
 
-Variable futura probable:
+### Resumen De Endpoints
+
+`GET /api/health`
+
+Devuelve estado basico del backend.
+
+```json
+{"status":"ok","service":"pokemon-world-backend"}
+```
+
+`POST /api/auth/register`
+
+Registra un usuario inactivo, genera token de confirmacion y devuelve una URL de confirmacion.
+
+`GET /api/auth/confirm?token=...`
+
+Activa la cuenta si el token es valido y no ha expirado.
+
+`POST /api/auth/login`
+
+Comprueba credenciales. Solo permite login si el usuario esta activo. Si es correcto, crea sesion con `JSESSIONID`.
+
+`GET /api/auth/me`
+
+Devuelve el usuario actual si hay sesion activa.
+
+`POST /api/auth/logout`
+
+Invalida la sesion actual.
+
+## Autenticacion Y Sesion
+
+El proyecto no usa JWT.
+
+El flujo actual es:
+
+1. El usuario se registra.
+2. El backend crea el usuario con `activo = false`.
+3. Se genera `tokenConfirmacion`.
+4. Se guarda `fechaExpiracionToken`.
+5. Se devuelve una URL de confirmacion para desarrollo/despliegue actual sin SMTP real.
+6. El usuario confirma la cuenta con `/api/auth/confirm?token=...`.
+7. El backend marca `activo = true`.
+8. El token y la fecha de expiracion se limpian.
+9. El usuario puede iniciar sesion.
+10. Login crea una cookie `JSESSIONID`.
+11. `/api/auth/me` valida la sesion.
+12. Logout invalida la sesion.
+
+No se guardan tokens en `localStorage`. El frontend depende de cookies de sesion y usa `credentials: "include"`.
+
+## Validaciones De Registro
+
+El backend valida el formulario de registro con `jakarta.validation`.
+
+Username:
+
+- obligatorio
+- entre 3 y 30 caracteres
+- solo letras, numeros y guion bajo
+- unico en base de datos
+
+Email:
+
+- obligatorio
+- formato valido
+- unico en base de datos
+
+Password:
+
+- obligatorio
+- entre 8 y 100 caracteres
+- al menos una mayuscula
+- al menos una minuscula
+- al menos un numero
+- sin espacios
+
+Confirm password:
+
+- obligatorio
+- debe coincidir con password
+
+Los errores de validacion de campos se devuelven mediante `ValidacionResponse` y `GlobalExceptionHandler`:
+
+```json
+{
+  "mensaje": "Revisa los campos del formulario",
+  "errores": {
+    "password": "La contrasena debe tener entre 8 y 100 caracteres"
+  }
+}
+```
+
+Errores de negocio como email duplicado o username duplicado se devuelven con un mensaje simple:
+
+```json
+{"mensaje":"Ya existe un usuario registrado con ese email"}
+```
+
+En login se mantiene un mensaje generico para credenciales incorrectas.
+
+## Variables De Entorno
+
+El proyecto usa `.env` en local/VPS y `.env.example` como plantilla segura.
+
+Variables actuales:
 
 ```env
-VITE_API_URL=http://localhost:8080
+MYSQL_DATABASE=pokemon_world
+MYSQL_USER=pokemon_user
+MYSQL_PASSWORD=change_me
+MYSQL_ROOT_PASSWORD=change_me
+MYSQL_PORT=3307
+
+BACK_PORT=8080
+FRONT_PORT=5173
+SERVER_PORT=8080
+
+VITE_API_URL=http://localhost:8080/api
+BACKEND_URL=http://localhost:8080
+FRONTEND_URL=http://localhost:5173
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000
 ```
 
-Flujo futuro esperado:
+Valores esperados en local:
 
-1. El usuario rellena login o registro.
-2. El frontend valida mínimos de formulario.
-3. El frontend llama al backend Spring Boot.
-4. El backend valida y responde.
-5. El backend persiste usuarios en base de datos.
-6. El frontend gestiona sesión, token o estado autenticado.
+```env
+VITE_API_URL=http://localhost:8080/api
+FRONTEND_URL=http://localhost:5173
+BACKEND_URL=http://localhost:8080
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000
+```
 
-## Estado Del Proyecto
+Valores esperados en produccion:
+
+```env
+VITE_API_URL=https://pokemon-world.es/api
+FRONTEND_URL=https://pokemon-world.es
+BACKEND_URL=https://pokemon-world.es
+CORS_ALLOWED_ORIGINS=https://pokemon-world.es,https://www.pokemon-world.es
+```
+
+No se deben incluir contrasenas reales, tokens, cookies ni credenciales en el README.
+
+## Ejecucion Local Sin Docker Completo
+
+Primero crea un `.env` a partir de `.env.example` y ajusta valores locales.
+
+Levantar solo MySQL:
+
+```bash
+docker compose up -d mysql
+```
+
+Arrancar backend:
+
+```bash
+cd back
+set -a
+source ../.env
+set +a
+./mvnw spring-boot:run
+```
+
+Arrancar frontend:
+
+```bash
+npm --prefix front run dev
+```
+
+URLs locales:
+
+```text
+Frontend: http://localhost:5173
+Backend:  http://localhost:8080/api/health
+MySQL:    127.0.0.1:3307
+```
+
+## Ejecucion Con Docker Compose
+
+Construir y levantar todo:
+
+```bash
+docker compose up -d --build
+```
+
+Comprobar servicios:
+
+```bash
+docker compose ps
+```
+
+Validar backend:
+
+```bash
+curl http://localhost:8080/api/health
+```
+
+Validar frontend:
+
+```bash
+curl -I http://localhost:5173
+```
+
+Servicios definidos:
+
+- `mysql`: MySQL 8.4 con volumen persistente.
+- `back`: Spring Boot escuchando internamente en `8080`.
+- `front`: build Vite servido con `serve` en `5173`.
+
+En el `docker-compose.yml` actual, los puertos se publican ligados a `127.0.0.1`. Esto encaja con el despliegue en VPS, donde Apache expone publicamente el frontend y la API.
+
+## Dockerfiles
+
+### Backend
+
+`back/Dockerfile` usa multi-stage build:
+
+- fase build con Eclipse Temurin JDK 21
+- empaquetado con Maven Wrapper
+- fase runtime con Eclipse Temurin JRE 21
+- ejecucion final con `java -jar app.jar`
+
+### Frontend
+
+`front/Dockerfile` usa multi-stage build:
+
+- build con Node 22
+- `npm ci`
+- `npm run build`
+- runtime con Node 22 y `serve@14`
+
+`VITE_API_URL` se fija en build time porque Vite inyecta las variables durante el build.
+
+Las imagenes base usan AWS ECR Public:
+
+```text
+public.ecr.aws/docker/library/...
+```
+
+Esto se dejo asi porque en este entorno hubo timeouts descargando capas desde Docker Hub/Cloudflare.
+
+## Despliegue En Produccion
+
+Produccion funciona con esta arquitectura:
+
+```text
+Usuario
+↓
+Cloudflare
+↓
+Apache en VPS Hostinger
+↓
+Docker Compose
+├── front
+├── back
+└── mysql
+```
+
+Elementos del despliegue:
+
+- Dominio comprado en IONOS.
+- DNS gestionado/proxied con Cloudflare.
+- VPS Hostinger con Ubuntu.
+- Docker y Docker Compose.
+- Apache como reverse proxy.
+- Certbot para HTTPS.
+- Certificado para `pokemon-world.es` y `www.pokemon-world.es`.
+- UFW permitiendo los puertos necesarios como `22`, `80` y `443`.
+- No se usa Nginx en esta configuracion.
+
+Rutas en Apache:
+
+```text
+/api  -> 127.0.0.1:8080/api
+/     -> 127.0.0.1:5173/
+```
+
+La regla de `/api` debe ir antes que la regla `/` para que las peticiones de API no terminen en el frontend.
+
+En produccion, `.env` debe tener:
+
+```env
+VITE_API_URL=https://pokemon-world.es/api
+FRONTEND_URL=https://pokemon-world.es
+BACKEND_URL=https://pokemon-world.es
+CORS_ALLOWED_ORIGINS=https://pokemon-world.es,https://www.pokemon-world.es
+```
+
+Si cambian variables usadas por Vite, hay que reconstruir el frontend.
+
+## Comandos De Validacion
+
+Frontend:
+
+```bash
+npm --prefix front run lint
+npm --prefix front run build
+```
+
+Backend:
+
+```bash
+cd back
+./mvnw test
+./mvnw clean package -DskipTests
+```
+
+Docker:
+
+```bash
+docker compose config
+docker compose ps
+```
+
+API local:
+
+```bash
+curl http://localhost:8080/api/health
+curl -i http://localhost:8080/api/auth/me
+```
+
+API produccion:
+
+```bash
+curl https://pokemon-world.es/api/health
+curl -i https://pokemon-world.es/api/auth/me
+```
+
+Preflight CORS:
+
+```bash
+curl -i -X OPTIONS https://pokemon-world.es/api/auth/register \
+  -H "Origin: https://pokemon-world.es" \
+  -H "Access-Control-Request-Method: POST"
+```
+
+Debe devolver `Access-Control-Allow-Origin` con el origen permitido y `Access-Control-Allow-Credentials: true`.
+
+## Limpieza Y Archivos Ignorados
+
+No se suben al repositorio:
+
+- `.env`
+- `front/node_modules/`
+- `front/dist/`
+- `front/.vite/`
+- `back/target/`
+- `cookies.txt`
+- logs
+- caches
+
+`.env.example` si se sube como plantilla, pero no debe contener secretos reales.
+
+## Estado Actual Del Proyecto
 
 Estado actual:
 
-- aplicación funcional
+- frontend terminado
 - landing funcional
-- login visual funcional
-- registro visual funcional
-- mapa operativo
-- panel operativo
-- estilos separados
-- preview estática del mapa en la landing
-- lógica de APIs separada en utilidades
-- panel lazy
-- validaciones de imagen
-- control de peticiones concurrentes
-- README como documentación única del proyecto
+- login conectado al backend
+- register conectado al backend
+- activacion de cuenta por token
+- backend de autenticacion funcional
+- sesiones con `JSESSIONID`
+- acceso al mapa protegido
+- validaciones de registro mejoradas
+- CORS configurable por variables
+- Docker Compose funcional
+- despliegue real funcionando en `https://pokemon-world.es`
+- dominio HTTPS funcionando
+- responsive de landing, login y register revisado
+- limpieza de residuos de documentacion/configuracion realizada
+- mapa y logica Pokemon intactos
+
+## Proximos Pasos
+
+Proximos pasos realistas:
+
+- configurar envio real de emails SMTP
+- crear una pantalla frontend real de confirmacion de cuenta
+- mejorar persistencia de sesion si se reinicia backend
+- añadir favoritos o historial de paises
+- ampliar memoria tecnica final del TFG
