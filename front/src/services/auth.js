@@ -20,7 +20,9 @@ async function pedirJson(ruta, opciones = {}) {
 
   if (!respuesta.ok) {
     const mensaje = datos?.mensaje ?? "Ha ocurrido un error inesperado";
-    throw new Error(mensaje);
+    const error = new Error(mensaje);
+    error.errores = datos?.errores ?? null;
+    throw error;
   }
 
   return datos;

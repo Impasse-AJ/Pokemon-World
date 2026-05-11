@@ -13,6 +13,36 @@ function obtenerTokenDesdeUrl(url) {
   }
 }
 
+function validarPassword(password) {
+  const errores = [];
+
+  if (password.length < 8) {
+    errores.push("La contraseña debe tener al menos 8 caracteres.");
+  }
+
+  if (password.length > 100) {
+    errores.push("La contraseña no puede superar los 100 caracteres.");
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    errores.push("La contraseña debe contener al menos una letra mayúscula.");
+  }
+
+  if (!/[a-z]/.test(password)) {
+    errores.push("La contraseña debe contener al menos una letra minúscula.");
+  }
+
+  if (!/\d/.test(password)) {
+    errores.push("La contraseña debe contener al menos un número.");
+  }
+
+  if (/\s/.test(password)) {
+    errores.push("La contraseña no puede contener espacios.");
+  }
+
+  return errores;
+}
+
 export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -23,6 +53,7 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
   const [mensaje, setMensaje] = useState("");
   const [urlConfirmacionDev, setUrlConfirmacionDev] = useState("");
   const [cuentaActivada, setCuentaActivada] = useState(false);
+  const [erroresCampos, setErroresCampos] = useState([]);
 
   const manejarSubmit = async (e) => {
     e.preventDefault();
@@ -30,14 +61,24 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
     setMensaje("");
     setUrlConfirmacionDev("");
     setCuentaActivada(false);
+    setErroresCampos([]);
 
     if (!username.trim() || !email.trim() || !password || !confirmPassword) {
       setError("Completa todos los campos antes de registrarte.");
       return;
     }
 
+    const erroresPassword = validarPassword(password);
+
+    if (erroresPassword.length > 0) {
+      setError("La contraseña no cumple los requisitos.");
+      setErroresCampos(erroresPassword);
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden.");
+      setErroresCampos(["Las contraseñas no coinciden."]);
       return;
     }
 
@@ -57,8 +98,10 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
 
       setMensaje(textoMensaje);
       setUrlConfirmacionDev(respuesta?.urlConfirmacionDev ?? "");
+      setErroresCampos([]);
     } catch (errorPeticion) {
       setError(errorPeticion.message);
+      setErroresCampos(errorPeticion.errores ? Object.values(errorPeticion.errores) : []);
     } finally {
       setCargando(false);
     }
@@ -75,6 +118,7 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
     try {
       setCargando(true);
       setError("");
+      setErroresCampos([]);
 
       const respuesta = await confirmarCuenta(token);
 
@@ -83,6 +127,7 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
       setCuentaActivada(true);
     } catch (errorPeticion) {
       setError(errorPeticion.message);
+      setErroresCampos(errorPeticion.errores ? Object.values(errorPeticion.errores) : []);
     } finally {
       setCargando(false);
     }
@@ -111,6 +156,13 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
             </div>
 
             {error ? <p className="auth-mensaje auth-mensaje--error">{error}</p> : null}
+            {erroresCampos.length > 0 ? (
+              <ul className="auth-lista-errores">
+                {erroresCampos.map((mensajeError) => (
+                  <li key={mensajeError}>{mensajeError}</li>
+                ))}
+              </ul>
+            ) : null}
             {mensaje ? <p className="auth-mensaje auth-mensaje--exito">{mensaje}</p> : null}
             {urlConfirmacionDev ? (
               <div className="auth-mensaje auth-mensaje--dev">

@@ -6,6 +6,7 @@ import com.pokemonworld.backend.dto.RegisterResponse;
 import com.pokemonworld.backend.dto.UsuarioResponse;
 import com.pokemonworld.backend.entity.Usuario;
 import com.pokemonworld.backend.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${app.backend.url:http://localhost:8080}")
+    private String backendUrl;
 
     public AuthService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
@@ -32,11 +36,11 @@ public class AuthService {
         }
 
         if (usuarioRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Ya existe un usuario con ese email");
+            throw new IllegalArgumentException("Ya existe un usuario registrado con ese email");
         }
 
         if (usuarioRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Ya existe un usuario con ese nombre");
+            throw new IllegalArgumentException("Ya existe un usuario con ese nombre de usuario");
         }
 
         String passwordHasheada = passwordEncoder.encode(request.getPassword());
@@ -48,7 +52,7 @@ public class AuthService {
         usuario.setFechaExpiracionToken(LocalDateTime.now().plusHours(24));
 
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
-        String urlConfirmacionDev = "http://localhost:8080/api/auth/confirm?token=" + token;
+        String urlConfirmacionDev = backendUrl + "/api/auth/confirm?token=" + token;
 
         return new RegisterResponse(
                 "Registro completado. Revisa tu bandeja de entrada para activar tu cuenta.",
