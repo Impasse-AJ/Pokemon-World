@@ -11,8 +11,6 @@ lerna-debug.log*
 
 # Environment
 .env
-.env.*
-!.env.example
 
 # Frontend
 .vite/
