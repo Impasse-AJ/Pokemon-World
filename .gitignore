@@ -21,6 +21,8 @@ front/.vite/
 
 # Backend
 back/target/
+back/cookies.txt
+cookies.txt
 
 # Editor directories and files
 .vscode/*

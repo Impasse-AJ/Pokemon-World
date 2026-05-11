@@ -535,6 +535,13 @@
   .preview-outer { margin-top: 2.5rem; }
 }
 
+@media (max-width: 380px) {
+  .preview-cta-movil {
+    padding: 0.5rem 1rem;
+    font-size: 0.78rem;
+  }
+}
+
 /* ================================================================
    SECCIÓN "CÓMO FUNCIONA"
    ================================================================ */
@@ -953,6 +960,7 @@
   font-size: 0.9rem;
   line-height: 1.45;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .auth-mensaje--exito {
@@ -989,6 +997,7 @@
   background: rgba(255, 216, 79, 0.1);
   border: 1px solid rgba(255, 216, 79, 0.28);
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .auth-mensaje--dev p { margin: 0; }
@@ -997,6 +1006,8 @@
   color: #ffd84f;
   text-decoration: underline;
   text-underline-offset: 0.18rem;
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 .auth-mensaje-accion {
@@ -1086,6 +1097,11 @@
 }
 
 .form-campo-completo { grid-column: 1 / -1; }
+
+@media (max-width: 520px) {
+  .form-grid-2 { grid-template-columns: 1fr; }
+  .form-campo-completo { grid-column: 1; }
+}
 
 .form-submit-registro { margin-top: 0.5rem; }
 
