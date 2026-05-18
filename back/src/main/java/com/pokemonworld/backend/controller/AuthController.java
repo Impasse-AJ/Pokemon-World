@@ -70,7 +70,7 @@ public class AuthController {
         try {
             UsuarioResponse usuario = authService.confirmarCuenta(token);
             return ResponseEntity.ok(new RegisterResponse(
-                    "Cuenta confirmada correctamente. Ya puedes iniciar sesion.",
+                    "Cuenta confirmada correctamente. Ya puedes iniciar sesión.",
                     usuario,
                     null
             ));
@@ -85,7 +85,7 @@ public class AuthController {
 
         if (session == null || session.getAttribute(CLAVE_USUARIO_SESION) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new MensajeResponse("No hay sesion activa"));
+                    .body(new MensajeResponse("No hay sesión activa"));
         }
 
         Long usuarioId = (Long) session.getAttribute(CLAVE_USUARIO_SESION);

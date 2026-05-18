@@ -39,12 +39,12 @@ public class EmailService {
 
             helper.setFrom(mailFrom, mailFromName);
             helper.setTo(emailDestino);
-            helper.setSubject("Activa tu cuenta en Pokemon World Map");
+            helper.setSubject("Activa tu cuenta en Pokémon World Map");
             helper.setText(crearTextoActivacion(username, urlActivacion), false);
 
             mailSender.send(mensaje);
         } catch (MailException | MessagingException | UnsupportedEncodingException error) {
-            throw new IllegalStateException("No se pudo enviar el email de activacion");
+            throw new IllegalStateException("No se pudo enviar el email de activación");
         }
     }
 
@@ -52,7 +52,7 @@ public class EmailService {
         return """
                 Hola %s,
 
-                Gracias por registrarte en Pokemon World Map.
+                Gracias por registrarte en Pokémon World Map.
 
                 Para activar tu cuenta, pulsa en el siguiente enlace:
 
@@ -60,7 +60,7 @@ public class EmailService {
 
                 Si no has creado esta cuenta, puedes ignorar este correo.
 
-                Pokemon World Map
+                Pokémon World Map
                 """.formatted(username, urlActivacion);
     }
 }

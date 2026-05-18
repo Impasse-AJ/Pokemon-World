@@ -1,23 +1,23 @@
-# Pokemon World Map
+# Pokémon World Map
 
-Pokemon World Map es una aplicacion web completa que combina un mapa mundial interactivo con autenticacion de usuarios, activacion por email, datos reales de paises, clima actual y recomendaciones Pokemon segun la temperatura.
+Pokémon World Map es una aplicación web completa que combina un mapa mundial interactivo con autenticación de usuarios, activación por email, datos reales de países, clima actual y recomendaciones Pokémon según la temperatura.
 
-El usuario puede entrar en una landing, registrarse, activar su cuenta, iniciar sesion y acceder al mapa. Una vez dentro del atlas, puede seleccionar paises en el mapa y ver una ficha con informacion del pais, clima actual y una lista de Pokemon recomendados.
+El usuario puede entrar en una landing, registrarse, activar su cuenta, iniciar sesión y acceder al mapa. Una vez dentro del atlas, puede seleccionar países en el mapa y ver una ficha con información del país, clima actual y una lista de Pokémon recomendados.
 
-La aplicacion esta desplegada en produccion en:
+La aplicación está desplegada en producción en:
 
 ```text
 https://pokemon-world.es
 ```
 
-Rutas publicas actuales:
+Rutas públicas actuales:
 
 ```text
 https://pokemon-world.es       -> frontend React/Vite
 https://pokemon-world.es/api   -> backend Spring Boot
 ```
 
-## Tecnologias Utilizadas
+## Tecnologías Utilizadas
 
 ### Frontend
 
@@ -29,7 +29,7 @@ https://pokemon-world.es/api   -> backend Spring Boot
 - Simplemaps
 - REST Countries
 - Open-Meteo
-- PokeAPI
+- PokéAPI
 
 ### Backend
 
@@ -55,11 +55,11 @@ https://pokemon-world.es/api   -> backend Spring Boot
 
 ## Arquitectura Del Proyecto
 
-El proyecto esta separado en dos partes principales:
+El proyecto está separado en dos partes principales:
 
 - `front/`: frontend React + Vite.
 - `back/`: backend Spring Boot.
-- raiz del proyecto: Docker Compose, variables de ejemplo, README y configuracion general.
+- raíz del proyecto: Docker Compose, variables de ejemplo, README y configuración general.
 
 Estructura principal:
 
@@ -125,19 +125,19 @@ El archivo `.env` existe en local o en la VPS, pero no debe subirse al repositor
 
 ## Frontend
 
-El frontend vive dentro de `front/` y esta construido con React + Vite.
+El frontend vive dentro de `front/` y está construido con React + Vite.
 
 Componentes principales:
 
-- `LandingPage.jsx`: pagina inicial, presentacion del proyecto, acceso a login, registro y mapa.
-- `LoginPage.jsx`: formulario de inicio de sesion conectado al backend.
-- `RegisterPage.jsx`: formulario de registro conectado al backend, con activacion dev y validacion visual.
+- `LandingPage.jsx`: página inicial, presentación del proyecto, acceso a login, registro y mapa.
+- `LoginPage.jsx`: formulario de inicio de sesión conectado al backend.
+- `RegisterPage.jsx`: formulario de registro conectado al backend, con activación dev y validación visual.
 - `ConfirmAccountPage.jsx`: pantalla visual que confirma la cuenta desde `/confirmar-cuenta?token=...`.
 - `WorldMap.jsx`: componente principal del mapa.
-- `PanelPais.jsx`: ficha con datos del pais, clima y Pokemon.
-- `layout/AuthLayout.jsx`: estructura comun para vistas publicas.
-- `layout/AuthNav.jsx`: navegacion comun de landing, login, registro y confirmacion, con menu movil responsive.
-- `layout/AuthFooter.jsx`: footer comun de las vistas publicas.
+- `PanelPais.jsx`: ficha con datos del país, clima y Pokémon.
+- `layout/AuthLayout.jsx`: estructura común para vistas públicas.
+- `layout/AuthNav.jsx`: navegación común de landing, login, registro y confirmación, con menú móvil responsive.
+- `layout/AuthFooter.jsx`: footer común de las vistas públicas.
 
 `App.jsx` gestiona las vistas internas sin React Router:
 
@@ -147,13 +147,13 @@ Componentes principales:
 - `confirmar-cuenta`
 - `mapa`
 
-Las vistas publicas se envuelven con `AuthLayout` para compartir navbar, footer e identidad visual. La vista `mapa` queda fuera de ese layout para mantener el mapa como protagonista y evitar interferencias con Simplemaps.
+Las vistas públicas se envuelven con `AuthLayout` para compartir navbar, footer e identidad visual. La vista `mapa` queda fuera de ese layout para mantener el mapa como protagonista y evitar interferencias con Simplemaps.
 
-Cuando el usuario accede al mapa por primera vez, `WorldMap` se monta y despues se mantiene en el DOM. Solo se oculta con clases CSS cuando se cambia de vista. Esta decision evita reinicializar Simplemaps y reduce el riesgo de romper el mapa al navegar.
+Cuando el usuario accede al mapa por primera vez, `WorldMap` se monta y después se mantiene en el DOM. Solo se oculta con clases CSS cuando se cambia de vista. Esta decisión evita reinicializar Simplemaps y reduce el riesgo de romper el mapa al navegar.
 
-### Integracion Frontend-Backend
+### Integración Frontend-Backend
 
-`front/src/services/auth.js` centraliza las llamadas de autenticacion:
+`front/src/services/auth.js` centraliza las llamadas de autenticación:
 
 - `registrarUsuario()`
 - `confirmarCuenta()`
@@ -167,18 +167,18 @@ Todas las llamadas usan:
 credentials: "include"
 ```
 
-Esto es necesario porque el backend usa sesion con cookie `JSESSIONID`.
+Esto es necesario porque el backend usa sesión con cookie `JSESSIONID`.
 
 ### Estilos Frontend
 
-Los estilos estan separados por responsabilidad:
+Los estilos están separados por responsabilidad:
 
 - `front/src/styles/auth.css`: landing, login, registro, formularios, mensajes y footer.
-- `front/src/styles/mapa.css`: pagina del mapa, cabecera, marco, logo, titulo y responsive del mapa.
-- `front/src/styles/panel.css`: panel del pais, datos, clima, tipos, lista Pokemon y estados internos.
-- `front/src/index.css`: estilos globales minimos, tokens base y clases para mantener el mapa montado.
+- `front/src/styles/mapa.css`: página del mapa, cabecera, marco, logo, título y responsive del mapa.
+- `front/src/styles/panel.css`: panel del país, datos, clima, tipos, lista Pokémon y estados internos.
+- `front/src/index.css`: estilos globales mínimos, tokens base y clases para mantener el mapa montado.
 
-El mapa es nucleo protegido. No se deben tocar sin motivo:
+El mapa es núcleo protegido. No se deben tocar sin motivo:
 
 - `front/src/components/WorldMap.jsx`
 - `front/src/components/PanelPais.jsx`
@@ -193,20 +193,20 @@ El mapa es nucleo protegido. No se deben tocar sin motivo:
 El flujo real del mapa es:
 
 1. El usuario intenta acceder al mapa.
-2. `App.jsx` comprueba la sesion con `/api/auth/me`.
-3. Si hay sesion, se muestra el mapa.
-4. El usuario selecciona un pais en Simplemaps.
-5. Simplemaps dispara el evento de cambio de pais.
-6. React captura la seleccion activa.
+2. `App.jsx` comprueba la sesión con `/api/auth/me`.
+3. Si hay sesión, se muestra el mapa.
+4. El usuario selecciona un país en Simplemaps.
+5. Simplemaps dispara el evento de cambio de país.
+6. React captura la selección activa.
 7. Se limpian datos anteriores para evitar mezclas.
 8. Se consulta REST Countries.
 9. Se consulta Open-Meteo usando las coordenadas de la capital.
 10. Se clasifica la temperatura.
-11. Se seleccionan tres tipos Pokemon recomendados.
-12. Se consulta PokeAPI.
+11. Se seleccionan tres tipos Pokémon recomendados.
+12. Se consulta PokéAPI.
 13. Se genera una lista determinista de candidatos.
-14. Se descartan Pokemon sin imagen valida.
-15. Se muestran hasta 20 Pokemon en el panel.
+14. Se descartan Pokémon sin imagen válida.
+15. Se muestran hasta 20 Pokémon en el panel.
 
 ### REST Countries
 
@@ -218,12 +218,12 @@ https://restcountries.com/v3.1/alpha/:id?fields=name,capital,capitalInfo,flags,l
 
 Datos usados:
 
-- nombre del pais
+- nombre del país
 - capital
 - coordenadas de capital
 - bandera
 - idiomas
-- codigo `cca2`
+- código `cca2`
 
 ### Open-Meteo
 
@@ -237,7 +237,7 @@ Dato usado:
 
 - `current.temperature_2m`
 
-### PokeAPI
+### PokéAPI
 
 Primero se consultan tipos:
 
@@ -251,11 +251,11 @@ Luego se consulta el detalle individual:
 https://pokeapi.co/api/v2/pokemon/:nombre
 ```
 
-### Clasificacion De Temperatura
+### Clasificación De Temperatura
 
-La funcion `clasificarTemperatura()` traduce la temperatura a categoria climatica y tipos Pokemon:
+La función `clasificarTemperatura()` traduce la temperatura a categoría climática y tipos Pokémon:
 
-| Temperatura | Categoria | Tipos |
+| Temperatura | Categoría | Tipos |
 |---|---|---|
 | `<= -5` | `polar` | `ice`, `water`, `steel` |
 | `<= 3` | `muy frío` | `ice`, `water`, `flying` |
@@ -267,7 +267,7 @@ La funcion `clasificarTemperatura()` traduce la temperatura a categoria climatic
 | `<= 39` | `muy cálido` | `fire`, `rock`, `dragon` |
 | `> 39` | `extremo` | `fire`, `ground`, `dragon` |
 
-### Generacion De Pokemon
+### Generación De Pokémon
 
 La lista no es aleatoria pura. Es determinista.
 
@@ -277,36 +277,36 @@ La semilla base se construye con:
 `${idPais}-${Math.round(temperatura)}`
 ```
 
-Con esa semilla se mezclan los pools de Pokemon por tipo, se eliminan duplicados y se piden detalles por lotes. La lista final puede mostrar hasta 20 Pokemon.
+Con esa semilla se mezclan los pools de Pokémon por tipo, se eliminan duplicados y se piden detalles por lotes. La lista final puede mostrar hasta 20 Pokémon.
 
-### Validacion De Imagen Pokemon
+### Validación De Imagen Pokémon
 
-No todos los Pokemon tienen imagen disponible. El orden de fallback es:
+No todos los Pokémon tienen imagen disponible. El orden de fallback es:
 
 1. `official-artwork`
 2. `home`
 3. `dream_world`
 4. `front_default`
 
-Si un Pokemon no tiene ninguna imagen valida, se descarta.
+Si un Pokémon no tiene ninguna imagen válida, se descarta.
 
 ## Backend
 
-El backend vive dentro de `back/` y esta construido con Spring Boot.
+El backend vive dentro de `back/` y está construido con Spring Boot.
 
 Responsabilidades actuales:
 
 - registro de usuarios
-- activacion de cuenta por token
+- activación de cuenta por token
 - login
 - logout
-- consulta de sesion actual
+- consulta de sesión actual
 - validaciones de registro
-- envio de email real de activacion
-- conexion con MySQL
-- configuracion CORS por variables
+- envío de email real de activación
+- conexión con MySQL
+- configuración CORS por variables
 
-La configuracion CORS no esta hardcodeada en Java. Se lee desde `CORS_ALLOWED_ORIGINS` mediante `application.properties`, lo que permite usar el mismo codigo en local y produccion cambiando solo variables de entorno.
+La configuración CORS no está hardcodeada en Java. Se lee desde `CORS_ALLOWED_ORIGINS` mediante `application.properties`, lo que permite usar el mismo código en local y producción cambiando solo variables de entorno.
 
 Endpoints actuales:
 
@@ -323,7 +323,7 @@ POST /api/auth/logout
 
 `GET /api/health`
 
-Devuelve estado basico del backend.
+Devuelve estado básico del backend.
 
 ```json
 {"status":"ok","service":"pokemon-world-backend"}
@@ -331,9 +331,9 @@ Devuelve estado basico del backend.
 
 `POST /api/auth/register`
 
-Registra un usuario inactivo, genera token de confirmacion, envia email de activacion si el mail esta habilitado y devuelve la URL dev solo si esta configurada.
+Registra un usuario inactivo, genera token de confirmación, envía email de activación si el mail está habilitado y devuelve la URL dev solo si está configurada.
 
-En produccion, el enlace enviado por email apunta al frontend:
+En producción, el enlace enviado por email apunta al frontend:
 
 ```text
 https://pokemon-world.es/confirmar-cuenta?token=...
@@ -343,21 +343,21 @@ La pantalla frontend lee el token y llama internamente al endpoint real del back
 
 `GET /api/auth/confirm?token=...`
 
-Activa la cuenta si el token es valido y no ha expirado.
+Activa la cuenta si el token es válido y no ha expirado.
 
 `POST /api/auth/login`
 
-Comprueba credenciales. Solo permite login si el usuario esta activo. Si es correcto, crea sesion con `JSESSIONID`.
+Comprueba credenciales. Solo permite login si el usuario está activo. Si es correcto, crea sesión con `JSESSIONID`.
 
 `GET /api/auth/me`
 
-Devuelve el usuario actual si hay sesion activa.
+Devuelve el usuario actual si hay sesión activa.
 
 `POST /api/auth/logout`
 
-Invalida la sesion actual.
+Invalida la sesión actual.
 
-## Autenticacion Y Sesion
+## Autenticación Y Sesión
 
 El proyecto no usa JWT.
 
@@ -367,18 +367,18 @@ El flujo actual es:
 2. El backend crea el usuario con `activo = false`.
 3. Se genera `tokenConfirmacion`.
 4. Se guarda `fechaExpiracionToken`.
-5. Si `MAIL_ENABLED=true`, se envia un email real de activacion.
-6. Si `MAIL_SHOW_DEV_CONFIRMATION_URL=true`, tambien se devuelve la URL de confirmacion para desarrollo.
+5. Si `MAIL_ENABLED=true`, se envía un email real de activación.
+6. Si `MAIL_SHOW_DEV_CONFIRMATION_URL=true`, también se devuelve la URL de confirmación para desarrollo.
 7. El usuario abre `/confirmar-cuenta?token=...` en el frontend.
 8. El frontend llama a `/api/auth/confirm?token=...`.
 9. El backend marca `activo = true`.
-10. El token y la fecha de expiracion se limpian.
-11. El usuario puede iniciar sesion.
+10. El token y la fecha de expiración se limpian.
+11. El usuario puede iniciar sesión.
 12. Login crea una cookie `JSESSIONID`.
-13. `/api/auth/me` valida la sesion.
-14. Logout invalida la sesion.
+13. `/api/auth/me` valida la sesión.
+14. Logout invalida la sesión.
 
-No se guardan tokens en `localStorage`. El frontend depende de cookies de sesion y usa `credentials: "include"`.
+No se guardan tokens en `localStorage`. El frontend depende de cookies de sesión y usa `credentials: "include"`.
 
 ## Validaciones De Registro
 
@@ -388,22 +388,22 @@ Username:
 
 - obligatorio
 - entre 3 y 30 caracteres
-- solo letras, numeros y guion bajo
-- unico en base de datos
+- solo letras, números y guion bajo
+- único en base de datos
 
 Email:
 
 - obligatorio
-- formato valido
-- unico en base de datos
+- formato válido
+- único en base de datos
 
 Password:
 
 - obligatorio
 - entre 8 y 100 caracteres
-- al menos una mayuscula
-- al menos una minuscula
-- al menos un numero
+- al menos una mayúscula
+- al menos una minúscula
+- al menos un número
 - sin espacios
 
 Confirm password:
@@ -411,13 +411,13 @@ Confirm password:
 - obligatorio
 - debe coincidir con password
 
-Los errores de validacion de campos se devuelven mediante `ValidacionResponse` y `GlobalExceptionHandler`:
+Los errores de validación de campos se devuelven mediante `ValidacionResponse` y `GlobalExceptionHandler`:
 
 ```json
 {
   "mensaje": "Revisa los campos del formulario",
   "errores": {
-    "password": "La contrasena debe tener entre 8 y 100 caracteres"
+    "password": "La contraseña debe tener entre 8 y 100 caracteres"
   }
 }
 ```
@@ -428,7 +428,7 @@ Errores de negocio como email duplicado o username duplicado se devuelven con un
 {"mensaje":"Ya existe un usuario registrado con ese email"}
 ```
 
-En login se mantiene un mensaje generico para credenciales incorrectas.
+En login se mantiene un mensaje genérico para credenciales incorrectas.
 
 ## Variables De Entorno
 
@@ -457,7 +457,7 @@ MAIL_PORT=587
 MAIL_USERNAME=change_me
 MAIL_PASSWORD=change_me
 MAIL_FROM=no-reply@pokemon-world.es
-MAIL_FROM_NAME=Pokemon World Map
+MAIL_FROM_NAME="Pokémon World Map"
 MAIL_SMTP_AUTH=true
 MAIL_SMTP_STARTTLS_ENABLE=true
 MAIL_ENABLED=false
@@ -475,7 +475,7 @@ MAIL_ENABLED=false
 MAIL_SHOW_DEV_CONFIRMATION_URL=true
 ```
 
-Valores esperados en produccion:
+Valores esperados en producción:
 
 ```env
 VITE_API_URL=https://pokemon-world.es/api
@@ -484,17 +484,21 @@ BACKEND_URL=https://pokemon-world.es
 CORS_ALLOWED_ORIGINS=https://pokemon-world.es,https://www.pokemon-world.es
 MAIL_HOST=smtp-relay.brevo.com
 MAIL_PORT=587
+MAIL_USERNAME=change_me
+MAIL_PASSWORD=change_me
 MAIL_FROM=no-reply@pokemon-world.es
-MAIL_FROM_NAME=Pokemon World Map
+MAIL_FROM_NAME="Pokémon World Map"
 MAIL_SMTP_AUTH=true
 MAIL_SMTP_STARTTLS_ENABLE=true
 MAIL_ENABLED=true
 MAIL_SHOW_DEV_CONFIRMATION_URL=false
 ```
 
-No se deben incluir contrasenas reales, tokens, cookies ni credenciales en el README.
+`MAIL_USERNAME` y `MAIL_PASSWORD` deben configurarse con los valores reales del SMTP de Brevo en la VPS, pero no deben subirse a Git ni copiarse en documentación pública.
 
-## Ejecucion Local Sin Docker Completo
+No se deben incluir contraseñas reales, tokens, cookies ni credenciales en el README.
+
+## Ejecución Local Sin Docker Completo
 
 Primero crea un `.env` a partir de `.env.example` y ajusta valores locales.
 
@@ -560,7 +564,7 @@ Servicios definidos:
 - `back`: Spring Boot escuchando internamente en `8080`.
 - `front`: build Vite servido con `serve` en `5173`.
 
-En el `docker-compose.yml` actual, los puertos se publican ligados a `127.0.0.1`. Esto encaja con el despliegue en VPS, donde Apache expone publicamente el frontend y la API.
+En el `docker-compose.yml` actual, los puertos se publican ligados a `127.0.0.1`. Esto encaja con el despliegue en VPS, donde Apache expone públicamente el frontend y la API.
 
 ## Dockerfiles
 
@@ -571,7 +575,7 @@ En el `docker-compose.yml` actual, los puertos se publican ligados a `127.0.0.1`
 - fase build con Eclipse Temurin JDK 21
 - empaquetado con Maven Wrapper
 - fase runtime con Eclipse Temurin JRE 21
-- ejecucion final con `java -jar app.jar`
+- ejecución final con `java -jar app.jar`
 
 ### Frontend
 
@@ -584,17 +588,17 @@ En el `docker-compose.yml` actual, los puertos se publican ligados a `127.0.0.1`
 
 `VITE_API_URL` se fija en build time porque Vite inyecta las variables durante el build.
 
-Las imagenes base usan AWS ECR Public:
+Las imágenes base usan AWS ECR Public:
 
 ```text
 public.ecr.aws/docker/library/...
 ```
 
-Esto se dejo asi porque en este entorno hubo timeouts descargando capas desde Docker Hub/Cloudflare.
+Esto se dejó así porque en este entorno hubo timeouts descargando capas desde Docker Hub/Cloudflare.
 
-## Despliegue En Produccion
+## Despliegue En Producción
 
-Produccion funciona con esta arquitectura:
+Producción funciona con esta arquitectura:
 
 ```text
 Usuario
@@ -619,7 +623,7 @@ Elementos del despliegue:
 - Certbot para HTTPS.
 - Certificado para `pokemon-world.es` y `www.pokemon-world.es`.
 - UFW permitiendo los puertos necesarios como `22`, `80` y `443`.
-- No se usa Nginx en esta configuracion.
+- No se usa Nginx en esta configuración.
 
 Rutas en Apache:
 
@@ -630,18 +634,20 @@ Rutas en Apache:
 
 La regla de `/api` debe ir antes que la regla `/` para que las peticiones de API no terminen en el frontend.
 
-En produccion, `.env` debe tener:
+En producción, `.env` debe tener:
 
 ```env
 VITE_API_URL=https://pokemon-world.es/api
 FRONTEND_URL=https://pokemon-world.es
 BACKEND_URL=https://pokemon-world.es
 CORS_ALLOWED_ORIGINS=https://pokemon-world.es,https://www.pokemon-world.es
+MAIL_USERNAME=valor_real_en_vps
+MAIL_PASSWORD=valor_real_en_vps
 ```
 
 Si cambian variables usadas por Vite, hay que reconstruir el frontend.
 
-## Comandos De Validacion
+## Comandos De Validación
 
 Frontend:
 
@@ -672,7 +678,7 @@ curl http://localhost:8080/api/health
 curl -i http://localhost:8080/api/auth/me
 ```
 
-API produccion:
+API producción:
 
 ```bash
 curl https://pokemon-world.es/api/health
@@ -702,7 +708,7 @@ No se suben al repositorio:
 - logs
 - caches
 
-`.env.example` si se sube como plantilla, pero no debe contener secretos reales.
+`.env.example` sí se sube como plantilla, pero no debe contener secretos reales.
 
 ## Estado Actual Del Proyecto
 
@@ -712,10 +718,10 @@ Estado actual:
 - landing funcional
 - login conectado al backend
 - register conectado al backend
-- activacion de cuenta por token
-- envio real de email de activacion con SMTP
-- pantalla frontend de confirmacion de cuenta
-- backend de autenticacion funcional
+- activación de cuenta por token
+- envío real de email de activación con SMTP
+- pantalla frontend de confirmación de cuenta
+- backend de autenticación funcional
 - sesiones con `JSESSIONID`
 - acceso al mapa protegido
 - validaciones de registro mejoradas
@@ -724,14 +730,16 @@ Estado actual:
 - despliegue real funcionando en `https://pokemon-world.es`
 - dominio HTTPS funcionando
 - responsive de landing, login y register revisado
-- limpieza de residuos de documentacion/configuracion realizada
-- mapa y logica Pokemon intactos
+- limpieza de residuos de documentación/configuración realizada
+- mapa y lógica Pokémon intactos
 
-## Proximos Pasos
+## Próximos Pasos
 
-Proximos pasos realistas:
+Próximos pasos realistas:
 
-- mejorar plantilla visual del email de activacion
-- mejorar persistencia de sesion si se reinicia backend
-- añadir favoritos o historial de paises
-- ampliar memoria tecnica final del TFG
+- mejorar plantilla visual del email de activación
+- mejorar persistencia de sesión si se reinicia backend
+- añadir favoritos o historial de países
+- ampliar memoria técnica final del TFG
+
+El proyecto se considera funcionalmente cerrado para la entrega del TFG. Las mejoras listadas quedan planteadas como evolución futura.

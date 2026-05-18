@@ -388,7 +388,7 @@ export default function WorldMap({ onVolver }) {
         />
 
         <header ref={referenciaEncabezado} className="world-map-cabecera">
-          <p className="world-map-subtitulo">Pokemon world atlas</p>
+          <p className="world-map-subtitulo">Pokémon world atlas</p>
           <h1 id="mapTitle" className="world-map-titulo" data-title={titulo}>
             {titulo}
           </h1>

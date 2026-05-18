@@ -43,7 +43,7 @@ public class AuthService {
         String email = request.getEmail().trim().toLowerCase();
 
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new IllegalArgumentException("Las contrasenas no coinciden");
+            throw new IllegalArgumentException("Las contraseñas no coinciden");
         }
 
         if (usuarioRepository.existsByEmail(email)) {
@@ -91,7 +91,7 @@ public class AuthService {
         }
 
         if (!usuario.isActivo()) {
-            throw new IllegalStateException("Debes confirmar tu cuenta antes de iniciar sesion");
+            throw new IllegalStateException("Debes confirmar tu cuenta antes de iniciar sesión");
         }
 
         return usuario;
@@ -99,11 +99,11 @@ public class AuthService {
 
     public UsuarioResponse confirmarCuenta(String token) {
         if (token == null || token.isBlank()) {
-            throw new IllegalArgumentException("Token de confirmacion no valido");
+            throw new IllegalArgumentException("Token de confirmación no válido");
         }
 
         Usuario usuario = usuarioRepository.findByTokenConfirmacion(token)
-                .orElseThrow(() -> new IllegalArgumentException("Token de confirmacion no valido"));
+                .orElseThrow(() -> new IllegalArgumentException("Token de confirmación no válido"));
 
         if (usuario.isActivo()) {
             return UsuarioResponse.desdeUsuario(usuario);
@@ -111,7 +111,7 @@ public class AuthService {
 
         if (usuario.getFechaExpiracionToken() == null
                 || usuario.getFechaExpiracionToken().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("El token de confirmacion ha expirado");
+            throw new IllegalArgumentException("El token de confirmación ha expirado");
         }
 
         usuario.setActivo(true);

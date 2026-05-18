@@ -126,7 +126,7 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
     const token = obtenerTokenDesdeUrl(urlConfirmacionDev);
 
     if (!token) {
-      setError("No se pudo obtener el token de activacion.");
+      setError("No se pudo obtener el token de activación.");
       return;
     }
 
@@ -137,7 +137,7 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
 
       const respuesta = await confirmarCuenta(token);
 
-      setMensaje(respuesta?.mensaje ?? "Cuenta confirmada correctamente. Ya puedes iniciar sesion.");
+      setMensaje(respuesta?.mensaje ?? "Cuenta confirmada correctamente. Ya puedes iniciar sesión.");
       setUrlConfirmacionDev("");
       setCuentaActivada(true);
     } catch (errorPeticion) {
@@ -177,7 +177,7 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
         {mensaje ? <p className="auth-mensaje auth-mensaje--exito">{mensaje}</p> : null}
         {urlConfirmacionDev ? (
           <div className="auth-mensaje auth-mensaje--dev">
-            <p>Enlace de activacion para desarrollo:</p>
+            <p>Enlace de activación para desarrollo:</p>
             <a href={urlConfirmacionDev}>{urlConfirmacionDev}</a>
             <button
               type="button"
@@ -268,11 +268,11 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
                     className="form-btn-submit"
                     onClick={() => onRegistroCorrecto?.(mensaje)}
                   >
-                    Ir a iniciar sesion <ArrowRight size={18} />
+                    Ir a iniciar sesión <ArrowRight size={18} />
                   </button>
                   {!cuentaActivada && urlConfirmacionDev ? (
                     <p className="registro-ayuda">
-                      Activa la cuenta antes de iniciar sesion.
+                      Activa la cuenta antes de iniciar sesión.
                     </p>
                   ) : null}
                 </div>

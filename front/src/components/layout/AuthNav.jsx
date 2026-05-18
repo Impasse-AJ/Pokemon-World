@@ -43,7 +43,7 @@ export default function AuthNav({
         <>
           <span className="auth-nav-usuario">Hola, {usuario.username}</span>
           <button className="auth-btn-nav-dorado auth-btn-nav-suave" onClick={() => manejarClick(onLogout)}>
-            Cerrar sesion
+            Cerrar sesión
           </button>
         </>
       ) : (
@@ -66,7 +66,7 @@ export default function AuthNav({
           <span className="auth-nav-logo-icono">
             <Compass size={22} />
           </span>
-          <span className="auth-nav-logo-texto">Pokemon World Map</span>
+          <span className="auth-nav-logo-texto">Pokémon World Map</span>
         </button>
 
         <div className="auth-nav-acciones auth-nav-links">

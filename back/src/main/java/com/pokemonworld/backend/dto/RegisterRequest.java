@@ -11,7 +11,7 @@ public class RegisterRequest {
     @Size(min = 3, max = 30, message = "El usuario debe tener entre 3 y 30 caracteres")
     @Pattern(
             regexp = "^[a-zA-Z0-9_]+$",
-            message = "El usuario solo puede contener letras, numeros y guion bajo"
+            message = "El usuario solo puede contener letras, números y guion bajo"
     )
     private String username;
 
@@ -19,15 +19,15 @@ public class RegisterRequest {
     @Email(message = "El email no tiene un formato valido")
     private String email;
 
-    @NotBlank(message = "La contrasena es obligatoria")
-    @Size(min = 8, max = 100, message = "La contrasena debe tener entre 8 y 100 caracteres")
-    @Pattern(regexp = ".*[A-Z].*", message = "La contrasena debe contener al menos una letra mayuscula")
-    @Pattern(regexp = ".*[a-z].*", message = "La contrasena debe contener al menos una letra minuscula")
-    @Pattern(regexp = ".*\\d.*", message = "La contrasena debe contener al menos un numero")
-    @Pattern(regexp = "^\\S+$", message = "La contrasena no puede contener espacios")
+    @NotBlank(message = "La contraseña es obligatoria")
+    @Size(min = 8, max = 100, message = "La contraseña debe tener entre 8 y 100 caracteres")
+    @Pattern(regexp = ".*[A-Z].*", message = "La contraseña debe contener al menos una letra mayúscula")
+    @Pattern(regexp = ".*[a-z].*", message = "La contraseña debe contener al menos una letra minúscula")
+    @Pattern(regexp = ".*\\d.*", message = "La contraseña debe contener al menos un número")
+    @Pattern(regexp = "^\\S+$", message = "La contraseña no puede contener espacios")
     private String password;
 
-    @NotBlank(message = "Debes repetir la contrasena")
+    @NotBlank(message = "Debes repetir la contraseña")
     private String confirmPassword;
 
     public String getUsername() {

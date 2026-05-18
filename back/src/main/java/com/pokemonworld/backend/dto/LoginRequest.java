@@ -9,7 +9,7 @@ public class LoginRequest {
     @Email(message = "El email no tiene un formato valido")
     private String email;
 
-    @NotBlank(message = "La contrasena es obligatoria")
+    @NotBlank(message = "La contraseña es obligatoria")
     private String password;
 
     public String getEmail() {

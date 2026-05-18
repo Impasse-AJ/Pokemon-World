@@ -28,7 +28,7 @@ function HeroSection({ usuario, onMapa, onLogin }) {
         transition={{ duration: 0.55 }}
       >
         <div className="landing-encabezado">
-          <p className="landing-subtitulo">Pokemon World Atlas</p>
+          <p className="landing-subtitulo">Pokémon World Atlas</p>
           <h1 className="landing-titulo" data-title="Explore Your Real World">Explore Your Real World</h1>
         </div>
         <p className="landing-descripcion">
@@ -78,7 +78,7 @@ function MapaPreview({ onMapa }) {
           className="preview-pokeball-img"
         />
         <div className="preview-title-block">
-          <p className="preview-atlas-sub">Pokemon world atlas</p>
+          <p className="preview-atlas-sub">Pokémon world atlas</p>
           <p className="preview-map-title">Pokémon World Map</p>
         </div>
       </div>

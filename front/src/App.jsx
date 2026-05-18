@@ -94,7 +94,7 @@ function App() {
 
   const irAlMapa = async () => {
     if (comprobandoSesion) {
-      irALogin("Estamos comprobando tu sesion. Intentalo de nuevo en un momento.");
+      irALogin("Estamos comprobando tu sesión. Inténtalo de nuevo en un momento.");
       return;
     }
 
@@ -106,7 +106,7 @@ function App() {
       setVista("mapa");
     } catch {
       setUsuario(null);
-      irALogin("Inicia sesion para acceder al mapa.");
+      irALogin("Inicia sesión para acceder al mapa.");
     }
   };
 
@@ -128,7 +128,7 @@ function App() {
     try {
       await cerrarSesion();
     } catch {
-      // Si el backend ya cerro la sesion, limpiamos igualmente el estado local.
+      // Si el backend ya cerró la sesión, limpiamos igualmente el estado local.
     } finally {
       setUsuario(null);
       setMensajeLogin("");
@@ -189,7 +189,7 @@ function App() {
         <div className="sesion-mapa-barra">
           <span>Hola, {usuario.username}</span>
           <button type="button" onClick={manejarLogout}>
-            Cerrar sesion
+            Cerrar sesión
           </button>
         </div>
       ) : null}

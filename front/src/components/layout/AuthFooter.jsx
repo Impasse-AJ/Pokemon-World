@@ -7,8 +7,8 @@ export default function AuthFooter() {
         <div className="auth-footer-logo">
           <Compass size={26} />
           <div className="auth-footer-logo-texto">
-            <p className="nombre">Pokemon World Map</p>
-            <p className="sub">Pokemon World Atlas</p>
+            <p className="nombre">Pokémon World Map</p>
+            <p className="sub">Pokémon World Atlas</p>
           </div>
         </div>
         <div className="auth-footer-links">
@@ -17,7 +17,7 @@ export default function AuthFooter() {
         </div>
       </div>
       <div className="auth-footer-copy">
-        <span>&copy; 2026 Pokemon World Atlas. Todos los derechos reservados.</span>
+        <span>&copy; 2026 Pokémon World Atlas. Todos los derechos reservados.</span>
         <span className="auth-footer-copy-sep">·</span>
         <span className="auth-footer-link">Política de privacidad</span>
         <span className="auth-footer-copy-sep">·</span>

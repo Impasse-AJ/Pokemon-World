@@ -18,7 +18,7 @@ export default function ConfirmAccountPage({ token, onLogin, onVolver }) {
     peticionIniciada.current = true;
 
     if (!token) {
-      setError("El enlace de activacion no es valido.");
+      setError("El enlace de activación no es válido.");
       setCargando(false);
       return;
     }
@@ -31,7 +31,7 @@ export default function ConfirmAccountPage({ token, onLogin, onVolver }) {
 
         if (componenteActivo) {
           setMensaje(
-            respuesta?.mensaje ?? "Cuenta confirmada correctamente. Ya puedes iniciar sesion.",
+            respuesta?.mensaje ?? "Cuenta confirmada correctamente. Ya puedes iniciar sesión.",
           );
         }
       } catch (errorPeticion) {
@@ -84,7 +84,7 @@ export default function ConfirmAccountPage({ token, onLogin, onVolver }) {
 
         <div className="registro-acciones-finales">
           <button type="button" className="form-btn-submit" onClick={onLogin} disabled={cargando}>
-            Ir a iniciar sesion <ArrowRight size={18} />
+            Ir a iniciar sesión <ArrowRight size={18} />
           </button>
           <button type="button" className="form-btn-volver" onClick={onVolver}>
             <ArrowLeft size={12} /> Volver al Inicio
