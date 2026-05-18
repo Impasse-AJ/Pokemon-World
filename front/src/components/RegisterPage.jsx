@@ -55,6 +55,13 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
   const [cuentaActivada, setCuentaActivada] = useState(false);
   const [erroresCampos, setErroresCampos] = useState([]);
 
+  const limpiarFormulario = () => {
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+  };
+
   const manejarSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -95,10 +102,18 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
       const textoMensaje =
         respuesta?.mensaje ??
         "Registro completado. Revisa tu bandeja de entrada para activar tu cuenta.";
+      const urlDev = respuesta?.urlConfirmacionDev ?? "";
 
-      setMensaje(textoMensaje);
-      setUrlConfirmacionDev(respuesta?.urlConfirmacionDev ?? "");
       setErroresCampos([]);
+      limpiarFormulario();
+
+      if (urlDev) {
+        setMensaje(textoMensaje);
+        setUrlConfirmacionDev(urlDev);
+        return;
+      }
+
+      onRegistroCorrecto?.(textoMensaje);
     } catch (errorPeticion) {
       setError(errorPeticion.message);
       setErroresCampos(errorPeticion.errores ? Object.values(errorPeticion.errores) : []);

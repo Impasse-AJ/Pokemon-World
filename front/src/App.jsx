@@ -3,19 +3,39 @@ import WorldMap from "./components/WorldMap";
 import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
+import ConfirmAccountPage from "./components/ConfirmAccountPage";
 import { cerrarSesion, obtenerUsuarioActual } from "./services/auth";
 
-// Vistas posibles: 'landing' | 'login' | 'register' | 'mapa'
+// Vistas posibles: 'landing' | 'login' | 'register' | 'mapa' | 'confirmar-cuenta'
 const VISTA_INICIAL = "landing";
+const VISTA_CONFIRMAR_CUENTA = "confirmar-cuenta";
+
+function esRutaConfirmacionCuenta() {
+  return window.location.pathname === "/confirmar-cuenta";
+}
+
+function obtenerTokenConfirmacionUrl() {
+  if (!esRutaConfirmacionCuenta()) {
+    return "";
+  }
+
+  const parametros = new URLSearchParams(window.location.search);
+  return parametros.get("token") ?? "";
+}
+
+function obtenerVistaInicial() {
+  return esRutaConfirmacionCuenta() ? VISTA_CONFIRMAR_CUENTA : VISTA_INICIAL;
+}
 
 function App() {
-  const [vista, setVista] = useState(VISTA_INICIAL);
+  const [vista, setVista] = useState(obtenerVistaInicial);
   // Simplemaps se inicializa una sola vez. Una vez que WorldMap se monta,
   // lo mantenemos en el DOM y solo lo ocultamos para no romper el mapa.
   const [mapaInicializado, setMapaInicializado] = useState(false);
   const [usuario, setUsuario] = useState(null);
   const [comprobandoSesion, setComprobandoSesion] = useState(true);
   const [mensajeLogin, setMensajeLogin] = useState("");
+  const [tokenConfirmacion, setTokenConfirmacion] = useState(obtenerTokenConfirmacionUrl);
   const clasesVistaMapa = vista === "mapa" ? "vista-mapa vista-mapa--activa" : "vista-mapa";
 
   useEffect(() => {
@@ -46,12 +66,27 @@ function App() {
     };
   }, []);
 
+  const limpiarRutaConfirmacion = () => {
+    if (esRutaConfirmacionCuenta()) {
+      window.history.replaceState({}, "", "/");
+    }
+
+    setTokenConfirmacion("");
+  };
+
+  const irAInicio = () => {
+    limpiarRutaConfirmacion();
+    setVista("landing");
+  };
+
   const irALogin = (mensaje = "") => {
+    limpiarRutaConfirmacion();
     setMensajeLogin(mensaje);
     setVista("login");
   };
 
   const irARegistro = () => {
+    limpiarRutaConfirmacion();
     setMensajeLogin("");
     setVista("register");
   };
@@ -66,6 +101,7 @@ function App() {
       const usuarioActual = await obtenerUsuarioActual();
       setUsuario(usuarioActual);
       setMapaInicializado(true);
+      limpiarRutaConfirmacion();
       setVista("mapa");
     } catch {
       setUsuario(null);
@@ -95,6 +131,7 @@ function App() {
     } finally {
       setUsuario(null);
       setMensajeLogin("");
+      limpiarRutaConfirmacion();
       setVista("landing");
     }
   };
@@ -103,7 +140,7 @@ function App() {
     <>
       {/* WorldMap: se monta cuando el usuario entra por primera vez y nunca se desmonta */}
       <div className={clasesVistaMapa}>
-        {mapaInicializado && <WorldMap onVolver={() => setVista("landing")} />}
+        {mapaInicializado && <WorldMap onVolver={irAInicio} />}
       </div>
 
       {vista === "mapa" && usuario ? (
@@ -127,7 +164,7 @@ function App() {
 
       {vista === "login" && (
         <LoginPage
-          onVolver={() => setVista("landing")}
+          onVolver={irAInicio}
           onRegistro={irARegistro}
           onMapa={irAlMapa}
           onLoginCorrecto={manejarLoginCorrecto}
@@ -137,9 +174,17 @@ function App() {
 
       {vista === "register" && (
         <RegisterPage
-          onVolver={() => setVista("landing")}
+          onVolver={irAInicio}
           onLogin={() => irALogin()}
           onRegistroCorrecto={manejarRegistroCorrecto}
+        />
+      )}
+
+      {vista === VISTA_CONFIRMAR_CUENTA && (
+        <ConfirmAccountPage
+          token={tokenConfirmacion}
+          onLogin={() => irALogin()}
+          onVolver={irAInicio}
         />
       )}
     </>

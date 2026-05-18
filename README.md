@@ -321,6 +321,14 @@ Devuelve estado basico del backend.
 
 Registra un usuario inactivo, genera token de confirmacion, envia email de activacion si el mail esta habilitado y devuelve la URL dev solo si esta configurada.
 
+En produccion, el enlace enviado por email apunta al frontend:
+
+```text
+https://pokemon-world.es/confirmar-cuenta?token=...
+```
+
+La pantalla frontend lee el token y llama internamente al endpoint real del backend.
+
 `GET /api/auth/confirm?token=...`
 
 Activa la cuenta si el token es valido y no ha expirado.
@@ -349,13 +357,14 @@ El flujo actual es:
 4. Se guarda `fechaExpiracionToken`.
 5. Si `MAIL_ENABLED=true`, se envia un email real de activacion.
 6. Si `MAIL_SHOW_DEV_CONFIRMATION_URL=true`, tambien se devuelve la URL de confirmacion para desarrollo.
-7. El usuario confirma la cuenta con `/api/auth/confirm?token=...`.
-8. El backend marca `activo = true`.
-9. El token y la fecha de expiracion se limpian.
-10. El usuario puede iniciar sesion.
-11. Login crea una cookie `JSESSIONID`.
-12. `/api/auth/me` valida la sesion.
-13. Logout invalida la sesion.
+7. El usuario abre `/confirmar-cuenta?token=...` en el frontend.
+8. El frontend llama a `/api/auth/confirm?token=...`.
+9. El backend marca `activo = true`.
+10. El token y la fecha de expiracion se limpian.
+11. El usuario puede iniciar sesion.
+12. Login crea una cookie `JSESSIONID`.
+13. `/api/auth/me` valida la sesion.
+14. Logout invalida la sesion.
 
 No se guardan tokens en `localStorage`. El frontend depende de cookies de sesion y usa `credentials: "include"`.
 
@@ -693,6 +702,7 @@ Estado actual:
 - register conectado al backend
 - activacion de cuenta por token
 - envio real de email de activacion con SMTP
+- pantalla frontend de confirmacion de cuenta
 - backend de autenticacion funcional
 - sesiones con `JSESSIONID`
 - acceso al mapa protegido
@@ -709,7 +719,6 @@ Estado actual:
 
 Proximos pasos realistas:
 
-- crear una pantalla frontend real de confirmacion de cuenta
 - mejorar plantilla visual del email de activacion
 - mejorar persistencia de sesion si se reinicia backend
 - añadir favoritos o historial de paises

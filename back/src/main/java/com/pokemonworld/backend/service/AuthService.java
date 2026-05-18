@@ -21,8 +21,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
-    @Value("${app.backend.url:http://localhost:8080}")
-    private String backendUrl;
+    @Value("${app.frontend.url:http://localhost:5173}")
+    private String frontendUrl;
 
     @Value("${app.mail.show-dev-confirmation-url:true}")
     private boolean showDevConfirmationUrl;
@@ -129,10 +129,10 @@ public class AuthService {
     }
 
     private String crearUrlConfirmacion(String token) {
-        String urlBase = backendUrl.endsWith("/")
-                ? backendUrl.substring(0, backendUrl.length() - 1)
-                : backendUrl;
+        String urlBase = frontendUrl.endsWith("/")
+                ? frontendUrl.substring(0, frontendUrl.length() - 1)
+                : frontendUrl;
 
-        return urlBase + "/api/auth/confirm?token=" + token;
+        return urlBase + "/confirmar-cuenta?token=" + token;
     }
 }
