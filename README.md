@@ -76,8 +76,13 @@ Pokemon World/
 │   │   │   ├── LandingPage.jsx
 │   │   │   ├── LoginPage.jsx
 │   │   │   ├── RegisterPage.jsx
+│   │   │   ├── ConfirmAccountPage.jsx
 │   │   │   ├── WorldMap.jsx
-│   │   │   └── PanelPais.jsx
+│   │   │   ├── PanelPais.jsx
+│   │   │   └── layout/
+│   │   │       ├── AuthLayout.jsx
+│   │   │       ├── AuthNav.jsx
+│   │   │       └── AuthFooter.jsx
 │   │   ├── services/
 │   │   │   └── auth.js
 │   │   ├── styles/
@@ -127,15 +132,22 @@ Componentes principales:
 - `LandingPage.jsx`: pagina inicial, presentacion del proyecto, acceso a login, registro y mapa.
 - `LoginPage.jsx`: formulario de inicio de sesion conectado al backend.
 - `RegisterPage.jsx`: formulario de registro conectado al backend, con activacion dev y validacion visual.
+- `ConfirmAccountPage.jsx`: pantalla visual que confirma la cuenta desde `/confirmar-cuenta?token=...`.
 - `WorldMap.jsx`: componente principal del mapa.
 - `PanelPais.jsx`: ficha con datos del pais, clima y Pokemon.
+- `layout/AuthLayout.jsx`: estructura comun para vistas publicas.
+- `layout/AuthNav.jsx`: navegacion comun de landing, login, registro y confirmacion, con menu movil responsive.
+- `layout/AuthFooter.jsx`: footer comun de las vistas publicas.
 
 `App.jsx` gestiona las vistas internas sin React Router:
 
 - `landing`
 - `login`
 - `register`
+- `confirmar-cuenta`
 - `mapa`
+
+Las vistas publicas se envuelven con `AuthLayout` para compartir navbar, footer e identidad visual. La vista `mapa` queda fuera de ese layout para mantener el mapa como protagonista y evitar interferencias con Simplemaps.
 
 Cuando el usuario accede al mapa por primera vez, `WorldMap` se monta y despues se mantiene en el DOM. Solo se oculta con clases CSS cuando se cambia de vista. Esta decision evita reinicializar Simplemaps y reduce el riesgo de romper el mapa al navegar.
 
