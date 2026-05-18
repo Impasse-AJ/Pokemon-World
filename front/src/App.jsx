@@ -4,6 +4,7 @@ import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import ConfirmAccountPage from "./components/ConfirmAccountPage";
+import AuthLayout from "./components/layout/AuthLayout";
 import { cerrarSesion, obtenerUsuarioActual } from "./services/auth";
 
 // Vistas posibles: 'landing' | 'login' | 'register' | 'mapa' | 'confirmar-cuenta'
@@ -136,6 +137,47 @@ function App() {
     }
   };
 
+  const renderizarVistaPublica = () => {
+    if (vista === "landing") {
+      return <LandingPage usuario={usuario} onMapa={irAlMapa} onLogin={() => irALogin()} />;
+    }
+
+    if (vista === "login") {
+      return (
+        <LoginPage
+          onVolver={irAInicio}
+          onRegistro={irARegistro}
+          onLoginCorrecto={manejarLoginCorrecto}
+          mensajeInicial={mensajeLogin}
+        />
+      );
+    }
+
+    if (vista === "register") {
+      return (
+        <RegisterPage
+          onVolver={irAInicio}
+          onLogin={() => irALogin()}
+          onRegistroCorrecto={manejarRegistroCorrecto}
+        />
+      );
+    }
+
+    if (vista === VISTA_CONFIRMAR_CUENTA) {
+      return (
+        <ConfirmAccountPage
+          token={tokenConfirmacion}
+          onLogin={() => irALogin()}
+          onVolver={irAInicio}
+        />
+      );
+    }
+
+    return null;
+  };
+
+  const contenidoPublico = renderizarVistaPublica();
+
   return (
     <>
       {/* WorldMap: se monta cuando el usuario entra por primera vez y nunca se desmonta */}
@@ -152,41 +194,19 @@ function App() {
         </div>
       ) : null}
 
-      {vista === "landing" && (
-        <LandingPage
+      {contenidoPublico ? (
+        <AuthLayout
           usuario={usuario}
+          vistaActual={vista}
+          onInicio={irAInicio}
           onMapa={irAlMapa}
+          onLogin={() => irALogin()}
+          onRegistro={irARegistro}
           onLogout={manejarLogout}
-          onLogin={() => irALogin()}
-          onRegistro={irARegistro}
-        />
-      )}
-
-      {vista === "login" && (
-        <LoginPage
-          onVolver={irAInicio}
-          onRegistro={irARegistro}
-          onMapa={irAlMapa}
-          onLoginCorrecto={manejarLoginCorrecto}
-          mensajeInicial={mensajeLogin}
-        />
-      )}
-
-      {vista === "register" && (
-        <RegisterPage
-          onVolver={irAInicio}
-          onLogin={() => irALogin()}
-          onRegistroCorrecto={manejarRegistroCorrecto}
-        />
-      )}
-
-      {vista === VISTA_CONFIRMAR_CUENTA && (
-        <ConfirmAccountPage
-          token={tokenConfirmacion}
-          onLogin={() => irALogin()}
-          onVolver={irAInicio}
-        />
-      )}
+        >
+          {contenidoPublico}
+        </AuthLayout>
+      ) : null}
     </>
   );
 }

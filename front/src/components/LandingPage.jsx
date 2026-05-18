@@ -1,56 +1,14 @@
 import { motion as Motion } from "motion/react";
-import { Compass, Map as MapIcon, Globe, ThermometerSun, Sparkles } from "lucide-react";
+import { Map as MapIcon, Globe, ThermometerSun, Sparkles } from "lucide-react";
 import "../styles/auth.css";
 
-export default function LandingPage({ usuario, onLogout, onLogin, onRegistro, onMapa }) {
+export default function LandingPage({ usuario, onLogin, onMapa }) {
   return (
-    <div className="auth-pantalla">
-      <Nav
-        usuario={usuario}
-        onLogout={onLogout}
-        onLogin={onLogin}
-        onRegistro={onRegistro}
-        onMapa={onMapa}
-      />
-      <main className="auth-main">
-        <HeroSection usuario={usuario} onMapa={onMapa} onLogin={onLogin} />
-        <FeaturesSection />
-        <FlujoDatosSection />
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
-/* ── Navegación ── */
-function Nav({ usuario, onLogout, onLogin, onRegistro, onMapa }) {
-  return (
-    <nav className="auth-nav">
-      <div className="auth-nav-inner">
-        <div className="auth-nav-logo">
-          <span className="auth-nav-logo-icono"><Compass size={20} /></span>
-          <span className="auth-nav-logo-texto">Pokemon World Map</span>
-        </div>
-        <div className="auth-nav-acciones">
-          <button className="auth-btn-nav-texto auth-btn-nav-activo" disabled>Inicio</button>
-          <button className="auth-btn-nav-outline" onClick={onMapa}>Explorar Mapa</button>
-          <div className="auth-nav-separador" />
-          {usuario ? (
-            <>
-              <span className="auth-nav-usuario">Hola, {usuario.username}</span>
-              <button className="auth-btn-nav-dorado auth-btn-nav-suave" onClick={onLogout}>
-                Cerrar sesion
-              </button>
-            </>
-          ) : (
-            <>
-              <button className="auth-btn-nav-texto auth-nav-solo-desktop" onClick={onLogin}>Entrar</button>
-              <button className="auth-btn-nav-dorado" onClick={onRegistro}>Registrarse</button>
-            </>
-          )}
-        </div>
-      </div>
-    </nav>
+    <>
+      <HeroSection usuario={usuario} onMapa={onMapa} onLogin={onLogin} />
+      <FeaturesSection />
+      <FlujoDatosSection />
+    </>
   );
 }
 
@@ -228,33 +186,5 @@ function FlujoDatosSection() {
         </div>
       </div>
     </section>
-  );
-}
-
-/* ── Footer ── */
-function Footer() {
-  return (
-    <footer className="auth-footer">
-      <div className="auth-footer-inner">
-        <div className="auth-footer-logo">
-          <Compass size={26} />
-          <div className="auth-footer-logo-texto">
-            <p className="nombre">Pokemon World Map</p>
-            <p className="sub">Pokemon World Atlas</p>
-          </div>
-        </div>
-        <div className="auth-footer-links">
-          <span className="auth-footer-link">TFG Project</span>
-          <span className="auth-footer-link">Abraham Pauta</span>
-        </div>
-      </div>
-      <div className="auth-footer-copy">
-        <span>&copy; 2026 Pokemon World Atlas. Todos los derechos reservados.</span>
-        <span className="auth-footer-copy-sep">·</span>
-        <span className="auth-footer-link">Política de privacidad</span>
-        <span className="auth-footer-copy-sep">·</span>
-        <span className="auth-footer-link">Aviso legal</span>
-      </div>
-    </footer>
   );
 }

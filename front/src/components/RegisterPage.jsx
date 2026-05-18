@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion as Motion } from "motion/react";
-import { Compass, UserPlus, User, Mail, Lock, ArrowRight, ArrowLeft } from "lucide-react";
+import { UserPlus, User, Mail, Lock, ArrowRight, ArrowLeft } from "lucide-react";
 import { confirmarCuenta, registrarUsuario } from "../services/auth";
 import "../styles/auth.css";
 
@@ -149,204 +149,154 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
   };
 
   return (
-    <div className="auth-pantalla">
-      <Nav onVolver={onVolver} onLogin={onLogin} />
+    <div className="form-pantalla">
+      <Motion.div
+        className="form-panel form-panel--ancho auth-glass"
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="form-panel-brillo form-panel-brillo--tl" />
 
-      <main className="auth-main">
-        <div className="form-pantalla">
-          <Motion.div
-            className="form-panel form-panel--ancho auth-glass"
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="form-panel-brillo form-panel-brillo--tl" />
-
-            <div className="form-cabecera">
-              <div className="form-icono-wrapper">
-                <UserPlus size={30} />
-              </div>
-              <h2 className="form-titulo">Nueva Cuenta</h2>
-              <p className="form-subtitulo">Empieza tu aventura hoy mismo</p>
-            </div>
-
-            {error ? <p className="auth-mensaje auth-mensaje--error">{error}</p> : null}
-            {erroresCampos.length > 0 ? (
-              <ul className="auth-lista-errores">
-                {erroresCampos.map((mensajeError) => (
-                  <li key={mensajeError}>{mensajeError}</li>
-                ))}
-              </ul>
-            ) : null}
-            {mensaje ? <p className="auth-mensaje auth-mensaje--exito">{mensaje}</p> : null}
-            {urlConfirmacionDev ? (
-              <div className="auth-mensaje auth-mensaje--dev">
-                <p>Enlace de activacion para desarrollo:</p>
-                <a href={urlConfirmacionDev}>{urlConfirmacionDev}</a>
-                <button
-                  type="button"
-                  className="auth-mensaje-accion"
-                  onClick={manejarActivacionDev}
-                  disabled={cargando}
-                >
-                  {cargando ? "Activando..." : "Activar cuenta ahora"}
-                </button>
-              </div>
-            ) : null}
-
-            <form onSubmit={manejarSubmit}>
-              <div className="form-grid-2">
-                <div className="form-grupo form-campo-completo">
-                  <label className="form-label">Usuario</label>
-                  <div className="form-input-wrapper">
-                    <span className="form-input-icono">
-                      <User size={18} />
-                    </span>
-                    <input
-                      type="text"
-                      placeholder="Entrenador Legendario"
-                      className="form-input"
-                      autoComplete="username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-grupo form-campo-completo">
-                  <label className="form-label">Email</label>
-                  <div className="form-input-wrapper">
-                    <span className="form-input-icono">
-                      <Mail size={18} />
-                    </span>
-                    <input
-                      type="email"
-                      placeholder="tu@email.com"
-                      className="form-input"
-                      autoComplete="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-grupo">
-                  <label className="form-label">Contraseña</label>
-                  <div className="form-input-wrapper">
-                    <span className="form-input-icono">
-                      <Lock size={18} />
-                    </span>
-                    <input
-                      type="password"
-                      placeholder="••••••••"
-                      className="form-input"
-                      autoComplete="new-password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-grupo">
-                  <label className="form-label">Repetir</label>
-                  <div className="form-input-wrapper">
-                    <span className="form-input-icono">
-                      <Lock size={18} />
-                    </span>
-                    <input
-                      type="password"
-                      placeholder="••••••••"
-                      className="form-input"
-                      autoComplete="new-password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-campo-completo form-submit-registro">
-                  {mensaje ? (
-                    <div className="registro-acciones-finales">
-                      <button
-                        type="button"
-                        className="form-btn-submit"
-                        onClick={() => onRegistroCorrecto?.(mensaje)}
-                      >
-                        Ir a iniciar sesion <ArrowRight size={18} />
-                      </button>
-                      {!cuentaActivada && urlConfirmacionDev ? (
-                        <p className="registro-ayuda">
-                          Activa la cuenta antes de iniciar sesion.
-                        </p>
-                      ) : null}
-                    </div>
-                  ) : (
-                    <button type="submit" className="form-btn-submit" disabled={cargando}>
-                      {cargando ? "Registrando..." : "Registrarse"} <ArrowRight size={18} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            </form>
-
-            <div className="form-pie">
-              <p className="form-pie-texto">
-                ¿Ya tienes cuenta?{" "}
-                <button className="form-pie-enlace" onClick={onLogin}>
-                  Iniciar sesión
-                </button>
-              </p>
-              <button className="form-btn-volver" onClick={onVolver}>
-                <ArrowLeft size={12} /> Volver al Inicio
-              </button>
-            </div>
-          </Motion.div>
+        <div className="form-cabecera">
+          <div className="form-icono-wrapper">
+            <UserPlus size={30} />
+          </div>
+          <h2 className="form-titulo">Nueva Cuenta</h2>
+          <p className="form-subtitulo">Empieza tu aventura hoy mismo</p>
         </div>
-      </main>
 
-      <footer className="auth-footer">
-        <div className="auth-footer-inner">
-          <div className="auth-footer-logo">
-            <Compass size={28} />
-            <div className="auth-footer-logo-texto">
-              <p className="nombre">Pokemon World Map</p>
-              <p className="sub">Pokemon World Atlas &copy; 2026</p>
+        {error ? <p className="auth-mensaje auth-mensaje--error">{error}</p> : null}
+        {erroresCampos.length > 0 ? (
+          <ul className="auth-lista-errores">
+            {erroresCampos.map((mensajeError) => (
+              <li key={mensajeError}>{mensajeError}</li>
+            ))}
+          </ul>
+        ) : null}
+        {mensaje ? <p className="auth-mensaje auth-mensaje--exito">{mensaje}</p> : null}
+        {urlConfirmacionDev ? (
+          <div className="auth-mensaje auth-mensaje--dev">
+            <p>Enlace de activacion para desarrollo:</p>
+            <a href={urlConfirmacionDev}>{urlConfirmacionDev}</a>
+            <button
+              type="button"
+              className="auth-mensaje-accion"
+              onClick={manejarActivacionDev}
+              disabled={cargando}
+            >
+              {cargando ? "Activando..." : "Activar cuenta ahora"}
+            </button>
+          </div>
+        ) : null}
+
+        <form onSubmit={manejarSubmit}>
+          <div className="form-grid-2">
+            <div className="form-grupo form-campo-completo">
+              <label className="form-label">Usuario</label>
+              <div className="form-input-wrapper">
+                <span className="form-input-icono">
+                  <User size={18} />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Entrenador Legendario"
+                  className="form-input"
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-grupo form-campo-completo">
+              <label className="form-label">Email</label>
+              <div className="form-input-wrapper">
+                <span className="form-input-icono">
+                  <Mail size={18} />
+                </span>
+                <input
+                  type="email"
+                  placeholder="tu@email.com"
+                  className="form-input"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-grupo">
+              <label className="form-label">Contraseña</label>
+              <div className="form-input-wrapper">
+                <span className="form-input-icono">
+                  <Lock size={18} />
+                </span>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  className="form-input"
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-grupo">
+              <label className="form-label">Repetir</label>
+              <div className="form-input-wrapper">
+                <span className="form-input-icono">
+                  <Lock size={18} />
+                </span>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  className="form-input"
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-campo-completo form-submit-registro">
+              {mensaje ? (
+                <div className="registro-acciones-finales">
+                  <button
+                    type="button"
+                    className="form-btn-submit"
+                    onClick={() => onRegistroCorrecto?.(mensaje)}
+                  >
+                    Ir a iniciar sesion <ArrowRight size={18} />
+                  </button>
+                  {!cuentaActivada && urlConfirmacionDev ? (
+                    <p className="registro-ayuda">
+                      Activa la cuenta antes de iniciar sesion.
+                    </p>
+                  ) : null}
+                </div>
+              ) : (
+                <button type="submit" className="form-btn-submit" disabled={cargando}>
+                  {cargando ? "Registrando..." : "Registrarse"} <ArrowRight size={18} />
+                </button>
+              )}
             </div>
           </div>
-          <div className="auth-footer-links">
-            <span className="auth-footer-link">TFG Project</span>
-            <span className="auth-footer-link">Abraham Pauta</span>
-          </div>
+        </form>
+
+        <div className="form-pie">
+          <p className="form-pie-texto">
+            ¿Ya tienes cuenta?{" "}
+            <button className="form-pie-enlace" onClick={onLogin}>
+              Iniciar sesión
+            </button>
+          </p>
+          <button className="form-btn-volver" onClick={onVolver}>
+            <ArrowLeft size={12} /> Volver al Inicio
+          </button>
         </div>
-      </footer>
+      </Motion.div>
     </div>
-  );
-}
-
-function Nav({ onVolver, onLogin }) {
-  return (
-    <nav className="auth-nav">
-      <div className="auth-nav-inner">
-        <button
-          className="auth-nav-logo auth-nav-logo-boton"
-          onClick={onVolver}
-        >
-          <span className="auth-nav-logo-icono">
-            <Compass size={22} />
-          </span>
-          <span className="auth-nav-logo-texto">Pokemon World Map</span>
-        </button>
-
-        <div className="auth-nav-acciones">
-          <button className="auth-btn-nav-texto auth-nav-solo-desktop" onClick={onLogin}>
-            Entrar
-          </button>
-          <div className="auth-nav-separador" />
-          <button className="auth-btn-nav-dorado auth-btn-nav-suave" onClick={onVolver}>
-            Volver
-          </button>
-        </div>
-      </div>
-    </nav>
   );
 }

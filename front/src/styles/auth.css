@@ -39,6 +39,10 @@
   padding-top: 5rem; /* compensa nav fija */
 }
 
+.auth-layout-main {
+  width: 100%;
+}
+
 .auth-glass {
   background: rgba(18, 42, 93, 0.4);
   backdrop-filter: blur(12px);
@@ -175,6 +179,10 @@
 
 .auth-btn-nav-dorado:hover { box-shadow: 0 0 14px rgba(255, 216, 79, 0.4); }
 .auth-btn-nav-dorado:active { transform: scale(0.97); }
+
+.auth-btn-nav-dorado-activo {
+  box-shadow: 0 0 14px rgba(255, 216, 79, 0.34);
+}
 
 .auth-btn-nav-suave {
   background: rgba(74, 116, 223, 0.15);
@@ -1118,11 +1126,22 @@
 @media (max-width: 540px) {
   .auth-nav-logo-texto   { display: none; }
   .auth-nav-separador    { display: none; }
-  .auth-nav-solo-desktop { display: none; }
   .auth-nav-usuario      { display: none; }
 
-  .auth-nav-inner { height: 4.5rem; padding: 0 1rem; }
-  .auth-main      { padding-top: 4.5rem; }
+  .auth-nav-inner {
+    min-height: 4.5rem;
+    height: auto;
+    padding: 0.65rem 1rem;
+    gap: 0.65rem;
+  }
+
+  .auth-nav-acciones {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.45rem;
+  }
+
+  .auth-main { padding-top: 6.15rem; }
 
   .landing-hero   { padding: 2.5rem 1.25rem 2rem; }
 
