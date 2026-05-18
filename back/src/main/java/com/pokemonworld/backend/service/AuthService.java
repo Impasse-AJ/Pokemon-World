@@ -9,6 +9,7 @@ import com.pokemonworld.backend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,15 +19,25 @@ public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Value("${app.backend.url:http://localhost:8080}")
     private String backendUrl;
 
-    public AuthService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    @Value("${app.mail.show-dev-confirmation-url:true}")
+    private boolean showDevConfirmationUrl;
+
+    public AuthService(
+            UsuarioRepository usuarioRepository,
+            PasswordEncoder passwordEncoder,
+            EmailService emailService
+    ) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
+    @Transactional
     public RegisterResponse registrar(RegisterRequest request) {
         String username = request.getUsername().trim();
         String email = request.getEmail().trim().toLowerCase();
@@ -52,7 +63,15 @@ public class AuthService {
         usuario.setFechaExpiracionToken(LocalDateTime.now().plusHours(24));
 
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
-        String urlConfirmacionDev = backendUrl + "/api/auth/confirm?token=" + token;
+        String urlConfirmacion = crearUrlConfirmacion(token);
+
+        emailService.enviarEmailActivacion(
+                usuarioGuardado.getEmail(),
+                usuarioGuardado.getUsername(),
+                urlConfirmacion
+        );
+
+        String urlConfirmacionDev = showDevConfirmationUrl ? urlConfirmacion : null;
 
         return new RegisterResponse(
                 "Registro completado. Revisa tu bandeja de entrada para activar tu cuenta.",
@@ -107,5 +126,13 @@ public class AuthService {
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    }
+
+    private String crearUrlConfirmacion(String token) {
+        String urlBase = backendUrl.endsWith("/")
+                ? backendUrl.substring(0, backendUrl.length() - 1)
+                : backendUrl;
+
+        return urlBase + "/api/auth/confirm?token=" + token;
     }
 }

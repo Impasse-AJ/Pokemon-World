@@ -38,6 +38,9 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
         } catch (IllegalArgumentException error) {
             return ResponseEntity.badRequest().body(new MensajeResponse(error.getMessage()));
+        } catch (IllegalStateException error) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MensajeResponse(error.getMessage()));
         }
     }
 

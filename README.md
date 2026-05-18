@@ -1,6 +1,6 @@
 # Pokemon World Map
 
-Pokemon World Map es una aplicacion web completa que combina un mapa mundial interactivo con autenticacion de usuarios, datos reales de paises, clima actual y recomendaciones Pokemon segun la temperatura.
+Pokemon World Map es una aplicacion web completa que combina un mapa mundial interactivo con autenticacion de usuarios, activacion por email, datos reales de paises, clima actual y recomendaciones Pokemon segun la temperatura.
 
 El usuario puede entrar en una landing, registrarse, activar su cuenta, iniciar sesion y acceder al mapa. Una vez dentro del atlas, puede seleccionar paises en el mapa y ver una ficha con informacion del pais, clima actual y una lista de Pokemon recomendados.
 
@@ -290,6 +290,7 @@ Responsabilidades actuales:
 - logout
 - consulta de sesion actual
 - validaciones de registro
+- envio de email real de activacion
 - conexion con MySQL
 - configuracion CORS por variables
 
@@ -318,7 +319,7 @@ Devuelve estado basico del backend.
 
 `POST /api/auth/register`
 
-Registra un usuario inactivo, genera token de confirmacion y devuelve una URL de confirmacion.
+Registra un usuario inactivo, genera token de confirmacion, envia email de activacion si el mail esta habilitado y devuelve la URL dev solo si esta configurada.
 
 `GET /api/auth/confirm?token=...`
 
@@ -346,14 +347,15 @@ El flujo actual es:
 2. El backend crea el usuario con `activo = false`.
 3. Se genera `tokenConfirmacion`.
 4. Se guarda `fechaExpiracionToken`.
-5. Se devuelve una URL de confirmacion para desarrollo/despliegue actual sin SMTP real.
-6. El usuario confirma la cuenta con `/api/auth/confirm?token=...`.
-7. El backend marca `activo = true`.
-8. El token y la fecha de expiracion se limpian.
-9. El usuario puede iniciar sesion.
-10. Login crea una cookie `JSESSIONID`.
-11. `/api/auth/me` valida la sesion.
-12. Logout invalida la sesion.
+5. Si `MAIL_ENABLED=true`, se envia un email real de activacion.
+6. Si `MAIL_SHOW_DEV_CONFIRMATION_URL=true`, tambien se devuelve la URL de confirmacion para desarrollo.
+7. El usuario confirma la cuenta con `/api/auth/confirm?token=...`.
+8. El backend marca `activo = true`.
+9. El token y la fecha de expiracion se limpian.
+10. El usuario puede iniciar sesion.
+11. Login crea una cookie `JSESSIONID`.
+12. `/api/auth/me` valida la sesion.
+13. Logout invalida la sesion.
 
 No se guardan tokens en `localStorage`. El frontend depende de cookies de sesion y usa `credentials: "include"`.
 
@@ -428,6 +430,17 @@ VITE_API_URL=http://localhost:8080/api
 BACKEND_URL=http://localhost:8080
 FRONTEND_URL=http://localhost:5173
 CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000
+
+MAIL_HOST=smtp-relay.brevo.com
+MAIL_PORT=587
+MAIL_USERNAME=change_me
+MAIL_PASSWORD=change_me
+MAIL_FROM=no-reply@pokemon-world.es
+MAIL_FROM_NAME=Pokemon World Map
+MAIL_SMTP_AUTH=true
+MAIL_SMTP_STARTTLS_ENABLE=true
+MAIL_ENABLED=false
+MAIL_SHOW_DEV_CONFIRMATION_URL=true
 ```
 
 Valores esperados en local:
@@ -437,6 +450,8 @@ VITE_API_URL=http://localhost:8080/api
 FRONTEND_URL=http://localhost:5173
 BACKEND_URL=http://localhost:8080
 CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000
+MAIL_ENABLED=false
+MAIL_SHOW_DEV_CONFIRMATION_URL=true
 ```
 
 Valores esperados en produccion:
@@ -446,6 +461,14 @@ VITE_API_URL=https://pokemon-world.es/api
 FRONTEND_URL=https://pokemon-world.es
 BACKEND_URL=https://pokemon-world.es
 CORS_ALLOWED_ORIGINS=https://pokemon-world.es,https://www.pokemon-world.es
+MAIL_HOST=smtp-relay.brevo.com
+MAIL_PORT=587
+MAIL_FROM=no-reply@pokemon-world.es
+MAIL_FROM_NAME=Pokemon World Map
+MAIL_SMTP_AUTH=true
+MAIL_SMTP_STARTTLS_ENABLE=true
+MAIL_ENABLED=true
+MAIL_SHOW_DEV_CONFIRMATION_URL=false
 ```
 
 No se deben incluir contrasenas reales, tokens, cookies ni credenciales en el README.
@@ -669,6 +692,7 @@ Estado actual:
 - login conectado al backend
 - register conectado al backend
 - activacion de cuenta por token
+- envio real de email de activacion con SMTP
 - backend de autenticacion funcional
 - sesiones con `JSESSIONID`
 - acceso al mapa protegido
@@ -685,8 +709,8 @@ Estado actual:
 
 Proximos pasos realistas:
 
-- configurar envio real de emails SMTP
 - crear una pantalla frontend real de confirmacion de cuenta
+- mejorar plantilla visual del email de activacion
 - mejorar persistencia de sesion si se reinicia backend
 - añadir favoritos o historial de paises
 - ampliar memoria tecnica final del TFG
