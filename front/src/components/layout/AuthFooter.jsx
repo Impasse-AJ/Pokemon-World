@@ -13,7 +13,7 @@ export default function AuthFooter() {
         </div>
         <div className="auth-footer-links">
           <span className="auth-footer-link">TFG Project</span>
-          <span className="auth-footer-link">Abraham Pauta</span>
+          <span className="auth-footer-link">Abraham Josue Pauta Paula</span>
         </div>
       </div>
       <div className="auth-footer-copy">
