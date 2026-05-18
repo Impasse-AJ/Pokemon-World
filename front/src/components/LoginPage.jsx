@@ -66,7 +66,7 @@ export default function LoginPage({
                 <LogIn size={30} />
               </div>
               <h2 className="form-titulo">Iniciar Sesión</h2>
-              <p className="form-subtitulo">Continúa tu viaje como explorador</p>
+              <p className="form-subtitulo">Continúa tu viaje como Entrenador</p>
             </div>
 
             {mensaje ? <p className="auth-mensaje auth-mensaje--exito">{mensaje}</p> : null}

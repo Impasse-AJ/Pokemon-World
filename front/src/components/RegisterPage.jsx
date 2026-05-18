@@ -189,7 +189,7 @@ export default function RegisterPage({ onVolver, onLogin, onRegistroCorrecto }) 
                     </span>
                     <input
                       type="text"
-                      placeholder="EntrenadorLegendario"
+                      placeholder="Entrenador Legendario"
                       className="form-input"
                       autoComplete="username"
                       value={username}
